@@ -52,7 +52,7 @@
         >
           {{ snackbarText }}
           <v-btn
-            flat
+            text
             color="primary"
             @click="snackbar = false"
           >
