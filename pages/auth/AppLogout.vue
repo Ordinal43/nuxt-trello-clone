@@ -1,5 +1,5 @@
 <template>
-  <h1>Sign in</h1>
+  <p>Sign out</p>
 </template>
 <script>
 export default {
