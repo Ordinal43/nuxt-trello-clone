@@ -3,6 +3,9 @@
 </template>
 <script>
 export default {
-  name: 'AppLogout'
+  name: 'AppLogout',
+  async created () {
+    await this.$fire.auth.signOut()
+  }
 }
 </script>

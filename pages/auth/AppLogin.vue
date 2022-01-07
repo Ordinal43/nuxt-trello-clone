@@ -79,7 +79,15 @@ export default {
   },
   methods: {
     login () {
-      //
+      this.$fire.auth.signInWithEmailAndPassword(
+        this.auth.email,
+        this.auth.password
+      ).then((user) => {
+        this.$router.push('/')
+      }).catch((error) => {
+        this.snackbarText = error.message
+        this.snackbar = true
+      })
     }
   }
 }
