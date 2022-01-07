@@ -27,6 +27,11 @@ export default {
   plugins: [
   ],
 
+  // Override Nuxt router config
+  router: {
+    middleware: ['auth']
+  },
+
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
 
