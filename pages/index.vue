@@ -1,5 +1,7 @@
 <template>
-  <h1>Trello clone</h1>
+  <v-container>
+    <h1>Trello clone</h1>
+  </v-container>
 </template>
 
 <script>

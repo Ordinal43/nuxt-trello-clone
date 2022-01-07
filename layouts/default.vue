@@ -1,11 +1,7 @@
 <template>
   <v-app>
     <v-main>
-      <v-container
-        class="fill-height"
-      >
-        <Nuxt />
-      </v-container>
+      <Nuxt />
     </v-main>
   </v-app>
 </template>
