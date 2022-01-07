@@ -18,14 +18,14 @@
             Log in to Brello
           </h3>
           <v-text-field
-            v-model="email"
+            v-model="auth.email"
             name="email"
             label="Enter e-mail"
             prepend-icon="mdi-account"
             type="text"
           />
           <v-text-field
-            v-model="password"
+            v-model="auth.password"
             name="password"
             label="Enter password"
             prepend-icon="mdi-lock"
