@@ -1,9 +1,10 @@
-export default ({ app, route, redirect }) => {
+export default ({ store, route, redirect }) => {
+  const user = store.getters.getUser
   if (route.path === '/auth/applogin') {
-    if (app.$fire.auth.currentUser) {
+    if (user) {
       return redirect('/')
     }
-  } else if (!app.$fire.auth.currentUser) {
+  } else if (!user) {
     return redirect('/auth/applogin')
   }
 }
