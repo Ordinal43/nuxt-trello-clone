@@ -82,9 +82,7 @@ export default {
       this.$fire.auth.signInWithEmailAndPassword(
         this.auth.email,
         this.auth.password
-      ).then((user) => {
-        this.$router.push('/')
-      }).catch((error) => {
+      ).catch((error) => {
         this.snackbarText = error.message
         this.snackbar = true
       })
