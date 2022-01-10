@@ -5,7 +5,7 @@
       <v-btn
         small
         class="ml-4"
-        @click="openDialogCreateBoard"
+        @click="dialog = true"
       >
         <v-icon
           left
@@ -141,23 +141,32 @@
             </v-row>
           </v-form>
         </v-container>
+        <v-overlay
+          absolute
+          :value="uploading"
+        >
+          <v-progress-circular
+            indeterminate
+          />
+        </v-overlay>
       </v-card>
     </v-dialog>
     <v-snackbar
       v-model="snackbar"
       :timeout="5000"
-      absolute
-      bottom
-      centered
+      :color="snackbarColor"
     >
       {{ snackbarText }}
-      <v-btn
-        text
-        color="primary"
-        @click="snackbar = false"
-      >
-        Close
-      </v-btn>
+      <template #action="{ attrs }">
+        <v-btn
+          color="white"
+          icon
+          v-bind="attrs"
+          @click="snackbar = false"
+        >
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </template>
     </v-snackbar>
   </v-container>
 </template>
@@ -172,6 +181,7 @@ export default {
       enableColor: false,
       dialog: false,
       valid: false,
+      uploading: false,
       board: {
         title: '',
         color: '',
@@ -182,23 +192,94 @@ export default {
           uuid: ''
         }
       },
-      currentImageId: '',
       fileToUpload: {},
       snackbar: false,
+      snackbarColor: '',
       snackbarText: ''
     }
   },
   methods: {
-    openDialogCreateBoard () {
-      this.currentImageId = uuidv4()
-      this.dialog = true
-    },
     removeColor () {
       this.board.color = ''
       this.enableColor = false
     },
     createBoard () {
-      //
+      const uuid = uuidv4()
+      if (this.$refs.form.validate()) {
+        this.uploading = true
+        if (this.fileToUpload.file) {
+          const itemFilename = `${uuid}-${this.fileToUpload.file.name}`
+          const itemName = `images/${this.$fire.auth.currentUser.uid}/boards/${uuid}/${itemFilename}`
+
+          const itemRef = this.$fire.storage.ref().child(itemName)
+          const itemMeta = {
+            customMetadata: {
+              owner: this.$fire.auth.currentUser.uid
+            }
+          }
+
+          const task = itemRef.put(this.fileToUpload.file, itemMeta)
+          return task.on(
+            'state_changed',
+            null,
+            // on upload error
+            (error) => {
+              this.snackbarColor = 'red darken-1'
+              this.snackbarText = error.message
+              this.snackbar = true
+              return false
+            },
+            // on upload success
+            async () => {
+              const url = await task.snapshot.ref.getDownloadURL()
+
+              this.board.image = {
+                name: itemFilename,
+                originalName: this.fileToUpload.file.name,
+                downloadURL: url,
+                uuid
+              }
+
+              this.uploadBoardData(uuid, itemRef)
+            }
+          )
+        } else {
+          this.uploadBoardData(uuid)
+        }
+      }
+    },
+    async uploadBoardData (uuid, itemRef) {
+      this.board.dateCreated = Date.now()
+      try {
+        await this.$fire.firestore
+          .collection('users')
+          .doc(this.$fire.auth.currentUser.uid)
+          .collection('boards')
+          .doc(uuid)
+          .set(this.board)
+
+        this.dialog = false
+        this.$refs.form.reset()
+        this.snackbarColor = 'green darken-1'
+        this.snackbarText = 'Successfully created your board'
+        this.snackbar = true
+      } catch (error) {
+        this.snackbarColor = 'red darken-1'
+        this.snackbarText = error.message
+        this.snackbar = true
+
+        if (itemRef) {
+          try {
+            itemRef.delete()
+          } catch (error) {
+            this.snackbarColor = 'red darken-1'
+            this.snackbarText = error.message
+            this.snackbar = true
+          }
+        }
+      } finally {
+        this.uploading = false
+      }
     },
     chooseImage () {
       this.$refs.imageFileInput.click()
