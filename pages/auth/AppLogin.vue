@@ -49,18 +49,18 @@
           <v-snackbar
             v-model="snackbar"
             :timeout="5000"
-            absolute
-            bottom
-            centered
           >
             {{ snackbarText }}
-            <v-btn
-              text
-              color="primary"
-              @click="snackbar = false"
-            >
-              Close
-            </v-btn>
+            <template #action="{ attrs }">
+              <v-btn
+                color="white"
+                icon
+                v-bind="attrs"
+                @click="snackbar = false"
+              >
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </template>
           </v-snackbar>
         </v-card>
       </v-col>
