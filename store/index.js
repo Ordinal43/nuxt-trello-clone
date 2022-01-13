@@ -19,7 +19,17 @@ const mutations = {
 }
 
 const actions = {
-  nuxtServerInit ({ commit }, { req }) {
+  async nuxtServerInit ({ commit, dispatch }, { req, res }) {
+    // Make auth user object available on server side
+    if (res && res.locals && res.locals.user) {
+      const { allClaims: claims, ...authUser } = res.locals.user
+      await dispatch('onAuthStateChangedAction', {
+        authUser,
+        claims
+      })
+    }
+
+    // Store auth user on client side with Vuex and cookie
     if (process.server && process.static) { return }
     if (!req.headers.cookie) { return }
 
@@ -49,8 +59,6 @@ const actions = {
 
       Cookie.set('brello_access_token', token)
       state.commit('setUser', { uid, email })
-
-      this.$router.push('/')
     }
   }
 }

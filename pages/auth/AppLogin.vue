@@ -41,6 +41,7 @@
             <v-btn
               block
               color="primary"
+              :loading="loading"
               @click="login"
             >
               Log in
@@ -77,19 +78,30 @@ export default {
         password: ''
       },
       isShowPass: false,
+      loading: false,
       snackbar: false,
       snackbarText: ''
     }
   },
+  watch: {
+    '$store.state.user' () {
+      this.$router.push({
+        path: '/'
+      })
+    }
+  },
   methods: {
     login () {
+      this.loading = true
       this.$fire.auth.signInWithEmailAndPassword(
         this.auth.email,
         this.auth.password
-      ).catch((error) => {
-        this.snackbarText = error.message
-        this.snackbar = true
-      })
+      )
+        .catch((error) => {
+          this.loading = false
+          this.snackbarText = error.message
+          this.snackbar = true
+        })
     }
   }
 }

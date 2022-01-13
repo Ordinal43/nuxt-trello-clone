@@ -209,12 +209,12 @@ export default {
         this.uploading = true
         if (this.fileToUpload.file) {
           const itemFilename = `${uuid}-${this.fileToUpload.file.name}`
-          const itemName = `images/${this.$fire.auth.currentUser.uid}/boards/${uuid}/${itemFilename}`
+          const itemName = `images/${this.$store.getters.getUser.uid}/boards/${uuid}/${itemFilename}`
 
           const itemRef = this.$fire.storage.ref().child(itemName)
           const itemMeta = {
             customMetadata: {
-              owner: this.$fire.auth.currentUser.uid
+              owner: this.$store.getters.getUser.uid
             }
           }
 
@@ -253,7 +253,7 @@ export default {
       try {
         await this.$fire.firestore
           .collection('users')
-          .doc(this.$fire.auth.currentUser.uid)
+          .doc(this.$store.getters.getUser.uid)
           .collection('boards')
           .doc(uuid)
           .set(this.board)
