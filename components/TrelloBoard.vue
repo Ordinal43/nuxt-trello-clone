@@ -15,9 +15,9 @@
       <h4>
         {{ board.title }}
       </h4>
-      <div>
+      <p class="caption">
         {{ dayjs(board.dateCreated).fromNow() }}
-      </div>
+      </p>
     </div>
   </v-card>
 </template>

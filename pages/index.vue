@@ -29,7 +29,7 @@
       </v-col>
       <template v-else>
         <div v-if="!boards.length">
-          <p>
+          <p class="text-center">
             No boards yet...
           </p>
           <v-btn @click="dialog = true">
@@ -49,7 +49,7 @@
             md="3"
             lg="2"
           >
-            <TrelloBoard :board="b" />
+            <LazyTrelloBoard :board="b" />
           </v-col>
         </template>
       </template>
