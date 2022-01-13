@@ -16,25 +16,17 @@
         {{ board.title }}
       </h4>
       <p class="caption">
-        {{ dayjs(board.dateCreated).fromNow() }}
+        {{ board.dateCreated | formatFromNow }}
       </p>
     </div>
   </v-card>
 </template>
 
 <script>
-import dayjs from 'dayjs'
-import relativeTime from 'dayjs/plugin/relativeTime'
-
-dayjs.extend(relativeTime)
-
 export default {
   name: 'TrelloBoard',
   props: {
     board: { type: Object, required: true }
-  },
-  methods: {
-    dayjs
   }
 }
 </script>
