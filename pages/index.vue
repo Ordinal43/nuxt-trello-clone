@@ -16,13 +16,17 @@
         create
       </v-btn>
     </v-row>
-    <v-row align="center">
-      <p v-if="$fetchState.pending">
-        Fetching boards...
-      </p>
-      <p v-else-if="$fetchState.error">
-        An error occurred :(
-      </p>
+    <v-row>
+      <v-col v-if="$fetchState.pending">
+        <p class="text-center text-caption">
+          Fetching boards...
+        </p>
+      </v-col>
+      <v-col v-else-if="$fetchState.error">
+        <p class="text-center text-caption">
+          An error occurred :(
+        </p>
+      </v-col>
       <template v-else>
         <div v-if="!boards.length">
           <p>
