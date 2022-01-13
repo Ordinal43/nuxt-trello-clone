@@ -3,6 +3,7 @@
     <v-row align="center">
       <h2>My Boards</h2>
       <v-btn
+        v-show="boards.length"
         small
         class="ml-4"
         @click="dialog = true"
@@ -14,6 +15,40 @@
         </v-icon>
         create
       </v-btn>
+    </v-row>
+    <v-row align="center">
+      <p v-if="$fetchState.pending">
+        Fetching boards...
+      </p>
+      <p v-else-if="$fetchState.error">
+        An error occurred :(
+      </p>
+      <template v-else>
+        <div v-if="!boards.length">
+          <p>
+            No boards yet...
+          </p>
+          <v-btn @click="dialog = true">
+            <v-icon
+              left
+            >
+              mdi-trello
+            </v-icon>
+            Add a board
+          </v-btn>
+        </div>
+        <template v-else>
+          <v-col
+            v-for="b in boards"
+            :key="b.id"
+            sm="4"
+            md="3"
+            lg="2"
+          >
+            <TrelloBoard :board="b" />
+          </v-col>
+        </template>
+      </template>
     </v-row>
     <v-dialog
       :key="dialog"
@@ -192,11 +227,54 @@ export default {
           uuid: ''
         }
       },
+      boards: [],
       fileToUpload: {},
       snackbar: false,
       snackbarColor: '',
       snackbarText: ''
     }
+  },
+  async fetch () {
+    // Get created board list
+    const boardsRef = this.$fire.firestore
+      .collection('users')
+      .doc(this.$store.getters.getUser.uid)
+      .collection('boards')
+
+    await boardsRef
+      .get()
+      .then((querySnapshot) => {
+        if (querySnapshot.docs.length > 0) {
+          try {
+            for (const doc of querySnapshot.docs) {
+              const data = doc.data()
+              data.id = doc.id
+              this.boards.push(data)
+            }
+          } catch (err) {
+            console.error(err)
+          }
+        }
+      })
+  },
+  mounted () {
+    // Add listener to refresh board when data changes
+    this.$fire.firestore
+      .collection('users')
+      .doc(this.$store.getters.getUser.uid)
+      .collection('boards')
+      .onSnapshot((querySnapshot) => {
+        if (querySnapshot.docs.length > 0) {
+          this.boards = []
+          try {
+            for (const doc of querySnapshot.docs) {
+              const data = doc.data()
+              data.id = doc.id
+              this.boards.push(data)
+            }
+          } catch (err) {}
+        }
+      })
   },
   methods: {
     removeColor () {
