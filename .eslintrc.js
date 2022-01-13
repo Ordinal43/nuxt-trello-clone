@@ -15,5 +15,8 @@ module.exports = {
   plugins: [
   ],
   // add your custom rules here
+  ignorePatterns: [
+    'static/firebase-auth-sw.js'
+  ],
   rules: {}
 }
