@@ -1,11 +1,14 @@
 <template>
   <v-app>
     <v-app-bar
-      v-if="$store.getters.getUser"
       app
       dense
     >
-      <v-toolbar-title>Brello</v-toolbar-title>
+      <v-toolbar-title>
+        <NuxtLink to="/">
+          Brello
+        </NuxtLink>
+      </v-toolbar-title>
       <v-spacer />
 
       <v-menu

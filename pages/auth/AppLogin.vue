@@ -71,6 +71,7 @@
 <script>
 export default {
   name: 'AppLogin',
+  layout: 'login',
   data () {
     return {
       auth: {
