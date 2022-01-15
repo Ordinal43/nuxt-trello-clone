@@ -73,10 +73,7 @@
               mdi-close
             </v-icon>
           </v-row>
-          <v-form
-            ref="form"
-            v-model="valid"
-          >
+          <v-form ref="form">
             <v-row>
               <v-col cols="12">
                 <v-text-field
@@ -219,7 +216,6 @@ export default {
     return {
       enableColor: false,
       dialog: false,
-      valid: false,
       uploading: false,
       board: {
         title: '',
