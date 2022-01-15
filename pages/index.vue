@@ -252,7 +252,6 @@ export default {
               this.boards.push(data)
             }
           } catch (err) {
-            console.error(err)
           }
         }
       })
