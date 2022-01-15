@@ -15,7 +15,7 @@
       <h4>
         {{ board.title }}
       </h4>
-      <p class="caption">
+      <p class="text-caption">
         {{ board.dateCreated | formatFromNow }}
       </p>
     </div>
