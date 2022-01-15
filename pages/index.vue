@@ -281,8 +281,8 @@ export default {
       this.enableColor = false
     },
     createBoard () {
-      const uuid = uuidv4()
       if (this.$refs.form.validate()) {
+        const uuid = uuidv4()
         this.uploading = true
         if (this.fileToUpload.file) {
           const itemFilename = `${uuid}-${this.fileToUpload.file.name}`
