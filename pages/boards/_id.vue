@@ -242,12 +242,12 @@ export default {
         }
       }
     },
-    async createCard (list, title) {
-      if (!list.cards) {
-        list.cards = []
+    async createCard (currentList, title) {
+      if (!currentList.cards) {
+        currentList.cards = []
       }
       const id = uuidv4()
-      list.cards.push({ id, title })
+      currentList.cards.push({ id, title })
 
       try {
         await this.updateBoard()
