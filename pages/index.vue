@@ -245,13 +245,10 @@ export default {
       .get()
       .then((querySnapshot) => {
         if (querySnapshot.docs.length > 0) {
-          try {
-            for (const doc of querySnapshot.docs) {
-              const data = doc.data()
-              data.id = doc.id
-              this.boards.push(data)
-            }
-          } catch (err) {
+          for (const doc of querySnapshot.docs) {
+            const data = doc.data()
+            data.id = doc.id
+            this.boards.push(data)
           }
         }
       })
@@ -265,13 +262,11 @@ export default {
       .onSnapshot((querySnapshot) => {
         if (querySnapshot.docs.length > 0) {
           this.boards = []
-          try {
-            for (const doc of querySnapshot.docs) {
-              const data = doc.data()
-              data.id = doc.id
-              this.boards.push(data)
-            }
-          } catch (err) {}
+          for (const doc of querySnapshot.docs) {
+            const data = doc.data()
+            data.id = doc.id
+            this.boards.push(data)
+          }
         }
       })
   },
