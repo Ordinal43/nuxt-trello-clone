@@ -15,7 +15,7 @@
           v-for="l in board.lists"
           :key="`list-${l.id}`"
           :list="l"
-          @delete-list="promptDelete"
+          @delete-list="promptDeleteList"
           @create-card="createCard(l, ...arguments)"
           @show-details="navigateToCard"
         />
@@ -97,7 +97,7 @@
 
     <!-- ============= Dialog delete List ============= -->
     <v-dialog
-      v-model="dialogDelete"
+      v-model="dialogDeleteList"
       max-width="400"
       persistent
     >
@@ -118,7 +118,7 @@
             >
               <v-btn
                 text
-                @click="dialogDelete = false"
+                @click="dialogDeleteList = false"
               >
                 Cancel
               </v-btn>
@@ -187,8 +187,8 @@ export default {
       list: {
         title: ''
       },
-      deleteId: null,
-      dialogDelete: false,
+      deleteListId: null,
+      dialogDeleteList: false,
       deleting: false,
       currentCard: {}
     }
@@ -256,13 +256,13 @@ export default {
         }
       }
     },
-    promptDelete (listId) {
-      this.deleteId = listId
-      this.dialogDelete = true
+    promptDeleteList (listId) {
+      this.deleteListId = listId
+      this.dialogDeleteList = true
     },
     async deleteList () {
       const index = this.board.lists
-        .findIndex(({ id }) => id === this.deleteId)
+        .findIndex(({ id }) => id === this.deleteListId)
 
       if (index > -1) {
         this.deleting = true
@@ -272,9 +272,9 @@ export default {
         } catch (error) {
           //
         } finally {
-          this.dialogDelete = false
+          this.dialogDeleteList = false
           this.deleting = false
-          this.deleteId = null
+          this.deleteListId = null
         }
       }
     },
