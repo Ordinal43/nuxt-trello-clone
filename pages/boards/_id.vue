@@ -169,14 +169,13 @@ export default {
       .doc(params.id)
 
     let board = {}
-    await boardsRef
+    const doc = await boardsRef
       .get()
-      .then((doc) => {
-        if (doc.exists) {
-          board = doc.data()
-          board.id = params.id
-        }
-      })
+
+    if (doc.exists) {
+      board = doc.data()
+      board.id = doc.id
+    }
 
     return { board }
   },

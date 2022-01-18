@@ -241,17 +241,16 @@ export default {
       .doc(this.$store.getters.getUser.uid)
       .collection('boards')
 
-    await boardsRef
+    const querySnapshot = await boardsRef
       .get()
-      .then((querySnapshot) => {
-        if (querySnapshot.docs.length > 0) {
-          for (const doc of querySnapshot.docs) {
-            const data = doc.data()
-            data.id = doc.id
-            this.boards.push(data)
-          }
-        }
-      })
+
+    if (querySnapshot.docs.length > 0) {
+      for (const doc of querySnapshot.docs) {
+        const data = doc.data()
+        data.id = doc.id
+        this.boards.push(data)
+      }
+    }
   },
   mounted () {
     // Add listener to refresh board when data changes
