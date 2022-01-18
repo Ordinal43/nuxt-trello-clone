@@ -17,6 +17,7 @@
           :list="l"
           @delete-list="promptDelete"
           @create-card="createCard(l, ...arguments)"
+          @show-details="navigateToCard"
         />
         <v-card
           width="272"
@@ -36,6 +37,8 @@
         </v-card>
       </div>
     </div>
+
+    <!-- ============= Dialog create List ============= -->
     <v-dialog
       :key="dialogCreate"
       v-model="dialogCreate"
@@ -91,6 +94,8 @@
         </v-overlay>
       </v-card>
     </v-dialog>
+
+    <!-- ============= Dialog delete List ============= -->
     <v-dialog
       v-model="dialogDelete"
       max-width="400"
@@ -136,6 +141,17 @@
         </v-overlay>
       </v-card>
     </v-dialog>
+
+    <!-- ============= Dialog card details ============= -->
+    <v-dialog
+      v-model="showCardDetails"
+      max-width="400"
+      persistent
+    >
+      <NuxtChild
+        :card="currentCard"
+      />
+    </v-dialog>
   </v-container>
 </template>
 
@@ -173,10 +189,30 @@ export default {
       },
       deleteId: null,
       dialogDelete: false,
-      deleting: false
+      deleting: false,
+      currentCard: {}
+    }
+  },
+  computed: {
+    showCardDetails () {
+      return !!this.$route.params.card_id
     }
   },
   mounted () {
+    // get card object on initial page load if on card details page
+    const cardId = this.$route.params.card_id
+    if (cardId) {
+      for (const list of this.board.lists) {
+        const card = (list.cards || [])
+          .find(card => card.id === cardId)
+
+        if (card) {
+          this.currentCard = card
+          break
+        }
+      }
+    }
+
     // Add listener to refresh board when data changes
     this.$fire.firestore
       .collection('users')
@@ -254,6 +290,10 @@ export default {
       } catch (error) {
         //
       }
+    },
+    navigateToCard (card) {
+      this.currentCard = card
+      this.$router.push(`/boards/${this.board.id}/card/${card.id}`)
     }
   }
 }

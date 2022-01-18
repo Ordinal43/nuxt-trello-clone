@@ -52,6 +52,7 @@
         v-for="card in list.cards"
         :key="`card-${card.id}`"
         class="mt-2 pa-2"
+        @click="$emit('show-details', card)"
       >
         {{ card.title }}
       </v-card>
