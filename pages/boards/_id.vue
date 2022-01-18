@@ -191,8 +191,8 @@ export default {
       })
   },
   methods: {
-    async updateBoard () {
-      await this.$fire.firestore
+    updateBoard () {
+      return this.$fire.firestore
         .collection('users')
         .doc(this.$store.getters.getUser.uid)
         .collection('boards')
@@ -242,14 +242,18 @@ export default {
         }
       }
     },
-    createCard (list, title) {
+    async createCard (list, title) {
       if (!list.cards) {
         list.cards = []
       }
       const id = uuidv4()
       list.cards.push({ id, title })
 
-      this.updateBoard()
+      try {
+        await this.updateBoard()
+      } catch (error) {
+        //
+      }
     }
   }
 }
