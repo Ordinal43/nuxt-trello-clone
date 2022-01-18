@@ -16,6 +16,7 @@
           :key="`list-${l.id}`"
           :list="l"
           @delete-list="promptDelete"
+          @create-card="createCard(l, ...arguments)"
         />
         <v-card
           width="272"
@@ -240,6 +241,15 @@ export default {
           this.deleteId = null
         }
       }
+    },
+    createCard (list, title) {
+      if (!list.cards) {
+        list.cards = []
+      }
+      const id = uuidv4()
+      list.cards.push({ id, title })
+
+      this.updateBoard()
     }
   }
 }

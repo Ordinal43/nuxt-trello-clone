@@ -48,14 +48,24 @@
       </v-menu>
     </div>
     <div class="flex-grow-1 flex-shrink-1">
-      <!--  -->
+      <v-card
+        v-for="card in list.cards"
+        :key="`card-${card.id}`"
+        class="mt-2 pa-2"
+      >
+        {{ card.title }}
+      </v-card>
     </div>
-    <v-hover class="flex-grow-0 flex-shrink-0">
+    <v-hover
+      v-show="!isInputShown"
+      class="flex-grow-0 flex-shrink-0"
+    >
       <template #default="{ hover }">
         <v-card
+          flat
           class="px-2 py-1 mt-3"
           :color="hover? '#00000014' : '#00000000'"
-          flat
+          @click="showCardForm"
         >
           <div>
             <div class="text-body-2">
@@ -68,6 +78,21 @@
         </v-card>
       </template>
     </v-hover>
+    <v-card
+      v-show="isInputShown"
+      class="mt-2 pa-2"
+    >
+      <textarea
+        ref="cardcreate"
+        v-model="cardTitle"
+        type="text"
+        placeholder="Enter card title..."
+        class="create-card-textarea"
+        @input="resize"
+        @blur="blurAction()"
+        @keydown.enter.prevent="blurAction(true)"
+      />
+    </v-card>
   </v-card>
 </template>
 
@@ -81,13 +106,46 @@ export default {
       menu: false,
       listAction: [
         { icon: 'mdi-delete', title: 'Delete list', color: 'red', method: this.deleteList }
-      ]
+      ],
+      isInputShown: false,
+      cardTitle: ''
     }
   },
   methods: {
     deleteList () {
       this.$emit('delete-list', this.list.id)
+    },
+    showCardForm () {
+      this.isInputShown = true
+      this.$nextTick(() => {
+        this.$refs.cardcreate.focus()
+      })
+    },
+    // dynamically adjust height to textarea content
+    resize ({ target }) {
+      target.style.height = '0px'
+      target.style.height = (target.scrollHeight) + 'px'
+    },
+    blurAction (enterPressed) {
+      if (this.cardTitle) {
+        this.$emit('create-card', this.cardTitle)
+        this.cardTitle = ''
+        this.isInputShown = false
+      } else if (!enterPressed) {
+        this.isInputShown = false
+      }
     }
   }
 }
 </script>
+
+<style scoped>
+.create-card-textarea {
+  width: 100%;
+  resize: none;
+  outline: none;
+  overflow-wrap: break-word;
+  min-height: 54px;
+  max-height: 162px;
+}
+</style>
