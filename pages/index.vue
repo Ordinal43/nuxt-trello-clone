@@ -73,7 +73,10 @@
               mdi-close
             </v-icon>
           </v-row>
-          <v-form ref="form">
+          <v-form
+            ref="form"
+            @submit.prevent=";"
+          >
             <v-row>
               <v-col cols="12">
                 <v-text-field
