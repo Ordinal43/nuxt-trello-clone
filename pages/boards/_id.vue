@@ -164,23 +164,37 @@ import { v4 as uuidv4 } from 'uuid'
 export default {
   name: 'BoardDetails',
   async asyncData ({ app, store, params }) {
-    // Get board details
-    const boardsRef = app.$fire.firestore
+    let board = {}
+    let currentCard = {}
+
+    // Get board object
+    const boardRef = app.$fire.firestore
       .collection('users')
       .doc(store.getters.getUser.uid)
       .collection('boards')
       .doc(params.id)
 
-    let board = {}
-    const doc = await boardsRef
-      .get()
-
-    if (doc.exists) {
-      board = doc.data()
-      board.id = doc.id
+    const docBoard = await boardRef.get()
+    if (docBoard.exists) {
+      board = docBoard.data()
+      board.id = docBoard.id
     }
 
-    return { board }
+    // Get card object if card_id param is present
+    const cardId = params.card_id
+    if (cardId) {
+      const cardRef = boardRef
+        .collection('cards')
+        .doc(cardId)
+
+      const docCard = await cardRef.get()
+      if (docCard.exists) {
+        currentCard = docCard.data()
+        currentCard.id = docCard.id
+      }
+    }
+
+    return { board, currentCard }
   },
   data () {
     return {
@@ -191,8 +205,7 @@ export default {
       },
       deleteListId: null,
       dialogDeleteList: false,
-      deleting: false,
-      currentCard: {}
+      deleting: false
     }
   },
   computed: {
@@ -201,20 +214,6 @@ export default {
     }
   },
   mounted () {
-    // get card object on initial page load if on card details page
-    const cardId = this.$route.params.card_id
-    if (cardId) {
-      for (const list of this.board.lists) {
-        const card = (list.cards || [])
-          .find(card => card.id === cardId)
-
-        if (card) {
-          this.currentCard = card
-          break
-        }
-      }
-    }
-
     // Add listener to refresh board when data changes
     this.$fire.firestore
       .collection('users')
@@ -229,14 +228,6 @@ export default {
       })
   },
   methods: {
-    updateBoard () {
-      return this.$fire.firestore
-        .collection('users')
-        .doc(this.$store.getters.getUser.uid)
-        .collection('boards')
-        .doc(this.board.id)
-        .update(this.board, { merge: true })
-    },
     async createList () {
       if (this.$refs.form.validate()) {
         this.uploading = true
@@ -248,7 +239,12 @@ export default {
         }
         this.board.lists.push(this.list)
         try {
-          await this.updateBoard()
+          await this.$fire.firestore
+            .collection('users')
+            .doc(this.$store.getters.getUser.uid)
+            .collection('boards')
+            .doc(this.board.id)
+            .update(this.board)
         } catch (error) {
           //
         } finally {
@@ -268,9 +264,28 @@ export default {
 
       if (index > -1) {
         this.deleting = true
+        const cards = [...(this.board.lists[index].cards || [])]
         this.board.lists.splice(index, 1)
         try {
-          await this.updateBoard()
+          const batch = this.$fire.firestore
+            .batch()
+
+          const boardRef = this.$fire.firestore
+            .collection('users')
+            .doc(this.$store.getters.getUser.uid)
+            .collection('boards')
+            .doc(this.board.id)
+
+          for (const card of cards) {
+            const deleteRef = boardRef
+              .collection('cards')
+              .doc(card.id)
+
+            batch.delete(deleteRef)
+          }
+          batch.update(boardRef, this.board)
+
+          await batch.commit()
         } catch (error) {
           //
         } finally {
@@ -281,16 +296,36 @@ export default {
       }
     },
     async createCard (currentList, title) {
+      const uuid = uuidv4()
+
       if (!currentList.cards) {
         currentList.cards = []
       }
-      const id = uuidv4()
-      currentList.cards.push({ id, title })
+      currentList.cards.push({
+        id: uuid,
+        title
+      })
 
       try {
-        await this.updateBoard()
+        const batch = this.$fire.firestore
+          .batch()
+
+        const boardRef = this.$fire.firestore
+          .collection('users')
+          .doc(this.$store.getters.getUser.uid)
+          .collection('boards')
+          .doc(this.board.id)
+
+        const newCardRef = boardRef
+          .collection('cards')
+          .doc(uuid)
+
+        batch.update(boardRef, this.board)
+        batch.set(newCardRef, { title })
+        await batch.commit()
       } catch (error) {
-        //
+        // revert local array update
+        currentList.cards.pop()
       }
     },
     navigateToCard (card) {
