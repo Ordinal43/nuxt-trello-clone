@@ -12,6 +12,16 @@
           mdi-close
         </v-icon>
       </v-row>
+      <v-row>
+        <v-col>
+          <v-btn
+            color="red"
+            @click="$emit('delete-card')"
+          >
+            delete
+          </v-btn>
+        </v-col>
+      </v-row>
     </v-container>
   </v-card>
 </template>

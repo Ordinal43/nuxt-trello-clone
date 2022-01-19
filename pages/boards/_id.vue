@@ -17,7 +17,7 @@
           :list="l"
           @delete-list="promptDeleteList"
           @create-card="createCard(l, ...arguments)"
-          @show-details="navigateToCard"
+          @show-details="navigateToCard(l, ...arguments)"
         />
         <v-card
           width="272"
@@ -136,7 +136,7 @@
         </v-container>
         <v-overlay
           absolute
-          :value="deleting"
+          :value="deletingList"
         >
           <v-progress-circular
             indeterminate
@@ -153,7 +153,55 @@
     >
       <NuxtChild
         :card="currentCard"
+        @delete-card="promptDeleteCard"
       />
+    </v-dialog>
+
+    <!-- ============= Dialog delete Card ============= -->
+    <v-dialog
+      v-model="dialogDeleteCard"
+      max-width="400"
+      persistent
+    >
+      <v-card>
+        <v-container>
+          <v-row
+            no-gutters
+            align="center"
+            justify="space-between"
+            class="mb-2"
+          >
+            <h3>Delete Card</h3>
+          </v-row>
+          <v-row>
+            <v-col
+              cols="12"
+              class="text-right"
+            >
+              <v-btn
+                text
+                @click="dialogDeleteCard = false"
+              >
+                Cancel
+              </v-btn>
+              <v-btn
+                color="red"
+                @click="deleteCard(currentCard)"
+              >
+                Delete
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-container>
+        <v-overlay
+          absolute
+          :value="deletingCard"
+        >
+          <v-progress-circular
+            indeterminate
+          />
+        </v-overlay>
+      </v-card>
     </v-dialog>
   </v-container>
 </template>
@@ -203,9 +251,13 @@ export default {
       list: {
         title: ''
       },
+
       deleteListId: null,
       dialogDeleteList: false,
-      deleting: false
+      deletingList: false,
+
+      dialogDeleteCard: false,
+      deletingCard: false
     }
   },
   computed: {
@@ -263,7 +315,7 @@ export default {
         .findIndex(({ id }) => id === this.deleteListId)
 
       if (index > -1) {
-        this.deleting = true
+        this.deletingList = true
         const cards = [...(this.board.lists[index].cards || [])]
         this.board.lists.splice(index, 1)
         try {
@@ -290,7 +342,7 @@ export default {
           //
         } finally {
           this.dialogDeleteList = false
-          this.deleting = false
+          this.deletingList = false
           this.deleteListId = null
         }
       }
@@ -328,9 +380,56 @@ export default {
         currentList.cards.pop()
       }
     },
-    navigateToCard (card) {
-      this.currentCard = card
+    navigateToCard (currentList, card) {
+      this.currentCard = {
+        ...card,
+        list_id: currentList.id
+      }
       this.$router.push(`/boards/${this.board.id}/card/${card.id}`)
+    },
+    promptDeleteCard () {
+      this.dialogDeleteCard = true
+    },
+    async deleteCard (currentCard) {
+      this.deletingCard = true
+      this.$router.replace(`/boards/${this.board.id}`)
+      try {
+        const batch = this.$fire.firestore
+          .batch()
+
+        const boardRef = this.$fire.firestore
+          .collection('users')
+          .doc(this.$store.getters.getUser.uid)
+          .collection('boards')
+          .doc(this.board.id)
+
+        // find list containing the card using currentCard's list_id
+        const listIdx = this.board.lists
+          .findIndex(({ id }) => id === currentCard.list_id)
+
+        if (listIdx > -1) {
+          // find the card to delete from list using currentCard's id
+          const cardIdx = this.board.lists[listIdx].cards
+            .findIndex(({ id }) => id === currentCard.id)
+          // delete card id from list
+          this.board.lists[listIdx].cards
+            .splice(cardIdx, 1)
+        }
+
+        const cardRef = boardRef
+          .collection('cards')
+          .doc(currentCard.id)
+
+        batch.update(boardRef, this.board)
+        batch.delete(cardRef)
+
+        await batch.commit()
+      } catch (error) {
+        //
+      } finally {
+        this.dialogDeleteCard = false
+        this.deletingCard = false
+      }
     }
   }
 }
