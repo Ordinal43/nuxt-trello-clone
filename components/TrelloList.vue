@@ -48,14 +48,21 @@
       </v-menu>
     </div>
     <div class="flex-grow-1 flex-shrink-1">
-      <v-card
-        v-for="card in list.cards"
-        :key="`card-${card.id}`"
-        class="mt-2 pa-2"
-        @click="$emit('show-details', card)"
-      >
-        {{ card.title }}
-      </v-card>
+      <template v-for="card in list.cards">
+        <v-hover
+          :key="`card-${card.id}`"
+          v-slot="{ hover }"
+        >
+          <v-card
+            class="mt-2 pa-2"
+            elevation="1"
+            :color="`${hover? 'grey lighten-4' : ''}`"
+            @click="$emit('show-details', card)"
+          >
+            {{ card.title }}
+          </v-card>
+        </v-hover>
+      </template>
     </div>
     <v-hover
       v-show="!isInputShown"
