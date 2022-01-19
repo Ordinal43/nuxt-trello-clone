@@ -56,7 +56,7 @@
           <v-card
             class="mt-2 pa-2"
             elevation="1"
-            :color="`${hover? 'grey lighten-4' : ''}`"
+            :color="`${hover? 'grey lighten-5' : ''}`"
             @click="$emit('show-details', card)"
           >
             {{ card.title }}
