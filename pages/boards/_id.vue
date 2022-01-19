@@ -280,6 +280,7 @@ export default {
       })
   },
   methods: {
+    // ============= List methods =============
     async createList () {
       if (this.$refs.form.validate()) {
         this.uploading = true
@@ -341,7 +342,7 @@ export default {
 
           await batch.commit()
         } catch (error) {
-          // re-insert deleted list
+          // re-insert locally deleted list
           this.board.lists.splice(index, 0, deletedList)
         } finally {
           this.dialogDeleteList = false
@@ -350,6 +351,7 @@ export default {
         }
       }
     },
+    // ============= Card methods =============
     async createCard (currentList, title) {
       const uuid = uuidv4()
 
@@ -379,7 +381,7 @@ export default {
         batch.set(newCardRef, { title })
         await batch.commit()
       } catch (error) {
-        // revert local array update
+        // remove locally inserted card
         currentList.cards.pop()
       }
     },
@@ -431,7 +433,7 @@ export default {
 
         await batch.commit()
       } catch (error) {
-        // re-insert deleted card
+        // re-insert locally deleted card
         this.board.lists[listIdx].cards
           .splice(cardIdx, 0, deletedCard)
       } finally {
