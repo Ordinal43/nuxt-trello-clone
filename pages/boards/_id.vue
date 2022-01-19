@@ -145,7 +145,7 @@
     <!-- ============= Dialog card details ============= -->
     <v-dialog
       v-model="showCardDetails"
-      max-width="400"
+      max-width="768"
       persistent
     >
       <NuxtChild
