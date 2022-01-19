@@ -317,7 +317,8 @@ export default {
       if (index > -1) {
         this.deletingList = true
         const cards = [...(this.board.lists[index].cards || [])]
-        this.board.lists.splice(index, 1)
+
+        const deletedList = this.board.lists.splice(index, 1)[0]
         try {
           const batch = this.$fire.firestore
             .batch()
@@ -339,7 +340,8 @@ export default {
 
           await batch.commit()
         } catch (error) {
-          //
+          // re-insert deleted list
+          this.board.lists.splice(index, 0, deletedList)
         } finally {
           this.dialogDeleteList = false
           this.deletingList = false
@@ -428,7 +430,7 @@ export default {
 
         await batch.commit()
       } catch (error) {
-        // reinsert deleted card
+        // re-insert deleted card
         this.board.lists[listIdx].cards
           .splice(cardIdx, 0, deletedCard)
       } finally {
