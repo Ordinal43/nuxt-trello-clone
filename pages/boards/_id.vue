@@ -298,7 +298,8 @@ export default {
             .doc(this.board.id)
             .update(this.board)
         } catch (error) {
-          //
+          // remove locally inserted list
+          this.board.lists.pop()
         } finally {
           this.dialogCreate = false
           this.uploading = false
