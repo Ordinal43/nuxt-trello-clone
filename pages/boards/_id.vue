@@ -393,6 +393,9 @@ export default {
     async deleteCard (currentCard) {
       this.deletingCard = true
       this.$router.replace(`/boards/${this.board.id}`)
+
+      let deletedCard = {}
+      let listIdx, cardIdx
       try {
         const batch = this.$fire.firestore
           .batch()
@@ -403,17 +406,17 @@ export default {
           .collection('boards')
           .doc(this.board.id)
 
-        // find list containing the card using currentCard's list_id
-        const listIdx = this.board.lists
+        // find index of list containing the card using currentCard's list_id
+        listIdx = this.board.lists
           .findIndex(({ id }) => id === currentCard.list_id)
 
         if (listIdx > -1) {
-          // find the card to delete from list using currentCard's id
-          const cardIdx = this.board.lists[listIdx].cards
+          // find index of card to delete from list using currentCard's id
+          cardIdx = this.board.lists[listIdx].cards
             .findIndex(({ id }) => id === currentCard.id)
-          // delete card id from list
-          this.board.lists[listIdx].cards
-            .splice(cardIdx, 1)
+          // delete card id from list, store the spliced element for error handling
+          deletedCard = this.board.lists[listIdx].cards
+            .splice(cardIdx, 1)[0]
         }
 
         const cardRef = boardRef
@@ -425,7 +428,9 @@ export default {
 
         await batch.commit()
       } catch (error) {
-        //
+        // reinsert deleted card
+        this.board.lists[listIdx].cards
+          .splice(cardIdx, 0, deletedCard)
       } finally {
         this.dialogDeleteCard = false
         this.deletingCard = false
