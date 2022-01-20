@@ -129,8 +129,10 @@ export default {
         this.$refs.cardcreate.focus()
       })
     },
-    // dynamically adjust height to textarea content
     resize ({ target }) {
+      /**
+       * Dynamically adjust height to textarea content
+       */
       target.style.height = '0px'
       target.style.height = (target.scrollHeight) + 'px'
     },

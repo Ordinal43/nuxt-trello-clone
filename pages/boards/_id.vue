@@ -280,7 +280,9 @@ export default {
       })
   },
   methods: {
-    // ============= List methods =============
+    /**
+     * ============= List methods =============
+     */
     async createList () {
       if (this.$refs.form.validate()) {
         this.uploading = true
@@ -351,7 +353,9 @@ export default {
         }
       }
     },
-    // ============= Card methods =============
+    /**
+     * ============= Card methods =============
+     */
     async createCard (currentList, title) {
       const uuid = uuidv4()
 
