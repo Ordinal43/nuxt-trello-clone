@@ -11,13 +11,14 @@
         </div>
       </div>
       <div class="flex-grow-1 d-flex align-start">
-        <LazyTrelloList
+        <TrelloList
           v-for="l in board.lists"
           :key="`list-${l.id}`"
           :list="l"
           @delete-list="promptDeleteList"
           @create-card="createCard(l, ...arguments)"
           @show-details="navigateToCard(l, ...arguments)"
+          @drop-card="dropCard(l, ...arguments)"
         />
         <v-card
           width="272"
@@ -257,7 +258,11 @@ export default {
       deletingList: false,
 
       dialogDeleteCard: false,
-      deletingCard: false
+      deletingCard: false,
+
+      dragList: null,
+      dropList: null,
+      dragDropPayload: null
     }
   },
   computed: {
@@ -280,7 +285,9 @@ export default {
       })
   },
   methods: {
-    // ============= List methods =============
+    /**
+     * ============= List methods =============
+     */
     async createList () {
       if (this.$refs.form.validate()) {
         this.uploading = true
@@ -351,7 +358,9 @@ export default {
         }
       }
     },
-    // ============= Card methods =============
+    /**
+     * ============= Card methods =============
+     */
     async createCard (currentList, title) {
       const uuid = uuidv4()
 
@@ -439,6 +448,64 @@ export default {
       } finally {
         this.dialogDeleteCard = false
         this.deletingCard = false
+      }
+    },
+    dropCard (currentList, droppedResult) {
+      /**
+       * This method will ALWAYS BE CALLED TWICE (by the source list and the target list.)
+       * We'll handle the data changes for each of them here.
+       */
+      const { removedIndex, addedIndex, payload } = droppedResult
+      if (removedIndex === null && addedIndex === null) {
+        return
+      }
+      const result = [...currentList.cards]
+
+      if (removedIndex !== null) {
+        /**
+         * Will only run once to remove the dragged item from the SOURCE list container
+         */
+        this.dragDropPayload = result.splice(removedIndex, 1)[0]
+        this.dragList = {
+          list: currentList,
+          index: removedIndex
+        }
+      }
+      if (addedIndex !== null) {
+        /**
+         * Will only run once to add the dropped item to the TARGET list container
+         */
+        result.splice(addedIndex, 0, payload)
+        this.dropList = {
+          list: currentList,
+          index: addedIndex
+        }
+      }
+      currentList.cards = result
+      this.updateDragDropCards()
+    },
+    async updateDragDropCards () {
+      /**
+       * Only update firestore when both drag and drop objects are defined
+       */
+      if (this.dragList && this.dropList) {
+        try {
+          await this.$fire.firestore
+            .collection('users')
+            .doc(this.$store.getters.getUser.uid)
+            .collection('boards')
+            .doc(this.board.id)
+            .update(this.board)
+        } catch (error) {
+          // return moved card from target to source list
+          this.dropList.splice(this.dropList.index, 1)
+          this.dragList.splice(this.dragList.index, 0, this.dragDropPayload)
+        } finally {
+          // reset drag and drop objects
+          this.dragList = null
+          this.dropList = null
+          this.dragDropPayload = null
+        }
       }
     }
   }
