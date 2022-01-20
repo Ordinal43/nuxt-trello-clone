@@ -47,22 +47,33 @@
         </v-card>
       </v-menu>
     </div>
-    <div class="flex-grow-1 flex-shrink-1">
-      <template v-for="card in list.cards">
-        <v-hover
+    <div
+      v-show="list.cards.length"
+      class="flex-grow-1 flex-shrink-1"
+    >
+      <Container
+        :get-child-payload="getChildPayload"
+        group-name="list-container"
+        @drop="onDrop"
+      >
+        <Draggable
+          v-for="card in list.cards"
           :key="`card-${card.id}`"
-          v-slot="{ hover }"
         >
-          <v-card
-            class="mt-2 pa-2"
-            elevation="1"
-            :color="`${hover? 'grey lighten-5' : ''}`"
-            @click="$emit('show-details', card)"
+          <v-hover
+            v-slot="{ hover }"
           >
-            {{ card.title }}
-          </v-card>
-        </v-hover>
-      </template>
+            <v-card
+              class="mt-2 pa-2"
+              elevation="1"
+              :color="`${hover? 'grey lighten-5' : ''}`"
+              @click="$emit('show-details', card)"
+            >
+              {{ card.title }}
+            </v-card>
+          </v-hover>
+        </Draggable>
+      </Container>
     </div>
     <v-hover
       v-show="!isInputShown"
@@ -105,7 +116,12 @@
 </template>
 
 <script>
+import { Container, Draggable } from 'vue-dndrop'
+
 export default {
+  components: {
+    Container, Draggable
+  },
   props: {
     list: { type: Object, required: true }
   },
@@ -144,6 +160,15 @@ export default {
       } else if (!enterPressed) {
         this.isInputShown = false
       }
+    },
+    /**
+     * ============= Drag and drop methods =============
+     */
+    getChildPayload (index) {
+      return this.list.cards[index]
+    },
+    onDrop (droppedResult) {
+      this.$emit('drop-card', droppedResult)
     }
   }
 }
