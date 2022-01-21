@@ -4,8 +4,8 @@
     width="272"
     class="py-2 px-1 mr-2 d-flex flex-column"
     flat
-    @mouseover="showContainer = true"
-    @mouseleave="showContainer = false"
+    @mouseover="isMouseover = true"
+    @mouseleave="isMouseover = false"
   >
     <div class="py-2 px-1 flex-grow-0 flex-shrink-0 d-flex">
       <div class="text-subtitle-2 pl-2 brello-list-title">
@@ -52,7 +52,7 @@
     </div>
     <div class="flex-grow-1 flex-shrink-1">
       <Container
-        v-show="list.cards.length || (showContainer && isDragging)"
+        v-show="list.cards.length || (isMouseover && isDragging)"
         :get-child-payload="getChildPayload"
         group-name="list-container"
         drag-class="card-ghost"
@@ -146,7 +146,7 @@ export default {
       isInputShown: false,
       cardTitle: '',
 
-      showContainer: false,
+      isMouseover: false,
       // only show container when "isDragging = true"
       isDragging: false
     }
