@@ -372,3 +372,11 @@ export default {
   }
 }
 </script>
+
+<style>
+.drop-preview {
+  border-radius: 4px;
+  background-color: rgb(0 0 0 / 5%);
+  margin: 4px;
+}
+</style>

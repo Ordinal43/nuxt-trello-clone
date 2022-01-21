@@ -2,11 +2,11 @@
   <v-card
     color="#EBECF0"
     width="272"
-    class="pa-2 mr-2 d-flex flex-column"
+    class="py-2 px-1 mr-2 d-flex flex-column"
     flat
   >
-    <div class="pa-2 flex-grow-0 flex-shrink-0 d-flex justify-space-between">
-      <div class="text-subtitle-2">
+    <div class="py-2 px-1 flex-grow-0 flex-shrink-0 d-flex">
+      <div class="text-subtitle-2 pl-2 brello-list-title">
         {{ list.title }}
       </div>
       <v-menu
@@ -20,6 +20,7 @@
             text
             icon
             x-small
+            class="brello-list-action"
             v-on="on"
           >
             <v-icon>mdi-dots-vertical</v-icon>
@@ -48,12 +49,14 @@
       </v-menu>
     </div>
     <div
-      v-show="list.cards.length"
       class="flex-grow-1 flex-shrink-1"
     >
       <Container
         :get-child-payload="getChildPayload"
         group-name="list-container"
+        drag-class="card-ghost"
+        drop-class="card-ghost-drop"
+        :drop-placeholder="dropPlaceholderOptions"
         @drop="onDrop"
       >
         <Draggable
@@ -64,9 +67,10 @@
             v-slot="{ hover }"
           >
             <v-card
-              class="mt-2 pa-2"
+              class="mt-1 ma-1 pa-2"
               elevation="1"
               :color="`${hover? 'grey lighten-5' : ''}`"
+              :ripple="false"
               @click="$emit('show-details', card)"
             >
               {{ card.title }}
@@ -82,7 +86,7 @@
       <template #default="{ hover }">
         <v-card
           flat
-          class="px-2 py-1 mt-3"
+          class="px-2 py-1 mt-3 mx-1"
           :color="hover? '#00000014' : '#00000000'"
           @click="showCardForm"
         >
@@ -131,6 +135,11 @@ export default {
       listAction: [
         { icon: 'mdi-delete', title: 'Delete list', color: 'red', method: this.deleteList }
       ],
+      dropPlaceholderOptions: {
+        className: 'drop-preview',
+        animationDuration: '150',
+        showOnTop: false
+      },
       isInputShown: false,
       cardTitle: ''
     }
@@ -175,6 +184,15 @@ export default {
 </script>
 
 <style scoped>
+.brello-list-title {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.brello-list-action {
+  flex: 0 0 auto;
+}
+
 .create-card-textarea {
   width: 100%;
   resize: none;
@@ -182,5 +200,15 @@ export default {
   overflow-wrap: break-word;
   min-height: 54px;
   max-height: 162px;
+}
+
+.card-ghost {
+  transition: transform 0.18s ease;
+  transform: rotateZ(3deg);
+}
+
+.card-ghost-drop {
+  transition: transform 0.18s ease-in-out;
+  transform: rotateZ(0deg);
 }
 </style>
