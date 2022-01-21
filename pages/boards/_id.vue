@@ -148,9 +148,9 @@
 
     <!-- ============= Dialog card details ============= -->
     <v-dialog
-      v-model="showCardDetails"
+      :value="showCardDetails"
       max-width="768"
-      persistent
+      @click:outside="$router.go(-1)"
     >
       <NuxtChild
         :card="currentCard"
