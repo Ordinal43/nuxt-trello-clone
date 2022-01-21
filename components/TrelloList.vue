@@ -48,9 +48,7 @@
         </v-card>
       </v-menu>
     </div>
-    <div
-      class="flex-grow-1 flex-shrink-1"
-    >
+    <div class="flex-grow-1 flex-shrink-1">
       <Container
         :get-child-payload="getChildPayload"
         group-name="list-container"
