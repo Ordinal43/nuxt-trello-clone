@@ -419,27 +419,31 @@ export default {
           .collection('boards')
           .doc(this.board.id)
 
-        // find index of list containing the card using currentCard's list_id
-        listIdx = this.board.lists
-          .findIndex(({ id }) => id === this.currentCard.list_id)
+        // Ensure this.currentCard is not empty
+        if (this.currentCard.id && this.currentCard.list_id) {
+          // find index of list containing the card using currentCard's list_id
+          listIdx = this.board.lists
+            .findIndex(({ id }) => id === this.currentCard.list_id)
 
-        if (listIdx > -1) {
-          // find index of card to delete from list using currentCard's id
-          cardIdx = this.board.lists[listIdx].cards
-            .findIndex(({ id }) => id === this.currentCard.id)
-          // delete card id from list, store the spliced element for error handling
-          deletedCard = this.board.lists[listIdx].cards
-            .splice(cardIdx, 1)[0]
+          if (listIdx > -1) {
+            // find index of card to delete from list using currentCard's id
+            cardIdx = this.board.lists[listIdx].cards
+              .findIndex(({ id }) => id === this.currentCard.id)
+            // delete card id from list, store the spliced element for error handling
+            deletedCard = this.board.lists[listIdx].cards
+              .splice(cardIdx, 1)[0]
+          }
+
+          const cardRef = boardRef
+            .collection('cards')
+            .doc(this.currentCard.id)
+
+          batch.delete(cardRef)
+          batch.update(boardRef, this.board)
+          await batch.commit()
+        } else {
+          throw (new Error('Card not found!'))
         }
-
-        const cardRef = boardRef
-          .collection('cards')
-          .doc(this.currentCard.id)
-
-        batch.update(boardRef, this.board)
-        batch.delete(cardRef)
-
-        await batch.commit()
       } catch (error) {
         // re-insert locally deleted card
         this.board.lists[listIdx].cards
