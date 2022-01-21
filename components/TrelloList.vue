@@ -70,7 +70,7 @@
             v-slot="{ hover }"
           >
             <v-card
-              class="mt-1 ma-1 pa-2"
+              class="mt-1 ma-1 pa-2 text-body-2"
               elevation="1"
               :color="`${hover? 'grey lighten-5' : ''}`"
               :ripple="false"
@@ -89,7 +89,7 @@
       <template #default="{ hover }">
         <v-card
           flat
-          class="px-2 py-1 mt-3 mx-1"
+          class="pa-2 mt-1 mx-1"
           :color="hover? '#00000014' : '#00000000'"
           @click="showCardForm"
         >
@@ -106,14 +106,14 @@
     </v-hover>
     <v-card
       v-show="isInputShown"
-      class="mt-2 pa-2"
+      class="mt-1 pa-2 mx-1"
     >
       <textarea
         ref="cardcreate"
         v-model="cardTitle"
         type="text"
         placeholder="Enter card title..."
-        class="create-card-textarea"
+        class="create-card-textarea text-body-2"
         @input="resize"
         @blur="blurAction()"
         @keydown.enter.prevent="blurAction(true)"
