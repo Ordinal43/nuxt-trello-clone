@@ -44,7 +44,7 @@
         <template v-else>
           <v-col
             v-for="b in boards"
-            :key="b.id"
+            :key="`board-${b.id}`"
             sm="4"
             md="3"
             lg="2"
