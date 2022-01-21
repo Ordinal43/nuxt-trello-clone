@@ -4,6 +4,8 @@
     width="272"
     class="py-2 px-1 mr-2 d-flex flex-column"
     flat
+    @mouseover="showContainer = true"
+    @mouseleave="showContainer = false"
   >
     <div class="py-2 px-1 flex-grow-0 flex-shrink-0 d-flex">
       <div class="text-subtitle-2 pl-2 brello-list-title">
@@ -50,12 +52,15 @@
     </div>
     <div class="flex-grow-1 flex-shrink-1">
       <Container
+        v-show="list.cards.length || (showContainer && isDragging)"
         :get-child-payload="getChildPayload"
         group-name="list-container"
         drag-class="card-ghost"
         drop-class="card-ghost-drop"
         :drop-placeholder="dropPlaceholderOptions"
         @drop="onDrop"
+        @drag-start="isDragging = true"
+        @drag-end="isDragging = false"
       >
         <Draggable
           v-for="card in list.cards"
@@ -139,7 +144,11 @@ export default {
         showOnTop: false
       },
       isInputShown: false,
-      cardTitle: ''
+      cardTitle: '',
+
+      showContainer: false,
+      // only show container when "isDragging = true"
+      isDragging: false
     }
   },
   methods: {
