@@ -23,11 +23,7 @@
         </v-icon>
       </div>
       <v-row>
-        <v-col v-if="$fetchState.pending">
-          <p class="text-center text-caption">
-            Fetching card...
-          </p>
-        </v-col>
+        <v-col v-if="$fetchState.pending" />
         <v-col v-else-if="$fetchState.error">
           <p class="text-center text-caption">
             An error occurred :(
@@ -106,7 +102,7 @@ export default {
   resize: none;
   outline: none;
   overflow-wrap: break-word;
-  min-height: 24px;
+  min-height: 40px;
   border-radius: 3px;
   padding: 4px 8px;
   &:focus {
