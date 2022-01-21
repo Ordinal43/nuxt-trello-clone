@@ -8,7 +8,7 @@
         <div class="brello-card-title">
           <textarea
             ref="brello-edit-card-title"
-            v-model="card.title"
+            v-model="detailedCard.title"
             spellcheck="false"
             rows="1"
             class="card-title-textarea text-h6"
@@ -44,14 +44,9 @@
 
 <script>
 export default {
-  props: {
-    simpleCard: { type: Object, required: true }
-  },
   data () {
     return {
-      card: {
-        title: this.simpleCard.title
-      }
+      detailedCard: {}
     }
   },
   async fetch () {
@@ -67,8 +62,8 @@ export default {
       .get()
 
     if (doc.exists) {
-      this.card = doc.data()
-      this.card.id = doc.id
+      this.detailedCard = doc.data()
+      this.detailedCard.id = doc.id
     }
   },
   mounted () {

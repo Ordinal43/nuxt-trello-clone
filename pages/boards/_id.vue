@@ -153,7 +153,6 @@
       @click:outside="$router.go(-1)"
     >
       <NuxtChild
-        :simple-card="currentCard"
         @delete-card="promptDeleteCard"
       />
     </v-dialog>
