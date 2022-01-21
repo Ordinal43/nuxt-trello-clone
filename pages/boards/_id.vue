@@ -187,7 +187,7 @@
               </v-btn>
               <v-btn
                 color="red"
-                @click="deleteCard(currentCard)"
+                @click="deleteCard"
               >
                 Delete
               </v-btn>
@@ -404,7 +404,7 @@ export default {
     promptDeleteCard () {
       this.dialogDeleteCard = true
     },
-    async deleteCard (currentCard) {
+    async deleteCard () {
       this.deletingCard = true
       this.$router.replace(`/boards/${this.board.id}`)
 
@@ -422,12 +422,12 @@ export default {
 
         // find index of list containing the card using currentCard's list_id
         listIdx = this.board.lists
-          .findIndex(({ id }) => id === currentCard.list_id)
+          .findIndex(({ id }) => id === this.currentCard.list_id)
 
         if (listIdx > -1) {
           // find index of card to delete from list using currentCard's id
           cardIdx = this.board.lists[listIdx].cards
-            .findIndex(({ id }) => id === currentCard.id)
+            .findIndex(({ id }) => id === this.currentCard.id)
           // delete card id from list, store the spliced element for error handling
           deletedCard = this.board.lists[listIdx].cards
             .splice(cardIdx, 1)[0]
@@ -435,7 +435,7 @@ export default {
 
         const cardRef = boardRef
           .collection('cards')
-          .doc(currentCard.id)
+          .doc(this.currentCard.id)
 
         batch.update(boardRef, this.board)
         batch.delete(cardRef)
@@ -448,6 +448,7 @@ export default {
       } finally {
         this.dialogDeleteCard = false
         this.deletingCard = false
+        this.currentCard = {}
       }
     },
     dropCard (currentList, droppedResult) {
