@@ -280,7 +280,7 @@ export default {
       .onSnapshot((doc) => {
         if (doc.exists) {
           this.board = doc.data()
-          this.board.id = this.$route.params.id
+          this.board.id = doc.id
         }
       })
   },
