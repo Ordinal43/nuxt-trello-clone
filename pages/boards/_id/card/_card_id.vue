@@ -45,6 +45,9 @@
                 cols="12"
                 sm="3"
               >
+                <MenuChecklist
+                  @add-checklist="addChecklist"
+                />
                 <div class="mb-2">
                   <v-btn
                     small
@@ -116,6 +119,11 @@ export default {
   mounted () {
     // fire textarea resize on mounted
     this.mixin_resizeTextarea({ target: this.$refs['brello-edit-card-title'] })
+  },
+  methods: {
+    addChecklist () {
+      //
+    }
   }
 }
 </script>
