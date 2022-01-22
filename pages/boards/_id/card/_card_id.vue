@@ -37,32 +37,28 @@
           <template v-else>
             <v-row>
               <!-- ============= Main ============= -->
-              <v-col
-                cols="12"
-                sm="9"
-                class="pl-sm-4"
-              >
-                <CardDescription
-                  v-model="detailedCard.description"
-                />
-              </v-col>
+              <CardDescription
+                v-model="detailedCard.description"
+              />
               <!-- ============= Sidebar ============= -->
               <v-col
                 cols="12"
                 sm="3"
               >
-                <v-btn
-                  small
-                  depressed
-                  block
-                  color="#091E4214"
-                  @click="$emit('delete-card')"
-                >
-                  <v-icon left>
-                    mdi-delete
-                  </v-icon>
-                  delete
-                </v-btn>
+                <div class="mb-2">
+                  <v-btn
+                    small
+                    depressed
+                    block
+                    color="#091E4214"
+                    @click="$emit('delete-card')"
+                  >
+                    <v-icon left>
+                      mdi-delete
+                    </v-icon>
+                    delete
+                  </v-btn>
+                </div>
               </v-col>
             </v-row>
           </template>
@@ -81,9 +77,7 @@ export default {
   ],
   data () {
     return {
-      detailedCard: {
-        description: 'tes'
-      }
+      detailedCard: {}
     }
   },
   async fetch () {
@@ -101,6 +95,22 @@ export default {
     if (doc.exists) {
       this.detailedCard = doc.data()
       this.detailedCard.id = doc.id
+      this.detailedCard.fromFirestore = true
+    }
+  },
+  watch: {
+    detailedCard: {
+      handler (val) {
+        /**
+         * Only request update if data changes happen locally
+         */
+        if (!val.fromFirestore) {
+          console.log(val.description)
+        } else {
+          val.fromFirestore = false
+        }
+      },
+      deep: true
     }
   },
   mounted () {
