@@ -27,19 +27,45 @@
         </v-col>
       </v-row>
       <v-row>
-        <v-col v-if="$fetchState.pending" />
-        <v-col v-else-if="$fetchState.error">
-          <p class="text-center text-caption">
-            An error occurred :(
-          </p>
-        </v-col>
-        <v-col v-else>
-          <v-btn
-            color="red"
-            @click="$emit('delete-card')"
-          >
-            delete
-          </v-btn>
+        <v-col>
+          <template v-if="$fetchState.pending" />
+          <template v-else-if="$fetchState.error">
+            <p class="text-center text-caption">
+              An error occurred :(
+            </p>
+          </template>
+          <template v-else>
+            <v-row>
+              <!-- ============= Main ============= -->
+              <v-col
+                cols="12"
+                sm="9"
+                class="pl-sm-4"
+              >
+                <CardDescription
+                  v-model="detailedCard.description"
+                />
+              </v-col>
+              <!-- ============= Sidebar ============= -->
+              <v-col
+                cols="12"
+                sm="3"
+              >
+                <v-btn
+                  small
+                  depressed
+                  block
+                  color="#091E4214"
+                  @click="$emit('delete-card')"
+                >
+                  <v-icon left>
+                    mdi-delete
+                  </v-icon>
+                  delete
+                </v-btn>
+              </v-col>
+            </v-row>
+          </template>
         </v-col>
       </v-row>
     </v-container>
@@ -55,7 +81,9 @@ export default {
   ],
   data () {
     return {
-      detailedCard: {}
+      detailedCard: {
+        description: 'tes'
+      }
     }
   },
   async fetch () {
