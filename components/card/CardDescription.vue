@@ -1,5 +1,9 @@
 <template>
-  <div>
+  <v-col
+    cols="12"
+    sm="9"
+    class="pl-sm-4"
+  >
     <div class="d-flex align-start">
       <v-icon
         class="brello-card-icon pr-4"
@@ -19,8 +23,7 @@
           <v-sheet
             v-else
             rounded
-            color="#091E4214"
-            class="px-2 py-1"
+            class="desc-fake px-3 py-2 text-subtitle-1 blue-grey--text text--darken-4"
           >
             Add a more detailed description...
           </v-sheet>
@@ -29,7 +32,7 @@
       <template v-else>
         <textarea
           ref="description"
-          class="card-description"
+          class="card-description text-subtitle-1"
           placeholder="Add a more detailed description..."
           :value="value"
           @input="mixin_resizeTextarea"
@@ -53,7 +56,7 @@
         </div>
       </template>
     </div>
-  </div>
+  </v-col>
 </template>
 
 <script>
@@ -84,6 +87,7 @@ export default {
     update () {
       const val = this.$refs.description.value
       this.$emit('input', val)
+      this.descriptionEdit = false
     }
   }
 }
