@@ -373,10 +373,29 @@ export default {
 }
 </script>
 
-<style>
-.drop-preview {
+<style lang="scss">
+input,
+textarea {
+  width: 100%;
+  outline: none;
+}
+
+textarea {
+  resize: none;
+  overflow-wrap: break-word;
+}
+
+input.brello-input {
+  padding: 4px 8px;
   border-radius: 4px;
-  background-color: rgb(0 0 0 / 5%);
-  margin: 4px;
+  background-color: #fafbfc;;
+  box-shadow: inset 0 0 0 2px #dfe1e6;
+  &:hover {
+    background-color: #ebecf0;
+  }
+  &:focus {
+    background-color: #fff;
+    box-shadow: inset 0 0 0 2px #0079bf;
+  }
 }
 </style>

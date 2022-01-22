@@ -187,32 +187,35 @@ export default {
 }
 </script>
 
-<style scoped>
-.brello-list-title {
-  flex: 1 1 auto;
-  min-width: 0;
+<style lang="scss" scoped>
+::v-deep .drop-preview {
+  border-radius: 4px;
+  background-color: rgb(0 0 0 / 5%);
+  margin: 4px;
 }
 
-.brello-list-action {
-  flex: 0 0 auto;
+.brello-list{
+  &-title {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  &-action {
+    flex: 0 0 auto;
+  }
 }
 
 .create-card-textarea {
-  width: 100%;
-  resize: none;
-  outline: none;
-  overflow-wrap: break-word;
   min-height: 54px;
   max-height: 162px;
+  background-color: rgb(255 255 255 / 0%);
 }
 
 .card-ghost {
   transition: transform 0.18s ease;
   transform: rotateZ(3deg);
-}
-
-.card-ghost-drop {
-  transition: transform 0.18s ease-in-out;
-  transform: rotateZ(0deg);
+  &-drop {
+    transition: transform 0.18s ease-in-out;
+    transform: rotateZ(0deg);
+  }
 }
 </style>

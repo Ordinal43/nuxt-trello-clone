@@ -88,3 +88,19 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.desc-fake {
+  min-height: 56px;
+  background-color: #091E420A;
+  &:hover {
+    background-color: #091E4214;
+  }
+}
+
+textarea.card-description {
+  background-color: #fff;
+  min-height: 108px;
+  padding: 8px 12px;
+}
+</style>

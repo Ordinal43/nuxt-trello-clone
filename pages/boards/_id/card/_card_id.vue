@@ -125,23 +125,18 @@ export default {
   }
 }
 
-::v-deep textarea {
-  width: 100%;
-  resize: none;
-  outline: none;
-  overflow-wrap: break-word;
+::v-deep textarea, ::v-deep input {
   padding: 4px 8px;
   border-radius: 4px;
   &:focus {
-    background: #fff;
+    background-color: #fff;
     box-shadow: inset 0 0 0 2px #0079bf;
   }
+}
+
+::v-deep textarea {
   &.card-title {
     min-height: 40px;
-  }
-  &.card-description {
-    background: #fff;
-    min-height: 108px;
   }
 }
 </style>
