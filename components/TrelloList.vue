@@ -114,7 +114,7 @@
         type="text"
         placeholder="Enter card title..."
         class="create-card-textarea text-body-2"
-        @input="resize"
+        @input="mixin_resizeTextarea"
         @blur="blurAction()"
         @keydown.enter.prevent="blurAction(true)"
       />
@@ -124,11 +124,15 @@
 
 <script>
 import { Container, Draggable } from 'vue-dndrop'
+import { mixinTextArea } from '@/mixins/vue-mixins'
 
 export default {
   components: {
     Container, Draggable
   },
+  mixins: [
+    mixinTextArea
+  ],
   props: {
     list: { type: Object, required: true }
   },
@@ -160,13 +164,6 @@ export default {
       this.$nextTick(() => {
         this.$refs.cardcreate.focus()
       })
-    },
-    resize ({ target }) {
-      /**
-       * Dynamically adjust height to textarea content
-       */
-      target.style.height = '0px'
-      target.style.height = (target.scrollHeight) + 'px'
     },
     blurAction (enterPressed) {
       if (this.cardTitle) {
