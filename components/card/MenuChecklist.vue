@@ -76,6 +76,7 @@ export default {
       if (this.title) {
         this.menu = false
         this.$emit('add-checklist', this.title)
+        this.title = ''
       } else {
         this.$refs.checklistTitle.focus()
       }
