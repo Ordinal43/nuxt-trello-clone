@@ -45,6 +45,9 @@
                 <CardDescription
                   v-model="detailedCard.description"
                 />
+                <CardChecklistGroup
+                  v-model="detailedCard.checklists"
+                />
               </v-col>
               <!-- ============= Sidebar ============= -->
               <v-col
@@ -78,6 +81,7 @@
 </template>
 
 <script>
+import { v4 as uuidv4 } from 'uuid'
 import { mixinTextArea } from '@/mixins/vue-mixins'
 
 export default {
@@ -110,11 +114,10 @@ export default {
   watch: {
     detailedCard: {
       handler (val) {
-        /**
-         * Only request update if data changes happen locally
-         */
+        // Only request update if data changes happen locally
         if (!val.fromFirestore) {
-          console.log(val.description)
+          console.log('watch triggered')
+          console.log(val)
         } else {
           val.fromFirestore = false
         }
@@ -127,8 +130,24 @@ export default {
     this.mixin_resizeTextarea({ target: this.$refs['brello-edit-card-title'] })
   },
   methods: {
-    addChecklist () {
-      //
+    addChecklist (title) {
+      if (!this.detailedCard.checklists) {
+        /**
+         * Ensures that the new object property is reactive
+         * so Vue 2 can detect its changes (Vue 3 does this automatically).
+         *
+         * (https://vuejs.org/v2/guide/reactivity.html#For-Objects)
+         */
+        this.$set(this.detailedCard, 'checklists', [])
+      }
+
+      const checklist = {
+        id: uuidv4(),
+        title,
+        items: []
+      }
+
+      this.detailedCard.checklists.push(checklist)
     }
   }
 }
