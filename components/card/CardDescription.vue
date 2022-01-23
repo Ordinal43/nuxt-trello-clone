@@ -1,9 +1,5 @@
 <template>
-  <v-col
-    cols="12"
-    sm="9"
-    class="pl-sm-4"
-  >
+  <div>
     <div class="d-flex align-start">
       <v-icon
         class="brello-card-icon pr-4"
@@ -56,7 +52,7 @@
         </div>
       </template>
     </div>
-  </v-col>
+  </div>
 </template>
 
 <script>

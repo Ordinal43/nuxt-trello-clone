@@ -37,9 +37,15 @@
           <template v-else>
             <v-row>
               <!-- ============= Main ============= -->
-              <CardDescription
-                v-model="detailedCard.description"
-              />
+              <v-col
+                cols="12"
+                sm="9"
+                class="pl-sm-4"
+              >
+                <CardDescription
+                  v-model="detailedCard.description"
+                />
+              </v-col>
               <!-- ============= Sidebar ============= -->
               <v-col
                 cols="12"
