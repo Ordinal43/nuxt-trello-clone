@@ -144,7 +144,8 @@ export default {
       const checklist = {
         id: uuidv4(),
         title,
-        items: []
+        items: [],
+        checked: []
       }
 
       this.detailedCard.checklists.push(checklist)
