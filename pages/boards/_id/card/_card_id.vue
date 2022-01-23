@@ -117,7 +117,6 @@ export default {
         // Only request update if data changes happen locally
         if (!val.fromFirestore) {
           console.log('watch triggered')
-          console.log(val)
         } else {
           val.fromFirestore = false
         }
