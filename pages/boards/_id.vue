@@ -502,8 +502,8 @@ export default {
             .update(this.board)
         } catch (error) {
           // return moved card from target to source list
-          this.dropList.splice(this.dropList.index, 1)
-          this.dragList.splice(this.dragList.index, 0, this.dragDropPayload)
+          this.dropList.list.cards.splice(this.dropList.index, 1)
+          this.dragList.list.cards.splice(this.dragList.index, 0, this.dragDropPayload)
         } finally {
           // reset drag and drop objects
           this.dragList = null
