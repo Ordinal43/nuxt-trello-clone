@@ -19,7 +19,7 @@
           <v-sheet
             v-else
             rounded
-            class="desc-fake px-3 py-2 text-subtitle-1 blue-grey--text text--darken-4"
+            class="desc-fake px-3 py-2 text-body-2 blue-grey--text text--darken-4"
           >
             Add a more detailed description...
           </v-sheet>
@@ -28,9 +28,10 @@
       <template v-else>
         <textarea
           ref="description"
-          class="card-description text-subtitle-1"
+          class="card-description text-body-2"
           placeholder="Add a more detailed description..."
           :value="value"
+          @focus="mixin_resizeTextarea"
           @input="mixin_resizeTextarea"
         />
         <div class="mt-1">
@@ -100,7 +101,7 @@ export default {
 
 textarea.card-description {
   background-color: #fff;
-  min-height: 108px;
+  min-height: 70px;
   padding: 8px 12px;
 }
 </style>
