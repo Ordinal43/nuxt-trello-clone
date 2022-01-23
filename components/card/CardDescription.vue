@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="my-5 pa-2">
     <div class="d-flex align-start">
       <v-icon
         class="brello-card-icon pr-4"

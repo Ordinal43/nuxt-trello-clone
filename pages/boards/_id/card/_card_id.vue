@@ -62,7 +62,7 @@
                     small
                     depressed
                     block
-                    color="#091E4214"
+                    color="#091E420A"
                     @click="$emit('delete-card')"
                   >
                     <v-icon left>
