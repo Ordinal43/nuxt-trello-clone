@@ -47,10 +47,9 @@
                   Start date
                 </div>
                 <div class="d-flex">
-                  <v-checkbox
+                  <v-simple-checkbox
                     :value="hasStartDate"
-                    hide-details
-                    class="mt-0"
+                    color="primary"
                     @click="toggleStart"
                   />
                   <input
@@ -70,10 +69,9 @@
                   End date
                 </div>
                 <div class="d-flex">
-                  <v-checkbox
+                  <v-simple-checkbox
                     :value="hasEndDate"
-                    hide-details
-                    class="mt-0"
+                    color="primary"
                     @click="toggleEnd"
                   />
                   <input
