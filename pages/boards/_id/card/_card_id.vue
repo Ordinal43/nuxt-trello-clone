@@ -42,6 +42,11 @@
                 sm="9"
                 class="pl-sm-4"
               >
+                <CardDate
+                  v-if="detailedCard.date"
+                  v-model="detailedCard.date"
+                  @open-date-menu="openDateMenu"
+                />
                 <CardDescription
                   v-model="detailedCard.description"
                 />
@@ -135,6 +140,7 @@ export default {
         // Only request update if data changes happen locally
         if (!val.fromFirestore) {
           console.log('watch triggered')
+          console.log(this.detailedCard.date)
         } else {
           val.fromFirestore = false
         }
