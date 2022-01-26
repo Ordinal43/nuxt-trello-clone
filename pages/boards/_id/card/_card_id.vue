@@ -57,10 +57,24 @@
                 <MenuChecklist
                   @add-checklist="addChecklist"
                 />
-                <MenuDate
-                  ref="menuDate"
-                  v-model="detailedCard.dates"
-                />
+                <div class="mb-2">
+                  <v-btn
+                    small
+                    depressed
+                    block
+                    color="#091E420A"
+                    @click="openDateMenu"
+                  >
+                    <v-icon left>
+                      mdi-checkbox-marked-outline
+                    </v-icon>
+                    date
+                  </v-btn>
+                  <MenuDate
+                    ref="menuDate"
+                    v-model="detailedCard.date"
+                  />
+                </div>
                 <div class="mb-2">
                   <v-btn
                     small
@@ -152,6 +166,9 @@ export default {
       }
 
       this.detailedCard.checklists.push(checklist)
+    },
+    openDateMenu (e) {
+      this.$refs.menuDate.showMenu(e)
     }
   }
 }

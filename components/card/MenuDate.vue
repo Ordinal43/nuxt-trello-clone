@@ -1,126 +1,112 @@
 <template>
-  <div class="mb-2">
-    <v-menu
-      v-model="menu"
-      absolute
-      :close-on-content-click="false"
-      offset-y
-    >
-      <template #activator="{ on }">
-        <v-btn
-          small
-          depressed
-          block
-          color="#091E420A"
-          v-on="on"
-        >
-          <v-icon left>
-            mdi-checkbox-marked-outline
-          </v-icon>
-          date
-        </v-btn>
-      </template>
-      <v-card width="300">
-        <v-container>
-          <v-row>
-            <v-col class="d-flex align-center justify-space-between">
-              <h4>Dates</h4>
-              <v-icon @click="menu = false">
-                mdi-close
-              </v-icon>
-            </v-col>
-            <v-col cols="12" class="px-0 pt-0">
-              <v-date-picker
-                :value="getDateRange"
-                range
-                :picker-date="getPickerDate"
-                flat
-                no-title
-                full-width
-                show-adjacent-months
-                color="primary"
-                @click:date="setDate($event, true)"
-              />
-            </v-col>
-            <v-col cols="12">
-              <div class="mb-2">
-                <div class="text-caption mb-1">
-                  Start date
-                </div>
-                <div class="d-flex">
-                  <v-simple-checkbox
-                    :value="hasStartDate"
-                    color="primary"
-                    @click="toggleStart"
-                  />
-                  <input
-                    ref="inputStartDate"
-                    type="text"
-                    placeholder="M/D/YYYY"
-                    :value="hasStartDate? startDate : ''"
-                    :class="`brello-input date-input ml-2 text-body-2 ${!isOnEndDate && hasStartDate? 'active' : ''}`"
-                    :disabled="!hasStartDate"
-                    @focus="isOnEndDate = false"
-                    @blur="setDate($event.target.value)"
-                  >
-                </div>
+  <v-menu
+    v-model="menu"
+    absolute
+    :close-on-click="false"
+    :close-on-content-click="false"
+    :position-x="x"
+    :position-y="y"
+  >
+    <v-card width="300">
+      <v-container>
+        <v-row>
+          <v-col class="d-flex align-center justify-space-between">
+            <h4>Dates</h4>
+            <v-icon @click="menu = false">
+              mdi-close
+            </v-icon>
+          </v-col>
+          <v-col cols="12" class="px-0 pt-0">
+            <v-date-picker
+              :value="getDateRange"
+              range
+              :picker-date="getPickerDate"
+              flat
+              no-title
+              full-width
+              show-adjacent-months
+              color="primary"
+              @click:date="setDate($event, true)"
+            />
+          </v-col>
+          <v-col cols="12">
+            <div class="mb-2">
+              <div class="text-caption mb-1">
+                Start date
               </div>
-              <div>
-                <div class="text-caption mb-1">
-                  End date
-                </div>
-                <div class="d-flex">
-                  <v-simple-checkbox
-                    :value="hasEndDate"
-                    color="primary"
-                    @click="toggleEnd"
-                  />
-                  <input
-                    ref="inputEndDate"
-                    type="text"
-                    placeholder="M/D/YYYY"
-                    :value="hasEndDate? endDate : ''"
-                    :class="`brello-input date-input ml-2 text-body-2 ${isOnEndDate && hasEndDate? 'active' : ''}`"
-                    :disabled="!hasEndDate"
-                    @focus="isOnEndDate = true"
-                    @blur="setDate($event.target.value)"
-                  >
-                  <input
-                    ref="inputEndTime"
-                    type="text"
-                    placeholder="h:mm A"
-                    :value="hasEndDate? endTime : ''"
-                    :class="`brello-input date-input ml-2 text-body-2 ${isOnEndDate && hasEndDate? 'active' : ''}`"
-                    :disabled="!hasEndDate"
-                    @focus="isOnEndDate = true"
-                    @blur="setEndTime($event.target.value)"
-                  >
-                </div>
+              <div class="d-flex">
+                <v-simple-checkbox
+                  :value="hasStartDate"
+                  color="primary"
+                  @click="toggleStart"
+                />
+                <input
+                  ref="inputStartDate"
+                  type="text"
+                  placeholder="M/D/YYYY"
+                  :value="hasStartDate? startDate : ''"
+                  :class="`brello-input date-input ml-2 text-body-2 ${!isOnEndDate && hasStartDate? 'active' : ''}`"
+                  :disabled="!hasStartDate"
+                  @focus="isOnEndDate = false"
+                  @blur="setDate($event.target.value)"
+                >
               </div>
-            </v-col>
-            <v-col cols="12">
-              <v-btn
-                block
-                depressed
-                color="primary"
-                class="mb-2"
-                @click="saveDate"
-              >
-                Save
-              </v-btn>
-              <v-btn
-                block
-                depressed
-                @click="removeDate"
-              >
-                remove
-              </v-btn>
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-card>
-    </v-menu>
-  </div>
+            </div>
+            <div>
+              <div class="text-caption mb-1">
+                End date
+              </div>
+              <div class="d-flex">
+                <v-simple-checkbox
+                  :value="hasEndDate"
+                  color="primary"
+                  @click="toggleEnd"
+                />
+                <input
+                  ref="inputEndDate"
+                  type="text"
+                  placeholder="M/D/YYYY"
+                  :value="hasEndDate? endDate : ''"
+                  :class="`brello-input date-input ml-2 text-body-2 ${isOnEndDate && hasEndDate? 'active' : ''}`"
+                  :disabled="!hasEndDate"
+                  @focus="isOnEndDate = true"
+                  @blur="setDate($event.target.value)"
+                >
+                <input
+                  ref="inputEndTime"
+                  type="text"
+                  placeholder="h:mm A"
+                  :value="hasEndDate? endTime : ''"
+                  :class="`brello-input date-input ml-2 text-body-2 ${isOnEndDate && hasEndDate? 'active' : ''}`"
+                  :disabled="!hasEndDate"
+                  @focus="isOnEndDate = true"
+                  @blur="setEndTime($event.target.value)"
+                >
+              </div>
+            </div>
+          </v-col>
+          <v-col cols="12">
+            <v-btn
+              block
+              depressed
+              color="primary"
+              class="mb-2"
+              @click="saveDate"
+            >
+              Save
+            </v-btn>
+            <v-btn
+              block
+              depressed
+              @click="removeDate"
+            >
+              remove
+            </v-btn>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-card>
+  </v-menu>
 </template>
 
 <script>
@@ -144,6 +130,8 @@ export default {
   data () {
     return {
       menu: false,
+      x: 0,
+      y: 0,
       dates: [],
       startDate: undefined,
       endDate: undefined,
@@ -196,6 +184,11 @@ export default {
     }
   },
   methods: {
+    showMenu (e) {
+      this.x = e.clientX
+      this.y = e.clientY
+      this.menu = true
+    },
     toggleStart () {
       this.hasStartDate = !this.hasStartDate
       if (this.hasStartDate) {
