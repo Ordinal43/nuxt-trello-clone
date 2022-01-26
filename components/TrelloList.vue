@@ -66,9 +66,7 @@
           v-for="card in list.cards"
           :key="`card-${card.id}`"
         >
-          <v-hover
-            v-slot="{ hover }"
-          >
+          <v-hover v-slot="{ hover }">
             <v-card
               class="mt-1 ma-1 pa-2 text-body-2"
               elevation="1"
