@@ -280,13 +280,16 @@ export default {
       this.$emit('input', cloneDeep(obj))
     },
     saveDate () {
-      const saveObj = {}
+      let saveObj
       if (this.hasStartDate) {
+        saveObj = {}
         saveObj.startDate = this.startDate
       }
       if (this.hasEndDate) {
+        saveObj = saveObj || {}
         saveObj.endDate = this.endDate
         saveObj.endTime = this.endTime
+        saveObj.isDone = false
       }
       this.update(saveObj)
     },
