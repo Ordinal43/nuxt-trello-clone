@@ -2,6 +2,7 @@
   <div class="mb-2">
     <v-menu
       v-model="menu"
+      absolute
       :close-on-content-click="false"
       offset-y
     >
@@ -43,7 +44,7 @@
             </v-col>
             <v-col cols="12">
               <div class="mb-2">
-                <div class="text-caption">
+                <div class="text-caption mb-1">
                   Start date
                 </div>
                 <div class="d-flex">
@@ -65,7 +66,7 @@
                 </div>
               </div>
               <div>
-                <div class="text-caption">
+                <div class="text-caption mb-1">
                   End date
                 </div>
                 <div class="d-flex">
