@@ -19,7 +19,7 @@
           checklist
         </v-btn>
       </template>
-      <v-card width="300" color="#F4F5F7">
+      <v-card width="300">
         <v-container>
           <v-row>
             <v-col class="d-flex align-center justify-space-between">
@@ -39,6 +39,7 @@
             </v-col>
             <v-col cols="12">
               <v-btn
+                depressed
                 color="primary"
                 @click="addChecklist"
               >

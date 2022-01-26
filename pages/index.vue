@@ -393,9 +393,15 @@ input.brello-input {
   &:hover {
     background-color: #ebecf0;
   }
-  &:focus {
+  &:focus, &.active {
     background-color: #fff;
     box-shadow: inset 0 0 0 2px #0079bf;
+  }
+  &[disabled] {
+    background-color: #dfe1e6;
+    &:hover {
+      cursor: not-allowed;
+    }
   }
 }
 </style>
