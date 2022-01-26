@@ -1,15 +1,14 @@
-import dayjs from 'dayjs'
-import relativeTime from 'dayjs/plugin/relativeTime'
 import Vue from 'vue'
-
-dayjs.extend(relativeTime)
+import dayjs from '@/utils/dayjs.utils'
 
 Vue.filter('formatFromNow', (value) => {
-  if (!value) { return '' }
-  return dayjs(value).fromNow()
+  const dayjsObj = dayjs(value)
+  if (!dayjsObj.isValid()) { return '' }
+  return dayjsObj.fromNow()
 })
 
-Vue.filter('formatDate', (value) => {
-  if (!value) { return '' }
-  return dayjs(value).format('MMM D, YYYY')
+Vue.filter('formatDate', (value, format = 'MMM D, YYYY') => {
+  const dayjsObj = dayjs(value)
+  if (!dayjsObj.isValid()) { return '' }
+  return dayjsObj.format(format)
 })
