@@ -57,7 +57,10 @@
                 <MenuChecklist
                   @add-checklist="addChecklist"
                 />
-                <MenuDate />
+                <MenuDate
+                  ref="menuDate"
+                  v-model="detailedCard.dates"
+                />
                 <div class="mb-2">
                   <v-btn
                     small

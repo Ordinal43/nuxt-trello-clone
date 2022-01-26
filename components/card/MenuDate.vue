@@ -124,6 +124,7 @@
 </template>
 
 <script>
+import { cloneDeep } from 'lodash'
 import { VALID_DATE_FORMATS, SANITIZE_DATE_STRING, SANITIZE_TIME_STRING } from '@/utils/date.utils'
 import dayjs from '@/utils/dayjs.utils'
 
@@ -134,13 +135,19 @@ const FORMAT_TIME = 'h:mm A'
 let FLAG_PREVENT_SET_DATE = false
 
 export default {
+  props: {
+    value: {
+      type: Object,
+      default: () => {}
+    }
+  },
   data () {
     return {
       menu: false,
       dates: [],
-      startDate: dayjs().format(FORMAT_DATE),
-      endDate: dayjs().format(FORMAT_DATE),
-      endTime: dayjs().format(FORMAT_TIME),
+      startDate: undefined,
+      endDate: undefined,
+      endTime: undefined,
       hasStartDate: false,
       hasEndDate: false,
       isOnEndDate: true
@@ -170,7 +177,19 @@ export default {
          * https://github.com/vuetifyjs/vuetify/issues/4454
          */
         setTimeout(() => {
-          this.hasEndDate = true
+          let saved = this.value || {}
+          if (Object.keys(saved).length !== 0) {
+            this.hasStartDate = !!(saved.startDate)
+            this.hasEndDate = !!(saved.endDate)
+          } else {
+            saved = {}
+            this.hasStartDate = false
+            this.hasEndDate = true
+            this.isOnEndDate = true
+          }
+          this.startDate = saved.startDate || dayjs().format(FORMAT_DATE)
+          this.endDate = saved.endDate || dayjs().format(FORMAT_DATE)
+          this.endTime = saved.endTime || dayjs().format(FORMAT_TIME)
           this.$refs.inputEndDate.focus()
         }, 100)
       }
@@ -263,11 +282,23 @@ export default {
       }
       this.$refs.inputEndTime.value = this.endTime
     },
+    update (obj) {
+      this.menu = false
+      this.$emit('input', cloneDeep(obj))
+    },
     saveDate () {
-      //
+      const saveObj = {}
+      if (this.hasStartDate) {
+        saveObj.startDate = this.startDate
+      }
+      if (this.hasEndDate) {
+        saveObj.endDate = this.endDate
+        saveObj.endTime = this.endTime
+      }
+      this.update(saveObj)
     },
     removeDate () {
-      //
+      this.update(undefined)
     }
   }
 }
