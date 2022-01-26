@@ -57,6 +57,7 @@
                 <MenuChecklist
                   @add-checklist="addChecklist"
                 />
+                <MenuDate />
                 <div class="mb-2">
                   <v-btn
                     small

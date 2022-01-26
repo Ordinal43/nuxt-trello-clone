@@ -1,0 +1,281 @@
+<template>
+  <div class="mb-2">
+    <v-menu
+      v-model="menu"
+      :close-on-content-click="false"
+      offset-y
+    >
+      <template #activator="{ on }">
+        <v-btn
+          small
+          depressed
+          block
+          color="#091E420A"
+          v-on="on"
+        >
+          <v-icon left>
+            mdi-checkbox-marked-outline
+          </v-icon>
+          date
+        </v-btn>
+      </template>
+      <v-card width="300">
+        <v-container>
+          <v-row>
+            <v-col class="d-flex align-center justify-space-between">
+              <h4>Dates</h4>
+              <v-icon @click="menu = false">
+                mdi-close
+              </v-icon>
+            </v-col>
+            <v-col cols="12" class="px-0 pt-0">
+              <v-date-picker
+                :value="getDateRange"
+                range
+                :picker-date="getPickerDate"
+                flat
+                no-title
+                full-width
+                show-adjacent-months
+                color="primary"
+                @click:date="setDate($event, true)"
+              />
+            </v-col>
+            <v-col cols="12">
+              <div class="mb-2">
+                <div class="text-caption">
+                  Start date
+                </div>
+                <div class="d-flex">
+                  <v-checkbox
+                    :value="hasStartDate"
+                    hide-details
+                    class="mt-0"
+                    @click="toggleStart"
+                  />
+                  <input
+                    ref="inputStartDate"
+                    type="text"
+                    placeholder="M/D/YYYY"
+                    :value="hasStartDate? startDate : ''"
+                    :class="`brello-input date-input ml-2 text-body-2 ${!isOnEndDate? 'active' : ''}`"
+                    :disabled="!hasStartDate"
+                    @focus="isOnEndDate = false"
+                    @blur="setDate($event.target.value)"
+                  >
+                </div>
+              </div>
+              <div>
+                <div class="text-caption">
+                  End date
+                </div>
+                <div class="d-flex">
+                  <v-checkbox
+                    :value="hasEndDate"
+                    hide-details
+                    class="mt-0"
+                    @click="toggleEnd"
+                  />
+                  <input
+                    ref="inputEndDate"
+                    type="text"
+                    placeholder="M/D/YYYY"
+                    :value="hasEndDate? endDate : ''"
+                    :class="`brello-input date-input ml-2 text-body-2 ${isOnEndDate? 'active' : ''}`"
+                    :disabled="!hasEndDate"
+                    @focus="isOnEndDate = true"
+                    @blur="setDate($event.target.value)"
+                  >
+                  <input
+                    ref="inputEndTime"
+                    type="text"
+                    placeholder="h:mm A"
+                    :value="hasEndDate? endTime : ''"
+                    :class="`brello-input date-input ml-2 text-body-2 ${isOnEndDate? 'active' : ''}`"
+                    :disabled="!hasEndDate"
+                    @focus="isOnEndDate = true"
+                    @blur="setEndTime($event.target.value)"
+                  >
+                </div>
+              </div>
+            </v-col>
+            <v-col cols="12">
+              <v-btn
+                block
+                depressed
+                color="primary"
+                class="mb-2"
+                @click="saveDate"
+              >
+                Save
+              </v-btn>
+              <v-btn
+                block
+                depressed
+                @click="removeDate"
+              >
+                remove
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-card>
+    </v-menu>
+  </div>
+</template>
+
+<script>
+import { VALID_DATE_FORMATS, SANITIZE_DATE_STRING, SANITIZE_TIME_STRING } from '@/utils/date.utils'
+import dayjs from '@/utils/dayjs.utils'
+
+const FORMAT_DATE = 'M/D/YYYY'
+const FORMAT_DATE_PICKER = 'YYYY-MM-DD'
+const FORMAT_TIME = 'h:mm A'
+
+let FLAG_PREVENT_SET_DATE = false
+
+export default {
+  data () {
+    return {
+      menu: false,
+      dates: [],
+      startDate: dayjs().format(FORMAT_DATE),
+      endDate: dayjs().format(FORMAT_DATE),
+      endTime: dayjs().format(FORMAT_TIME),
+      hasStartDate: false,
+      hasEndDate: false,
+      isOnEndDate: true
+    }
+  },
+  computed: {
+    getPickerDate () {
+      const from = this.hasStartDate ? dayjs(this.startDate).format(FORMAT_DATE_PICKER) : null
+      const to = this.hasEndDate ? dayjs(this.endDate).format(FORMAT_DATE_PICKER) : null
+      return this.isOnEndDate ? to : from
+    },
+    getDateRange () {
+      const arr = []
+      const from = this.hasStartDate ? dayjs(this.startDate).format(FORMAT_DATE_PICKER) : null
+      const to = this.hasEndDate ? dayjs(this.endDate).format(FORMAT_DATE_PICKER) : null
+      if (from) { arr.push(from) }
+      if (to) { arr.push(to) }
+
+      return arr
+    }
+  },
+  watch: {
+    menu (val) {
+      if (val) {
+        /**
+         * Vuetify issue:
+         * https://github.com/vuetifyjs/vuetify/issues/4454
+         */
+        setTimeout(() => {
+          this.hasEndDate = true
+          this.$refs.inputEndDate.focus()
+        }, 100)
+      }
+    }
+  },
+  methods: {
+    toggleStart () {
+      this.hasStartDate = !this.hasStartDate
+      if (this.hasStartDate) {
+        this.$nextTick(() => {
+          this.$refs.inputStartDate.focus()
+        })
+      } else if (this.hasEndDate) {
+        this.$nextTick(() => {
+          this.$refs.inputEndDate.focus()
+        })
+      }
+    },
+    toggleEnd () {
+      this.hasEndDate = !this.hasEndDate
+      if (this.hasEndDate) {
+        this.$nextTick(() => {
+          this.$refs.inputEndDate.focus()
+        })
+      } else if (this.hasStartDate) {
+        this.$nextTick(() => {
+          this.$refs.inputStartDate.focus()
+        })
+      }
+    },
+    setDate (date, fromPicker) {
+      // Prevent blur eve
+      if (!FLAG_PREVENT_SET_DATE) {
+        date = SANITIZE_DATE_STRING(date)
+        const dateObj = dayjs(date, VALID_DATE_FORMATS)
+
+        if (dateObj.isValid()) {
+          const formatted = dateObj.format(FORMAT_DATE)
+
+          if (this.isOnEndDate) {
+            this.endDate = formatted
+
+            let start = dayjs(this.startDate)
+            if (start.diff(dateObj) > 0) {
+              start = dateObj.subtract(1, 'day')
+              this.startDate = start.format(FORMAT_DATE)
+              this.$refs.inputStartDate.value = this.startDate
+            }
+          } else {
+            this.startDate = formatted
+
+            let end = dayjs(this.endDate)
+            if (end.diff(dateObj) < 0) {
+              end = dateObj.add(1, 'day')
+              this.endDate = end.format(FORMAT_DATE)
+              this.$refs.inputEndDate.value = this.endDate
+            }
+          }
+        }
+
+        // reset date to previous value if not valid
+        if (this.isOnEndDate) {
+          this.$refs.inputEndDate.value = this.endDate
+        } else {
+          this.$refs.inputStartDate.value = this.startDate
+          if (this.hasEndDate && fromPicker) {
+            /**
+             * When inputEndDate is focused, inputStartDate will fire a "blur" event.
+             * if not handled, inputEndDate's value will be mistakenly updated.
+             *
+             * To prevent this, we'll set a flag to prevent setDate from firing again
+             * until said flag is reset
+             */
+            FLAG_PREVENT_SET_DATE = true
+            this.$refs.inputEndDate.focus()
+          }
+        }
+      } else {
+        // reset the flag when setDate() is called again
+        FLAG_PREVENT_SET_DATE = false
+      }
+    },
+    setEndTime (time) {
+      time = SANITIZE_TIME_STRING(time)
+
+      const timeObj = dayjs(`1/1/1 ${time}`)
+      if (timeObj.isValid()) {
+        const formatted = timeObj.format(FORMAT_TIME)
+        this.endTime = formatted
+      }
+      this.$refs.inputEndTime.value = this.endTime
+    },
+    saveDate () {
+      //
+    },
+    removeDate () {
+      //
+    }
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+input.date-input {
+  width: 98px;
+}
+</style>
