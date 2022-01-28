@@ -6,14 +6,26 @@
       >
         mdi-text
       </v-icon>
-      <p class="brello-card-header text-subtitle-1 font-weight-medium">
+      <p class="text-subtitle-1 font-weight-medium">
         Description
       </p>
+      <v-btn
+        small
+        depressed
+        color="#091E420A"
+        class="brello-card-icon ml-3"
+        @click="openEdit"
+      >
+        Edit
+      </v-btn>
     </div>
     <div class="ml-sm-10">
       <template v-if="!descriptionEdit">
         <div @click="openEdit">
-          <div v-if="value">
+          <div
+            v-if="value"
+            class="desc text-body-2"
+          >
             {{ value }}
           </div>
           <v-sheet
@@ -91,12 +103,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.desc-fake {
-  min-height: 56px;
-  background-color: #091E420A;
+.desc {
   &:hover {
-    background-color: #091E4214;
     cursor: pointer;
+  }
+  &-fake {
+    min-height: 56px;
+    background-color: #091E420A;
+    &:hover {
+      background-color: #091E4214;
+    }
   }
 }
 
