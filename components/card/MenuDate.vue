@@ -19,8 +19,8 @@
           <v-col cols="12" class="px-0 pt-0">
             <v-date-picker
               :value="getDateRange"
+              :picker-date.sync="pickerDate"
               range
-              :picker-date="getPickerDate"
               flat
               no-title
               full-width
@@ -47,7 +47,7 @@
                   :value="hasStartDate? startDate : ''"
                   :class="`brello-input date-input ml-2 text-body-2 ${!isOnEndDate && hasStartDate? 'active' : ''}`"
                   :disabled="!hasStartDate"
-                  @focus="isOnEndDate = false"
+                  @focus="focusDateInput(false)"
                   @blur="setDate($event.target.value)"
                 >
               </div>
@@ -69,7 +69,7 @@
                   :value="hasEndDate? endDate : ''"
                   :class="`brello-input date-input ml-2 text-body-2 ${isOnEndDate && hasEndDate? 'active' : ''}`"
                   :disabled="!hasEndDate"
-                  @focus="isOnEndDate = true"
+                  @focus="focusDateInput(true)"
                   @blur="setDate($event.target.value)"
                 >
                 <input
@@ -79,7 +79,7 @@
                   :value="hasEndDate? endTime : ''"
                   :class="`brello-input date-input ml-2 text-body-2 ${isOnEndDate && hasEndDate? 'active' : ''}`"
                   :disabled="!hasEndDate"
-                  @focus="isOnEndDate = true"
+                  @focus="focusDateInput(true)"
                   @blur="setEndTime($event.target.value)"
                 >
               </div>
@@ -133,6 +133,7 @@ export default {
       x: 0,
       y: 0,
       dates: [],
+      pickerDate: undefined,
       startDate: undefined,
       endDate: undefined,
       endTime: undefined,
@@ -142,11 +143,11 @@ export default {
     }
   },
   computed: {
-    getPickerDate () {
-      const from = this.hasStartDate ? dayjs(this.startDate).format(FORMAT_DATE_PICKER) : null
-      const to = this.hasEndDate ? dayjs(this.endDate).format(FORMAT_DATE_PICKER) : null
-      return this.isOnEndDate ? to : from
-    },
+    // getPickerDate () {
+    //   const from = this.hasStartDate ? dayjs(this.startDate).format(FORMAT_DATE_PICKER) : null
+    //   const to = this.hasEndDate ? dayjs(this.endDate).format(FORMAT_DATE_PICKER) : null
+    //   return this.isOnEndDate ? to : from
+    // },
     getDateRange () {
       const arr = []
       const from = this.hasStartDate ? dayjs(this.startDate).format(FORMAT_DATE_PICKER) : null
@@ -213,6 +214,16 @@ export default {
         })
       }
     },
+    focusDateInput (isOnEndDate) {
+      this.isOnEndDate = isOnEndDate
+      let date = this.isOnEndDate ? this.endDate : this.startDate
+      date = SANITIZE_DATE_STRING(date)
+      const dateObj = dayjs(date, VALID_DATE_FORMATS)
+
+      if (dateObj.isValid()) {
+        this.pickerDate = dateObj.format(FORMAT_DATE_PICKER)
+      }
+    },
     setDate (date, fromPicker) {
       // Prevent blur eve
       if (!FLAG_PREVENT_SET_DATE) {
@@ -241,6 +252,8 @@ export default {
               this.$refs.inputEndDate.value = this.endDate
             }
           }
+
+          this.pickerDate = dateObj.format(FORMAT_DATE_PICKER)
         }
 
         // reset date to previous value if not valid
