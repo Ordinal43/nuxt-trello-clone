@@ -19,6 +19,7 @@
           @create-card="createCard(l, ...arguments)"
           @show-details="navigateToCard(l, ...arguments)"
           @drop-card="dropCard(l, ...arguments)"
+          @update-card="updateCard"
         />
         <v-card
           width="272"
@@ -148,12 +149,12 @@
 
     <!-- ============= Dialog card details ============= -->
     <v-dialog
-      v-model="showCardDetails"
+      :value="showCardDetails"
       max-width="768"
-      persistent
+      @click:outside="$router.go(-1)"
     >
       <NuxtChild
-        :card="currentCard"
+        @update-card="updateCard"
         @delete-card="promptDeleteCard"
       />
     </v-dialog>
@@ -187,7 +188,7 @@
               </v-btn>
               <v-btn
                 color="red"
-                @click="deleteCard(currentCard)"
+                @click="deleteCard"
               >
                 Delete
               </v-btn>
@@ -208,6 +209,7 @@
 </template>
 
 <script>
+import { cloneDeep } from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
 
 export default {
@@ -280,7 +282,7 @@ export default {
       .onSnapshot((doc) => {
         if (doc.exists) {
           this.board = doc.data()
-          this.board.id = this.$route.params.id
+          this.board.id = doc.id
         }
       })
   },
@@ -387,7 +389,10 @@ export default {
           .doc(uuid)
 
         batch.update(boardRef, this.board)
-        batch.set(newCardRef, { title })
+        batch.set(newCardRef, {
+          title,
+          list_id: currentList.id
+        })
         await batch.commit()
       } catch (error) {
         // remove locally inserted card
@@ -401,10 +406,42 @@ export default {
       }
       this.$router.push(`/boards/${this.board.id}/card/${card.id}`)
     },
+    async updateCard (detailedCard) {
+      try {
+        const idxList = this.board.lists
+          .findIndex(({ id }) => id === detailedCard.list_id)
+        const idxCard = this.board.lists[idxList].cards
+          .findIndex(({ id }) => id === detailedCard.id)
+
+        if (idxCard !== -1) {
+          const cardList = this.board.lists[idxList].cards
+          cardList.splice(idxCard, 1, cloneDeep(detailedCard))
+
+          const batch = this.$fire.firestore
+            .batch()
+
+          const boardRef = this.$fire.firestore
+            .collection('users')
+            .doc(this.$store.getters.getUser.uid)
+            .collection('boards')
+            .doc(this.board.id)
+
+          const cardRef = boardRef
+            .collection('cards')
+            .doc(detailedCard.id)
+
+          batch.update(boardRef, this.board)
+          batch.update(cardRef, detailedCard)
+          await batch.commit()
+        }
+      } catch (error) {
+        //
+      }
+    },
     promptDeleteCard () {
       this.dialogDeleteCard = true
     },
-    async deleteCard (currentCard) {
+    async deleteCard () {
       this.deletingCard = true
       this.$router.replace(`/boards/${this.board.id}`)
 
@@ -414,33 +451,36 @@ export default {
         const batch = this.$fire.firestore
           .batch()
 
-        const boardRef = this.$fire.firestore
-          .collection('users')
-          .doc(this.$store.getters.getUser.uid)
-          .collection('boards')
-          .doc(this.board.id)
+        // Ensure this.currentCard is not empty
+        if (this.currentCard.id && this.currentCard.list_id) {
+          // find index of list containing the card using currentCard's list_id
+          listIdx = this.board.lists
+            .findIndex(({ id }) => id === this.currentCard.list_id)
 
-        // find index of list containing the card using currentCard's list_id
-        listIdx = this.board.lists
-          .findIndex(({ id }) => id === currentCard.list_id)
+          if (listIdx > -1) {
+            // find index of card to delete from list using currentCard's id
+            cardIdx = this.board.lists[listIdx].cards
+              .findIndex(({ id }) => id === this.currentCard.id)
+            // delete card id from list, store the spliced element for error handling
+            deletedCard = this.board.lists[listIdx].cards
+              .splice(cardIdx, 1)[0]
+          }
 
-        if (listIdx > -1) {
-          // find index of card to delete from list using currentCard's id
-          cardIdx = this.board.lists[listIdx].cards
-            .findIndex(({ id }) => id === currentCard.id)
-          // delete card id from list, store the spliced element for error handling
-          deletedCard = this.board.lists[listIdx].cards
-            .splice(cardIdx, 1)[0]
+          const boardRef = this.$fire.firestore
+            .collection('users')
+            .doc(this.$store.getters.getUser.uid)
+            .collection('boards')
+            .doc(this.board.id)
+          const cardRef = boardRef
+            .collection('cards')
+            .doc(this.currentCard.id)
+
+          batch.delete(cardRef)
+          batch.update(boardRef, this.board)
+          await batch.commit()
+        } else {
+          throw (new Error('Card not found!'))
         }
-
-        const cardRef = boardRef
-          .collection('cards')
-          .doc(currentCard.id)
-
-        batch.update(boardRef, this.board)
-        batch.delete(cardRef)
-
-        await batch.commit()
       } catch (error) {
         // re-insert locally deleted card
         this.board.lists[listIdx].cards
@@ -448,6 +488,7 @@ export default {
       } finally {
         this.dialogDeleteCard = false
         this.deletingCard = false
+        this.currentCard = {}
       }
     },
     dropCard (currentList, droppedResult) {
@@ -498,8 +539,8 @@ export default {
             .update(this.board)
         } catch (error) {
           // return moved card from target to source list
-          this.dropList.splice(this.dropList.index, 1)
-          this.dragList.splice(this.dragList.index, 0, this.dragDropPayload)
+          this.dropList.list.cards.splice(this.dropList.index, 1)
+          this.dragList.list.cards.splice(this.dragList.index, 0, this.dragDropPayload)
         } finally {
           // reset drag and drop objects
           this.dragList = null

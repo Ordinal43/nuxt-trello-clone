@@ -44,7 +44,7 @@
         <template v-else>
           <v-col
             v-for="b in boards"
-            :key="b.id"
+            :key="`board-${b.id}`"
             sm="4"
             md="3"
             lg="2"
@@ -372,3 +372,36 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+input,
+textarea {
+  width: 100%;
+  outline: none;
+}
+
+textarea {
+  resize: none;
+  overflow-wrap: break-word;
+}
+
+input.brello-input {
+  padding: 4px 8px;
+  border-radius: 4px;
+  background-color: #fafbfc;;
+  box-shadow: inset 0 0 0 2px #dfe1e6;
+  &:hover {
+    background-color: #ebecf0;
+  }
+  &:focus, &.active {
+    background-color: #fff;
+    box-shadow: inset 0 0 0 2px #0079bf;
+  }
+  &[disabled] {
+    background-color: #dfe1e6;
+    &:hover {
+      cursor: not-allowed;
+    }
+  }
+}
+</style>
