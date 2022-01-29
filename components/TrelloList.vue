@@ -147,7 +147,7 @@
       <template #default="{ hover }">
         <v-card
           flat
-          class="pa-2 mt-1 mx-1"
+          class="px-2 py-1 mt-1 mx-1"
           :color="hover? '#00000014' : '#00000000'"
           @click="showCardForm"
         >
