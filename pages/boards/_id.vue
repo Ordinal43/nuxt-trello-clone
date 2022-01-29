@@ -23,11 +23,11 @@
         />
         <v-card
           width="272"
-          :color="dialogCreate ? '#EBECF0' : '#00000014'"
+          :color="showCreateList ? '#EBECF0' : '#00000014'"
           flat
         >
           <div
-            v-show="!dialogCreate"
+            v-show="!showCreateList"
             class="pa-4"
             @click="showInputList"
           >
@@ -39,7 +39,7 @@
             </div>
           </div>
           <div
-            v-show="dialogCreate"
+            v-show="showCreateList"
             class="pa-2"
           >
             <input
@@ -62,7 +62,7 @@
                 text
                 small
                 icon
-                @click="dialogCreate = false"
+                @click="showCreateList = false"
               >
                 <v-icon>mdi-close</v-icon>
               </v-btn>
@@ -221,7 +221,7 @@ export default {
   },
   data () {
     return {
-      dialogCreate: false,
+      showCreateList: false,
       list: {
         title: ''
       },
@@ -262,13 +262,13 @@ export default {
      * ============= List methods =============
      */
     showInputList () {
-      this.dialogCreate = true
+      this.showCreateList = true
       this.$nextTick(() => {
         this.$refs.inputCreateList.focus()
       })
     },
     async createList () {
-      this.dialogCreate = false
+      this.showCreateList = false
       this.list.id = uuidv4()
       this.list.cards = []
       this.list.dateCreated = Date.now()
