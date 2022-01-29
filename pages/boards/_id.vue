@@ -386,7 +386,10 @@ export default {
           .doc(uuid)
 
         batch.update(boardRef, this.board)
-        batch.set(newCardRef, { title })
+        batch.set(newCardRef, {
+          title,
+          list_id: currentList.id
+        })
         await batch.commit()
       } catch (error) {
         // remove locally inserted card
