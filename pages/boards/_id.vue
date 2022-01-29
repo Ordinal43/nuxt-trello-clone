@@ -450,12 +450,6 @@ export default {
         const batch = this.$fire.firestore
           .batch()
 
-        const boardRef = this.$fire.firestore
-          .collection('users')
-          .doc(this.$store.getters.getUser.uid)
-          .collection('boards')
-          .doc(this.board.id)
-
         // Ensure this.currentCard is not empty
         if (this.currentCard.id && this.currentCard.list_id) {
           // find index of list containing the card using currentCard's list_id
@@ -471,6 +465,11 @@ export default {
               .splice(cardIdx, 1)[0]
           }
 
+          const boardRef = this.$fire.firestore
+            .collection('users')
+            .doc(this.$store.getters.getUser.uid)
+            .collection('boards')
+            .doc(this.board.id)
           const cardRef = boardRef
             .collection('cards')
             .doc(this.currentCard.id)
