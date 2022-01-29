@@ -14,10 +14,28 @@
       />
       <v-sheet
         rounded
-        class="date-button d-flex ml-1 px-2 py-1 text-body-2 blue-grey--text text--darken-4"
+        class="date-button d-flex align-center ml-1 px-2 py-1 text-body-2 blue-grey--text text--darken-4"
         @click="$emit('open-date-menu', $event)"
       >
         {{ getDateDetails }}
+        <v-chip
+          v-if="value.isDone"
+          x-small
+          label
+          class="ml-2"
+          color="success"
+        >
+          complete
+        </v-chip>
+        <v-chip
+          v-else-if="getDateDueStatus"
+          x-small
+          label
+          class="ml-2 font-weight-medium"
+          :color="getDateDueStatus.color"
+        >
+          {{ getDateDueStatus.message }}
+        </v-chip>
         <v-icon right>
           mdi-chevron-down
         </v-icon>
@@ -29,11 +47,15 @@
 <script>
 import { tap, cloneDeep } from 'lodash'
 import dayjs from '@/utils/dayjs.utils'
+import { mixinDate } from '@/mixins/vue-mixins'
 
 const FORMAT_DATE_SAME_YEAR = 'MMM D'
-const FORMAT_DATE_DIFFERENT_YEAR = 'MMM D YYYY'
+const FORMAT_DATE_DIFFERENT_YEAR = 'MMM D, YYYY'
 
 export default {
+  mixins: [
+    mixinDate
+  ],
   props: {
     value: {
       type: Object,
@@ -50,6 +72,11 @@ export default {
       } else {
         return 'Start date'
       }
+    },
+    getDateDueStatus () {
+      return this.mixin_getDateDueStatus(
+        `${this.value.endDate} ${this.value.endTime || ''}`
+      )
     },
     getDateDetails () {
       let dateStr, format, sameYear
