@@ -68,13 +68,73 @@
         >
           <v-hover v-slot="{ hover }">
             <v-card
-              class="mt-1 ma-1 pa-2 text-body-2"
+              class="simple-card mt-1 ma-1 pa-2 text-body-2"
               elevation="1"
               :color="`${hover? 'grey lighten-5' : ''}`"
-              :ripple="false"
-              @click="$emit('show-details', card)"
+              @click.native="$emit('show-details', card)"
             >
-              {{ card.title }}
+              <div>
+                {{ card.title }}
+              </div>
+              <div
+                v-if="Object.keys(card).length > 2"
+                class="mt-2"
+              >
+                <v-hover v-slot="{ hover: hoverDate }">
+                  <v-btn
+                    v-if="card.date"
+                    x-small
+                    depressed
+                    :ripple="false"
+                    :color="getDateStatusColor(card.date)"
+                    class="text-none mr-1"
+                    @click.stop="updateStatus(card)"
+                  >
+                    <v-icon
+                      dense
+                      small
+                      left
+                    >
+                      {{
+                        hoverDate
+                          ? `mdi-checkbox-${card.date.isDone? 'marked' : 'blank'}-outline`
+                          : 'mdi-clock-time-four-outline'
+                      }}
+                    </v-icon>
+                    <span class="text-caption">
+                      {{ getDateDetails(card.date) }}
+                    </span>
+                  </v-btn>
+                </v-hover>
+                <v-icon
+                  v-if="card.description"
+                  dense
+                  small
+                  class="mr-1"
+                >
+                  mdi-text
+                </v-icon>
+                <v-btn
+                  v-if="card.checklists"
+                  x-small
+                  depressed
+                  :ripple="false"
+                  :color="getChecklistColor(card.checklists)"
+                  class="text-none mr-1"
+                >
+                  <v-icon
+                    dense
+                    small
+                    left
+                  >
+                    mdi-checkbox-marked-outline
+                  </v-icon>
+                  <span class="text-caption">
+                    {{ getChecklistCombined(card.checklists).done }} /
+                    {{ getChecklistCombined(card.checklists).total }}
+                  </span>
+                </v-btn>
+              </div>
             </v-card>
           </v-hover>
         </Draggable>
@@ -122,14 +182,20 @@
 
 <script>
 import { Container, Draggable } from 'vue-dndrop'
-import { mixinTextArea } from '@/mixins/vue-mixins'
+import { cloneDeep } from 'lodash'
+import { mixinTextArea, mixinDate } from '@/mixins/vue-mixins'
+import dayjs from '@/utils/dayjs.utils'
+
+const FORMAT_DATE_SAME_YEAR = 'MMM D'
+const FORMAT_DATE_DIFFERENT_YEAR = 'MMM D, YYYY'
 
 export default {
   components: {
     Container, Draggable
   },
   mixins: [
-    mixinTextArea
+    mixinTextArea,
+    mixinDate
   ],
   props: {
     list: { type: Object, required: true }
@@ -156,6 +222,45 @@ export default {
   methods: {
     deleteList () {
       this.$emit('delete-list', this.list.id)
+    },
+    getDateStatusColor ({ isDone, endDate, endTime }) {
+      return isDone
+        ? 'success'
+        : (this.mixin_getDateDueStatus(
+            `${endDate} ${endTime || ''}`
+          ) || {}).color || 'transparent'
+    },
+    getDateDetails (date) {
+      let dateStr, format, sameYear
+      if (date.startDate) {
+        dateStr = date.endDate ? '' : dayjs().isBefore(date.startDate, 'day') ? 'Starts: ' : 'Started: '
+        sameYear = dayjs().isSame(date.startDate, 'year')
+        format = sameYear ? FORMAT_DATE_SAME_YEAR : FORMAT_DATE_DIFFERENT_YEAR
+        dateStr += dayjs(date.startDate).format(format)
+      }
+      if (date.endDate) {
+        dateStr = dateStr ? `${dateStr} - ` : ''
+        sameYear = dayjs().isSame(date.endDate, 'year')
+        format = sameYear ? FORMAT_DATE_SAME_YEAR : FORMAT_DATE_DIFFERENT_YEAR
+        dateStr += dayjs(date.endDate).format(format)
+      }
+      return dateStr
+    },
+    getChecklistCombined (checklists) {
+      return checklists.reduce((acc, value) => {
+        acc.done = (acc.done || 0) + value.checked.length
+        acc.total = (acc.total || 0) + value.items.length
+        return acc
+      }, {})
+    },
+    getChecklistColor (checklists) {
+      const { done, total } = this.getChecklistCombined(checklists)
+      return done === total ? 'success' : 'transparent'
+    },
+    updateStatus (card) {
+      const clonedCard = cloneDeep(card)
+      clonedCard.date.isDone = !clonedCard.date.isDone
+      this.$emit('update-card', clonedCard)
     },
     showCardForm () {
       this.isInputShown = true
@@ -190,6 +295,10 @@ export default {
   border-radius: 4px;
   background-color: rgb(0 0 0 / 5%);
   margin: 4px;
+}
+
+.simple-card:hover {
+  cursor: pointer;
 }
 
 .brello-list{

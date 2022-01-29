@@ -19,6 +19,7 @@
           @create-card="createCard(l, ...arguments)"
           @show-details="navigateToCard(l, ...arguments)"
           @drop-card="dropCard(l, ...arguments)"
+          @update-card="updateCard"
         />
         <v-card
           width="272"
