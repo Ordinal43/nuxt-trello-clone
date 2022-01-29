@@ -154,6 +154,9 @@ export default {
     this.mixin_resizeTextarea({ target: this.$refs['brello-edit-card-title'] })
   },
   methods: {
+    updateCardDetails () {
+      this.$emit('update-card', this.detailedCard)
+    },
     addChecklist (title) {
       if (!this.detailedCard.checklists) {
         /**

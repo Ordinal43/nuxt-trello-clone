@@ -153,6 +153,7 @@
       @click:outside="$router.go(-1)"
     >
       <NuxtChild
+        @update-card="updateCard"
         @delete-card="promptDeleteCard"
       />
     </v-dialog>
@@ -207,6 +208,7 @@
 </template>
 
 <script>
+import { cloneDeep } from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
 
 export default {
@@ -402,6 +404,38 @@ export default {
         list_id: currentList.id
       }
       this.$router.push(`/boards/${this.board.id}/card/${card.id}`)
+    },
+    async updateCard (detailedCard) {
+      try {
+        const idxList = this.board.lists
+          .findIndex(({ id }) => id === detailedCard.list_id)
+        const idxCard = this.board.lists[idxList].cards
+          .findIndex(({ id }) => id === detailedCard.id)
+
+        if (idxCard !== -1) {
+          const cardList = this.board.lists[idxList].cards
+          cardList.splice(idxCard, 1, cloneDeep(detailedCard))
+
+          const batch = this.$fire.firestore
+            .batch()
+
+          const boardRef = this.$fire.firestore
+            .collection('users')
+            .doc(this.$store.getters.getUser.uid)
+            .collection('boards')
+            .doc(this.board.id)
+
+          const cardRef = boardRef
+            .collection('cards')
+            .doc(detailedCard.id)
+
+          batch.update(boardRef, this.board)
+          batch.update(cardRef, detailedCard)
+          await batch.commit()
+        }
+      } catch (error) {
+        //
+      }
     },
     promptDeleteCard () {
       this.dialogDeleteCard = true
