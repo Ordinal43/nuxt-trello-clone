@@ -307,7 +307,7 @@ export default {
       this.update(saveObj)
     },
     removeDate () {
-      this.update(undefined)
+      this.update(null)
     }
   }
 }
