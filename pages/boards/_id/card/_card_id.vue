@@ -107,6 +107,8 @@
 import { v4 as uuidv4 } from 'uuid'
 import { mixinTextArea } from '@/mixins/vue-mixins'
 
+let IS_FROM_FIRESTORE = false
+
 export default {
   mixins: [
     mixinTextArea
@@ -131,18 +133,17 @@ export default {
     if (doc.exists) {
       this.detailedCard = doc.data()
       this.detailedCard.id = doc.id
-      this.detailedCard.fromFirestore = true
+      IS_FROM_FIRESTORE = true
     }
   },
   watch: {
     detailedCard: {
       handler (val) {
         // Only request update if data changes happen locally
-        if (!val.fromFirestore) {
-          console.log('watch triggered')
-          console.log(this.detailedCard.date)
+        if (!IS_FROM_FIRESTORE) {
+          this.updateCardDetails()
         } else {
-          val.fromFirestore = false
+          IS_FROM_FIRESTORE = false
         }
       },
       deep: true
