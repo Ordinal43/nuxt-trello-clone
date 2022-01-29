@@ -23,12 +23,14 @@
         />
         <v-card
           width="272"
-          class="pa-2"
-          color="#00000014"
+          :color="dialogCreate ? '#EBECF0' : '#00000014'"
           flat
-          @click="dialogCreate = true"
         >
-          <div class="pa-2">
+          <div
+            v-show="!dialogCreate"
+            class="pa-4"
+            @click="showInputList"
+          >
             <div class="text-body-2">
               <v-icon small>
                 mdi-plus
@@ -36,69 +38,39 @@
               Add {{ (board.lists || []).length? 'another' : 'a' }} list
             </div>
           </div>
+          <div
+            v-show="dialogCreate"
+            class="pa-2"
+          >
+            <input
+              ref="inputCreateList"
+              v-model="list.title"
+              type="text"
+              placeholder="Enter list title..."
+              class="text-body-2 py-2"
+              @keydown.enter.prevent="createList"
+            >
+            <div class="mt-2">
+              <v-btn
+                small
+                color="primary"
+                @click="createList"
+              >
+                Add list
+              </v-btn>
+              <v-btn
+                text
+                small
+                icon
+                @click="dialogCreate = false"
+              >
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </div>
+          </div>
         </v-card>
       </div>
     </div>
-
-    <!-- ============= Dialog create List ============= -->
-    <v-dialog
-      :key="dialogCreate"
-      v-model="dialogCreate"
-      max-width="400"
-      persistent
-    >
-      <v-card>
-        <v-container>
-          <v-row
-            no-gutters
-            align="center"
-            justify="space-between"
-            class="mb-2"
-          >
-            <h3>Add List</h3>
-            <v-icon @click="dialogCreate = false">
-              mdi-close
-            </v-icon>
-          </v-row>
-          <v-form
-            ref="form"
-            @submit.prevent="createList"
-          >
-            <v-row>
-              <v-col cols="12">
-                <v-text-field
-                  v-model="list.title"
-                  label="List title"
-                  name="list_title"
-                  type="text"
-                  :rules="[v => !!v || 'List title is required']"
-                  required
-                />
-              </v-col>
-              <v-col
-                cols="12"
-                class="text-right"
-              >
-                <v-btn
-                  color="primary"
-                  @click="createList"
-                >
-                  Submit
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-form>
-        </v-container>
-        <v-overlay
-          absolute
-          :value="uploading"
-        >
-          <v-progress-circular
-            indeterminate
-          />
-        </v-overlay>
-      </v-card>
-    </v-dialog>
 
     <!-- ============= Dialog delete List ============= -->
     <v-dialog
@@ -250,7 +222,6 @@ export default {
   data () {
     return {
       dialogCreate: false,
-      uploading: false,
       list: {
         title: ''
       },
@@ -290,31 +261,33 @@ export default {
     /**
      * ============= List methods =============
      */
+    showInputList () {
+      this.dialogCreate = true
+      this.$nextTick(() => {
+        this.$refs.inputCreateList.focus()
+      })
+    },
     async createList () {
-      if (this.$refs.form.validate()) {
-        this.uploading = true
-        this.list.id = uuidv4()
-        this.list.cards = []
-        this.list.dateCreated = Date.now()
-        if (!this.board.lists) {
-          this.board.lists = []
-        }
-        this.board.lists.push(this.list)
-        try {
-          await this.$fire.firestore
-            .collection('users')
-            .doc(this.$store.getters.getUser.uid)
-            .collection('boards')
-            .doc(this.board.id)
-            .update(this.board)
-        } catch (error) {
-          // remove locally inserted list
-          this.board.lists.pop()
-        } finally {
-          this.dialogCreate = false
-          this.uploading = false
-          this.list = {}
-        }
+      this.dialogCreate = false
+      this.list.id = uuidv4()
+      this.list.cards = []
+      this.list.dateCreated = Date.now()
+      if (!this.board.lists) {
+        this.board.lists = []
+      }
+      this.board.lists.push(this.list)
+      try {
+        await this.$fire.firestore
+          .collection('users')
+          .doc(this.$store.getters.getUser.uid)
+          .collection('boards')
+          .doc(this.board.id)
+          .update(this.board)
+      } catch (error) {
+        // remove locally inserted list
+        this.board.lists.pop()
+      } finally {
+        this.list = {}
       }
     },
     promptDeleteList (listId) {
@@ -553,8 +526,15 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .brello-fill-height {
   height: 100%;
+}
+
+input {
+  padding: 4px 8px;
+  border-radius: 4px;
+  background-color: #fff;
+  box-shadow: inset 0 0 0 2px #0079bf;
 }
 </style>
