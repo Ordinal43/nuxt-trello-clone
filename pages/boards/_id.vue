@@ -1,104 +1,73 @@
 <template>
-  <v-container
-    fluid
-    class="brello-fill-height"
-  >
-    <div class="d-flex flex-column brello-fill-height">
-      <div class="flex-grow-0 mb-2">
-        <h3>{{ board.title }}</h3>
-        <div class="text-caption">
-          {{ board.dateCreated | formatDate }}
-        </div>
-      </div>
-      <div class="flex-grow-1 d-flex align-start">
-        <TrelloList
-          v-for="l in board.lists"
-          :key="`list-${l.id}`"
-          :list="l"
-          @delete-list="promptDeleteList"
-          @create-card="createCard(l, ...arguments)"
-          @show-details="navigateToCard(l, ...arguments)"
-          @drop-card="dropCard(l, ...arguments)"
-          @update-card="updateCard"
-        />
-        <v-card
-          width="272"
-          class="pa-2"
-          color="#00000014"
-          flat
-          @click="dialogCreate = true"
-        >
-          <div class="pa-2">
-            <div class="text-body-2">
-              <v-icon small>
-                mdi-plus
-              </v-icon>
-              Add {{ (board.lists || []).length? 'another' : 'a' }} list
-            </div>
-          </div>
-        </v-card>
+  <div class="brello-board-container">
+    <div class="pa-2">
+      <h3>{{ board.title }}</h3>
+      <div class="text-caption">
+        {{ board.dateCreated | formatDate }}
       </div>
     </div>
-
-    <!-- ============= Dialog create List ============= -->
-    <v-dialog
-      :key="dialogCreate"
-      v-model="dialogCreate"
-      max-width="400"
-      persistent
-    >
-      <v-card>
-        <v-container>
-          <v-row
-            no-gutters
-            align="center"
-            justify="space-between"
-            class="mb-2"
-          >
-            <h3>Add List</h3>
-            <v-icon @click="dialogCreate = false">
-              mdi-close
-            </v-icon>
-          </v-row>
-          <v-form
-            ref="form"
-            @submit.prevent="createList"
-          >
-            <v-row>
-              <v-col cols="12">
-                <v-text-field
-                  v-model="list.title"
-                  label="List title"
-                  name="list_title"
-                  type="text"
-                  :rules="[v => !!v || 'List title is required']"
-                  required
-                />
-              </v-col>
-              <v-col
-                cols="12"
-                class="text-right"
-              >
-                <v-btn
-                  color="primary"
-                  @click="createList"
-                >
-                  Submit
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-form>
-        </v-container>
-        <v-overlay
-          absolute
-          :value="uploading"
+    <div class="brello-list-container pl-5 pr-2 pb-3">
+      <TrelloList
+        v-for="l in board.lists"
+        :key="`list-${l.id}`"
+        :list="l"
+        @update-list-title="updateListTitle(l, ...arguments)"
+        @delete-list="promptDeleteList"
+        @create-card="createCard(l, ...arguments)"
+        @show-details="navigateToCard(l, ...arguments)"
+        @drop-card="dropCard(l, ...arguments)"
+        @update-card="updateCard"
+      />
+      <v-card
+        flat
+        width="272"
+        class="brello-list"
+        :color="isCreateList ? '#EBECF0' : '#00000014'"
+      >
+        <div
+          v-show="!isCreateList"
+          class="pa-4"
+          @click="showInputList"
         >
-          <v-progress-circular
-            indeterminate
-          />
-        </v-overlay>
+          <div class="text-body-2">
+            <v-icon small>
+              mdi-plus
+            </v-icon>
+            Add {{ (board.lists || []).length? 'another' : 'a' }} list
+          </div>
+        </div>
+        <div
+          v-show="isCreateList"
+          class="pa-2"
+        >
+          <input
+            ref="inputCreateList"
+            v-model="list.title"
+            type="text"
+            placeholder="Enter list title..."
+            class="text-body-2 py-2"
+            @keydown.enter="createList"
+          >
+          <div class="mt-2">
+            <v-btn
+              small
+              color="primary"
+              @click="createList"
+            >
+              Add list
+            </v-btn>
+            <v-btn
+              text
+              small
+              icon
+              @click="isCreateList = false"
+            >
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
+          </div>
+        </div>
       </v-card>
-    </v-dialog>
+    </div>
 
     <!-- ============= Dialog delete List ============= -->
     <v-dialog
@@ -205,7 +174,7 @@
         </v-overlay>
       </v-card>
     </v-dialog>
-  </v-container>
+  </div>
 </template>
 
 <script>
@@ -249,8 +218,7 @@ export default {
   },
   data () {
     return {
-      dialogCreate: false,
-      uploading: false,
+      isCreateList: false,
       list: {
         title: ''
       },
@@ -290,9 +258,15 @@ export default {
     /**
      * ============= List methods =============
      */
+    showInputList () {
+      this.isCreateList = true
+      this.$nextTick(() => {
+        this.$refs.inputCreateList.focus()
+      })
+    },
     async createList () {
-      if (this.$refs.form.validate()) {
-        this.uploading = true
+      if (this.list.title) {
+        this.isCreateList = false
         this.list.id = uuidv4()
         this.list.cards = []
         this.list.dateCreated = Date.now()
@@ -311,10 +285,24 @@ export default {
           // remove locally inserted list
           this.board.lists.pop()
         } finally {
-          this.dialogCreate = false
-          this.uploading = false
           this.list = {}
         }
+      } else {
+        this.$refs.inputCreateList.focus()
+      }
+    },
+    async updateListTitle (currentList, title) {
+      const oldTitle = currentList.title
+      currentList.title = title
+      try {
+        await this.$fire.firestore
+          .collection('users')
+          .doc(this.$store.getters.getUser.uid)
+          .collection('boards')
+          .doc(this.board.id)
+          .update(this.board)
+      } catch (error) {
+        currentList.title = oldTitle
       }
     },
     promptDeleteList (listId) {
@@ -553,8 +541,28 @@ export default {
 }
 </script>
 
-<style scoped>
-.brello-fill-height {
+<style lang="scss" scoped>
+.brello-board-container {
   height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.brello-list-container {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: flex-start;
+  overflow-x: scroll;
+}
+
+::v-deep .brello-list {
+  flex: 1 0 auto;
+}
+
+input {
+  padding: 4px 8px;
+  border-radius: 4px;
+  background-color: #fff;
+  box-shadow: inset 0 0 0 2px #0079bf;
 }
 </style>

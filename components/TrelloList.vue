@@ -2,15 +2,29 @@
   <v-card
     color="#EBECF0"
     width="272"
-    class="py-2 px-1 mr-2 d-flex flex-column"
+    class="brello-list py-2 px-1 mr-2"
     flat
     @mouseover="isMouseover = true"
     @mouseleave="isMouseover = false"
   >
-    <div class="py-2 px-1 flex-grow-0 flex-shrink-0 d-flex">
-      <div class="text-subtitle-2 pl-2 brello-list-title">
+    <div class="brello-list-header px-1 mb-1 d-flex">
+      <div
+        v-show="!isEditTitle"
+        class="py-2 pl-2 text-subtitle-2 brello-list-title"
+        @click="showEditListTitle"
+      >
         {{ list.title }}
       </div>
+      <input
+        v-show="isEditTitle"
+        ref="inputEditTitle"
+        :value="list.title"
+        type="text"
+        placeholder="Enter list title..."
+        class="text-subtitle-2 py-2"
+        @keydown.enter="updateListTitle"
+        @blur="updateListTitle"
+      >
       <v-menu
         v-model="menu"
         :close-on-content-click="false"
@@ -22,7 +36,7 @@
             text
             icon
             x-small
-            class="brello-list-action"
+            class="brello-list-action my-2"
             v-on="on"
           >
             <v-icon>mdi-dots-vertical</v-icon>
@@ -50,7 +64,7 @@
         </v-card>
       </v-menu>
     </div>
-    <div class="flex-grow-1 flex-shrink-1">
+    <div class="brello-list-content">
       <Container
         v-show="list.cards.length || (isMouseover && isDragging)"
         :get-child-payload="getChildPayload"
@@ -115,7 +129,7 @@
                   mdi-text
                 </v-icon>
                 <v-btn
-                  v-if="card.checklists"
+                  v-if="getChecklistCombined(card.checklists).total > 0"
                   x-small
                   depressed
                   :ripple="false"
@@ -140,43 +154,45 @@
         </Draggable>
       </Container>
     </div>
-    <v-hover
-      v-show="!isInputShown"
-      class="flex-grow-0 flex-shrink-0"
-    >
-      <template #default="{ hover }">
-        <v-card
-          flat
-          class="pa-2 mt-1 mx-1"
-          :color="hover? '#00000014' : '#00000000'"
-          @click="showCardForm"
-        >
-          <div>
-            <div class="text-body-2">
-              <v-icon small>
-                mdi-plus
-              </v-icon>
-              Add card
+    <div class="brello-list-footer mt-1 mx-1">
+      <v-hover
+        v-show="!isInputShown"
+        class="flex-grow-0 flex-shrink-0"
+      >
+        <template #default="{ hover }">
+          <v-card
+            flat
+            class="px-2 py-1"
+            :color="hover? '#00000014' : '#00000000'"
+            @click="showCardForm"
+          >
+            <div>
+              <div class="text-body-2">
+                <v-icon small>
+                  mdi-plus
+                </v-icon>
+                Add card
+              </div>
             </div>
-          </div>
-        </v-card>
-      </template>
-    </v-hover>
-    <v-card
-      v-show="isInputShown"
-      class="mt-1 pa-2 mx-1"
-    >
-      <textarea
-        ref="cardcreate"
-        v-model="cardTitle"
-        type="text"
-        placeholder="Enter card title..."
-        class="create-card-textarea text-body-2"
-        @input="mixin_resizeTextarea"
-        @blur="blurAction()"
-        @keydown.enter.prevent="blurAction(true)"
-      />
-    </v-card>
+          </v-card>
+        </template>
+      </v-hover>
+      <v-card
+        v-show="isInputShown"
+        class="pa-2"
+      >
+        <textarea
+          ref="cardcreate"
+          v-model="cardTitle"
+          type="text"
+          placeholder="Enter card title..."
+          class="create-card-textarea text-body-2"
+          @input="mixin_resizeTextarea"
+          @blur="blurAction()"
+          @keydown.enter.prevent="blurAction(true)"
+        />
+      </v-card>
+    </div>
   </v-card>
 </template>
 
@@ -188,6 +204,7 @@ import dayjs from '@/utils/dayjs.utils'
 
 const FORMAT_DATE_SAME_YEAR = 'MMM D'
 const FORMAT_DATE_DIFFERENT_YEAR = 'MMM D, YYYY'
+let INPUT_TITLE_PREV_VALUE
 
 export default {
   components: {
@@ -202,6 +219,7 @@ export default {
   },
   data () {
     return {
+      isEditTitle: false,
       menu: false,
       listAction: [
         { icon: 'mdi-delete', title: 'Delete list', color: 'red', method: this.deleteList }
@@ -219,7 +237,36 @@ export default {
       isDragging: false
     }
   },
+  beforeUpdate () {
+    /**
+     * Since 'mouseover' and 'mouseleave' events will re-render the component,
+     * store the current input value so it doesn't get reset
+     */
+    if (this.isEditTitle) {
+      INPUT_TITLE_PREV_VALUE = this.$refs.inputEditTitle.value
+    }
+  },
+  updated () {
+    /**
+     * Set the input's value using the previously stored variable
+     */
+    if (this.isEditTitle) {
+      this.$refs.inputEditTitle.value = INPUT_TITLE_PREV_VALUE
+    }
+  },
   methods: {
+    showEditListTitle () {
+      this.isEditTitle = true
+      this.$nextTick(() => {
+        this.$refs.inputEditTitle.focus()
+      })
+    },
+    updateListTitle ({ target }) {
+      this.isEditTitle = false
+      if (target.value && (target.value !== this.list.title)) {
+        this.$emit('update-list-title', target.value)
+      }
+    },
     deleteList () {
       this.$emit('delete-list', this.list.id)
     },
@@ -297,11 +344,31 @@ export default {
   margin: 4px;
 }
 
+input {
+  padding: 4px 8px;
+  border-radius: 4px;
+  background-color: #fff;
+  box-shadow: inset 0 0 0 2px #0079bf;
+}
+
 .simple-card:hover {
   cursor: pointer;
 }
 
 .brello-list{
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  &-header {
+    flex: 0 0 auto;
+  }
+  &-content {
+    flex: 1 1 auto;
+    overflow-y: scroll;
+  }
+  &-footer {
+    flex: 0 0 auto;
+  }
   &-title {
     flex: 1 1 auto;
     min-width: 0;
