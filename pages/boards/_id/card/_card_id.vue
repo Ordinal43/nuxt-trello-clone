@@ -149,8 +149,8 @@ export default {
       deep: true
     }
   },
-  mounted () {
-    // fire textarea resize on mounted
+  updated () {
+    // fire textarea resize on updated
     this.mixin_resizeTextarea({ target: this.$refs['brello-edit-card-title'] })
   },
   methods: {

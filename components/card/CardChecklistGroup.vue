@@ -112,25 +112,27 @@
             </div>
           </div>
         </div>
-        <div class="ml-sm-10">
-          <div
-            v-if="cl.items.length"
-            class="d-flex align-center mb-1"
-          >
-            <div class="brello-percent mr-3 text-center text-caption">
-              {{ getProgress(cl) }}%
-            </div>
-            <v-progress-linear
-              rounded
-              height="7"
-              :color="getProgress(cl) === 100? 'success' : 'primary'"
-              :value="getProgress(cl)"
-            />
+        <div
+          v-if="cl.items.length"
+          class="ml-sm-10 d-flex align-center mb-1"
+        >
+          <div class="brello-percent mr-3 text-center text-caption">
+            {{ getProgress(cl) }}%
           </div>
+          <v-progress-linear
+            rounded
+            height="7"
+            :color="getProgress(cl) === 100? 'success' : 'primary'"
+            :value="getProgress(cl)"
+          />
+        </div>
+        <v-hover
+          v-for="(item, itemIdx) in cl.items"
+          :key="`checklist-item-${item.id}`"
+          v-slot="{ hover }"
+        >
           <div
-            v-for="(item, itemIdx) in cl.items"
-            :key="`checklist-item-${item.id}`"
-            class="d-flex py-2"
+            :class="`d-flex ml-sm-8 px-2 py-2 ${hover ? 'grey lighten-3' : ''}`"
           >
             <v-checkbox
               :value="item.id"
@@ -178,47 +180,57 @@
                 </div>
               </template>
             </div>
-          </div>
-
-          <div class="mt-4">
             <v-btn
-              v-if="activeInputAddItem !== cl.id"
-              small
-              depressed
-              color="#091E420A"
-              @click="openAddTextarea(cl.id)"
+              v-show="hover"
+              x-small
+              icon
+              class="brello-card-icon"
+              @click="deleteItem(clIdx, item.id, itemIdx)"
             >
-              Add an item
+              <v-icon>
+                mdi-delete
+              </v-icon>
             </v-btn>
-            <template v-else>
-              <textarea
-                :ref="`textarea-add-${cl.id}`"
-                v-model="name"
-                class="add-item text-subtitle-1"
-                placeholder="Add an item"
-                @focus="mixin_resizeTextarea"
-                @input="mixin_resizeTextarea"
-                @keydown.enter.prevent="addChecklistItem(cl.id, clIdx)"
-              />
-              <div class="mt-1">
-                <v-btn
-                  small
-                  color="primary"
-                  @click="addChecklistItem(cl.id, clIdx)"
-                >
-                  Add
-                </v-btn>
-                <v-btn
-                  text
-                  small
-                  icon
-                  @click="closeAddTextarea"
-                >
-                  <v-icon>mdi-close</v-icon>
-                </v-btn>
-              </div>
-            </template>
           </div>
+        </v-hover>
+        <div class="ml-sm-10 mt-4">
+          <v-btn
+            v-if="activeInputAddItem !== cl.id"
+            small
+            depressed
+            color="#091E420A"
+            @click="openAddTextarea(cl.id)"
+          >
+            Add an item
+          </v-btn>
+          <template v-else>
+            <textarea
+              :ref="`textarea-add-${cl.id}`"
+              v-model="name"
+              class="add-item text-subtitle-1"
+              placeholder="Add an item"
+              @focus="mixin_resizeTextarea"
+              @input="mixin_resizeTextarea"
+              @keydown.enter.prevent="addChecklistItem(cl.id, clIdx)"
+            />
+            <div class="mt-1">
+              <v-btn
+                small
+                color="primary"
+                @click="addChecklistItem(cl.id, clIdx)"
+              >
+                Add
+              </v-btn>
+              <v-btn
+                text
+                small
+                icon
+                @click="closeAddTextarea"
+              >
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </div>
+          </template>
         </div>
       </v-card>
     </Draggable>
@@ -354,6 +366,13 @@ export default {
       } else {
         this.$refs[`textarea-edit-item-${itemId}`][0].focus()
       }
+    },
+    deleteItem (clIdx, itemId, itemIdx) {
+      this.update((arr) => {
+        arr[clIdx].items.splice(itemIdx, 1)
+        arr[clIdx].checked = arr[clIdx].checked
+          .filter(item => item !== itemId)
+      })
     },
     getProgress (cl) {
       return Math.round((cl.checked || []).length / (cl.items || []).length * 100)
