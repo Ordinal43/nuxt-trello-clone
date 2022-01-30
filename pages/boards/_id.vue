@@ -15,6 +15,7 @@
           v-for="l in board.lists"
           :key="`list-${l.id}`"
           :list="l"
+          @update-list-title="updateListTitle(l, ...arguments)"
           @delete-list="promptDeleteList"
           @create-card="createCard(l, ...arguments)"
           @show-details="navigateToCard(l, ...arguments)"
@@ -292,6 +293,20 @@ export default {
         }
       } else {
         this.$refs.inputCreateList.focus()
+      }
+    },
+    async updateListTitle (currentList, title) {
+      const oldTitle = currentList.title
+      currentList.title = title
+      try {
+        await this.$fire.firestore
+          .collection('users')
+          .doc(this.$store.getters.getUser.uid)
+          .collection('boards')
+          .doc(this.board.id)
+          .update(this.board)
+      } catch (error) {
+        currentList.title = oldTitle
       }
     },
     promptDeleteList (listId) {
