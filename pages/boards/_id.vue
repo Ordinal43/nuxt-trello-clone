@@ -49,7 +49,7 @@
               type="text"
               placeholder="Enter list title..."
               class="text-body-2 py-2"
-              @keydown.enter.prevent="createList"
+              @keydown.enter="createList"
             >
             <div class="mt-2">
               <v-btn
