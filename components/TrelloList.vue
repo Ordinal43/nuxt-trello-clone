@@ -2,12 +2,12 @@
   <v-card
     color="#EBECF0"
     width="272"
-    class="py-2 px-1 mr-2 d-flex flex-column"
+    class="brello-list py-2 px-1 mr-2"
     flat
     @mouseover="isMouseover = true"
     @mouseleave="isMouseover = false"
   >
-    <div class="px-1 flex-grow-0 flex-shrink-0 d-flex">
+    <div class="brello-list-header px-1 mb-1 d-flex">
       <div
         v-show="!isEditTitle"
         class="py-2 pl-2 text-subtitle-2 brello-list-title"
@@ -64,7 +64,7 @@
         </v-card>
       </v-menu>
     </div>
-    <div class="flex-grow-1 flex-shrink-1">
+    <div class="brello-list-content">
       <Container
         v-show="list.cards.length || (isMouseover && isDragging)"
         :get-child-payload="getChildPayload"
@@ -154,43 +154,45 @@
         </Draggable>
       </Container>
     </div>
-    <v-hover
-      v-show="!isInputShown"
-      class="flex-grow-0 flex-shrink-0"
-    >
-      <template #default="{ hover }">
-        <v-card
-          flat
-          class="px-2 py-1 mt-1 mx-1"
-          :color="hover? '#00000014' : '#00000000'"
-          @click="showCardForm"
-        >
-          <div>
-            <div class="text-body-2">
-              <v-icon small>
-                mdi-plus
-              </v-icon>
-              Add card
+    <div class="brello-list-footer mt-1 mx-1">
+      <v-hover
+        v-show="!isInputShown"
+        class="flex-grow-0 flex-shrink-0"
+      >
+        <template #default="{ hover }">
+          <v-card
+            flat
+            class="px-2 py-1"
+            :color="hover? '#00000014' : '#00000000'"
+            @click="showCardForm"
+          >
+            <div>
+              <div class="text-body-2">
+                <v-icon small>
+                  mdi-plus
+                </v-icon>
+                Add card
+              </div>
             </div>
-          </div>
-        </v-card>
-      </template>
-    </v-hover>
-    <v-card
-      v-show="isInputShown"
-      class="mt-1 pa-2 mx-1"
-    >
-      <textarea
-        ref="cardcreate"
-        v-model="cardTitle"
-        type="text"
-        placeholder="Enter card title..."
-        class="create-card-textarea text-body-2"
-        @input="mixin_resizeTextarea"
-        @blur="blurAction()"
-        @keydown.enter.prevent="blurAction(true)"
-      />
-    </v-card>
+          </v-card>
+        </template>
+      </v-hover>
+      <v-card
+        v-show="isInputShown"
+        class="pa-2"
+      >
+        <textarea
+          ref="cardcreate"
+          v-model="cardTitle"
+          type="text"
+          placeholder="Enter card title..."
+          class="create-card-textarea text-body-2"
+          @input="mixin_resizeTextarea"
+          @blur="blurAction()"
+          @keydown.enter.prevent="blurAction(true)"
+        />
+      </v-card>
+    </div>
   </v-card>
 </template>
 
@@ -354,6 +356,19 @@ input {
 }
 
 .brello-list{
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  &-header {
+    flex: 0 0 auto;
+  }
+  &-content {
+    flex: 1 1 auto;
+    overflow-y: scroll;
+  }
+  &-footer {
+    flex: 0 0 auto;
+  }
   &-title {
     flex: 1 1 auto;
     min-width: 0;

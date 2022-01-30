@@ -1,76 +1,72 @@
 <template>
-  <v-container
-    fluid
-    class="brello-fill-height"
-  >
-    <div class="d-flex flex-column brello-fill-height">
-      <div class="flex-grow-0 mb-2">
-        <h3>{{ board.title }}</h3>
-        <div class="text-caption">
-          {{ board.dateCreated | formatDate }}
-        </div>
+  <div class="brello-board-container">
+    <div class="pa-2">
+      <h3>{{ board.title }}</h3>
+      <div class="text-caption">
+        {{ board.dateCreated | formatDate }}
       </div>
-      <div class="flex-grow-1 d-flex align-start">
-        <TrelloList
-          v-for="l in board.lists"
-          :key="`list-${l.id}`"
-          :list="l"
-          @update-list-title="updateListTitle(l, ...arguments)"
-          @delete-list="promptDeleteList"
-          @create-card="createCard(l, ...arguments)"
-          @show-details="navigateToCard(l, ...arguments)"
-          @drop-card="dropCard(l, ...arguments)"
-          @update-card="updateCard"
-        />
-        <v-card
-          width="272"
-          :color="isCreateList ? '#EBECF0' : '#00000014'"
-          flat
+    </div>
+    <div class="brello-list-container pl-5 pr-2 pb-3">
+      <TrelloList
+        v-for="l in board.lists"
+        :key="`list-${l.id}`"
+        :list="l"
+        @update-list-title="updateListTitle(l, ...arguments)"
+        @delete-list="promptDeleteList"
+        @create-card="createCard(l, ...arguments)"
+        @show-details="navigateToCard(l, ...arguments)"
+        @drop-card="dropCard(l, ...arguments)"
+        @update-card="updateCard"
+      />
+      <v-card
+        flat
+        width="272"
+        class="brello-list"
+        :color="isCreateList ? '#EBECF0' : '#00000014'"
+      >
+        <div
+          v-show="!isCreateList"
+          class="pa-4"
+          @click="showInputList"
         >
-          <div
-            v-show="!isCreateList"
-            class="pa-4"
-            @click="showInputList"
-          >
-            <div class="text-body-2">
-              <v-icon small>
-                mdi-plus
-              </v-icon>
-              Add {{ (board.lists || []).length? 'another' : 'a' }} list
-            </div>
+          <div class="text-body-2">
+            <v-icon small>
+              mdi-plus
+            </v-icon>
+            Add {{ (board.lists || []).length? 'another' : 'a' }} list
           </div>
-          <div
-            v-show="isCreateList"
-            class="pa-2"
+        </div>
+        <div
+          v-show="isCreateList"
+          class="pa-2"
+        >
+          <input
+            ref="inputCreateList"
+            v-model="list.title"
+            type="text"
+            placeholder="Enter list title..."
+            class="text-body-2 py-2"
+            @keydown.enter="createList"
           >
-            <input
-              ref="inputCreateList"
-              v-model="list.title"
-              type="text"
-              placeholder="Enter list title..."
-              class="text-body-2 py-2"
-              @keydown.enter="createList"
+          <div class="mt-2">
+            <v-btn
+              small
+              color="primary"
+              @click="createList"
             >
-            <div class="mt-2">
-              <v-btn
-                small
-                color="primary"
-                @click="createList"
-              >
-                Add list
-              </v-btn>
-              <v-btn
-                text
-                small
-                icon
-                @click="isCreateList = false"
-              >
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-            </div>
+              Add list
+            </v-btn>
+            <v-btn
+              text
+              small
+              icon
+              @click="isCreateList = false"
+            >
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
           </div>
-        </v-card>
-      </div>
+        </div>
+      </v-card>
     </div>
 
     <!-- ============= Dialog delete List ============= -->
@@ -178,7 +174,7 @@
         </v-overlay>
       </v-card>
     </v-dialog>
-  </v-container>
+  </div>
 </template>
 
 <script>
@@ -546,8 +542,21 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.brello-fill-height {
+.brello-board-container {
   height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.brello-list-container {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: flex-start;
+  overflow-x: scroll;
+}
+
+::v-deep .brello-list {
+  flex: 1 0 auto;
 }
 
 input {
