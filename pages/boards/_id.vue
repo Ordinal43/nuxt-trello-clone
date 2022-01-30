@@ -23,11 +23,11 @@
         />
         <v-card
           width="272"
-          :color="showCreateList ? '#EBECF0' : '#00000014'"
+          :color="isCreateList ? '#EBECF0' : '#00000014'"
           flat
         >
           <div
-            v-show="!showCreateList"
+            v-show="!isCreateList"
             class="pa-4"
             @click="showInputList"
           >
@@ -39,7 +39,7 @@
             </div>
           </div>
           <div
-            v-show="showCreateList"
+            v-show="isCreateList"
             class="pa-2"
           >
             <input
@@ -62,7 +62,7 @@
                 text
                 small
                 icon
-                @click="showCreateList = false"
+                @click="isCreateList = false"
               >
                 <v-icon>mdi-close</v-icon>
               </v-btn>
@@ -221,7 +221,7 @@ export default {
   },
   data () {
     return {
-      showCreateList: false,
+      isCreateList: false,
       list: {
         title: ''
       },
@@ -262,32 +262,36 @@ export default {
      * ============= List methods =============
      */
     showInputList () {
-      this.showCreateList = true
+      this.isCreateList = true
       this.$nextTick(() => {
         this.$refs.inputCreateList.focus()
       })
     },
     async createList () {
-      this.showCreateList = false
-      this.list.id = uuidv4()
-      this.list.cards = []
-      this.list.dateCreated = Date.now()
-      if (!this.board.lists) {
-        this.board.lists = []
-      }
-      this.board.lists.push(this.list)
-      try {
-        await this.$fire.firestore
-          .collection('users')
-          .doc(this.$store.getters.getUser.uid)
-          .collection('boards')
-          .doc(this.board.id)
-          .update(this.board)
-      } catch (error) {
-        // remove locally inserted list
-        this.board.lists.pop()
-      } finally {
-        this.list = {}
+      if (this.list.title) {
+        this.isCreateList = false
+        this.list.id = uuidv4()
+        this.list.cards = []
+        this.list.dateCreated = Date.now()
+        if (!this.board.lists) {
+          this.board.lists = []
+        }
+        this.board.lists.push(this.list)
+        try {
+          await this.$fire.firestore
+            .collection('users')
+            .doc(this.$store.getters.getUser.uid)
+            .collection('boards')
+            .doc(this.board.id)
+            .update(this.board)
+        } catch (error) {
+          // remove locally inserted list
+          this.board.lists.pop()
+        } finally {
+          this.list = {}
+        }
+      } else {
+        this.$refs.inputCreateList.focus()
       }
     },
     promptDeleteList (listId) {
