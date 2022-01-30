@@ -3,10 +3,21 @@
     <v-app-bar
       app
       dense
+      flat
+      dark
+      color="rgba(0, 0, 0, 0.45)"
     >
       <v-toolbar-title>
-        <NuxtLink to="/">
-          Brello
+        <NuxtLink
+          to="/"
+          class="d-flex align-center"
+        >
+          <v-icon>
+            mdi-trello
+          </v-icon>
+          <span class="ml-2 mb-n1 text-h5 font-weight-bold">
+            Brello
+          </span>
         </NuxtLink>
       </v-toolbar-title>
       <v-spacer />
@@ -18,14 +29,16 @@
         :close-on-content-click="false"
       >
         <template
-          #activator="{ on, attrs }"
+          #activator="{ on }"
         >
           <v-btn
             icon
-            v-bind="attrs"
+            small
             v-on="on"
           >
-            <v-icon>mdi-account-circle</v-icon>
+            <v-icon>
+              mdi-account-circle
+            </v-icon>
           </v-btn>
         </template>
 
@@ -79,3 +92,10 @@ export default {
   name: 'DefaultLayout'
 }
 </script>
+
+<style lang="scss" scoped>
+a {
+  color: white;
+  text-decoration: none;
+}
+</style>
