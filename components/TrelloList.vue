@@ -129,7 +129,7 @@
                   mdi-text
                 </v-icon>
                 <v-btn
-                  v-if="card.checklists"
+                  v-if="getChecklistCombined(card.checklists).total > 0"
                   x-small
                   depressed
                   :ripple="false"
