@@ -34,8 +34,9 @@
       </v-btn>
     </v-card-text>
     <v-card-text>
+      Don't have an account?
       <NuxtLink to="/auth/signup">
-        Sign Up for an account
+        Sign up for an account
       </NuxtLink>
     </v-card-text>
   </v-card>
