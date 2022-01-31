@@ -33,6 +33,12 @@
         Log in
       </v-btn>
     </v-card-text>
+    <div class="text-body-1 text-center">
+      OR
+    </div>
+    <v-card-text>
+      <BtnGoogleSignIn />
+    </v-card-text>
     <v-card-text>
       Don't have an account?
       <NuxtLink to="/auth/signup">

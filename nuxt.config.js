@@ -105,7 +105,8 @@ export default {
           success: colors.green.accent3
         }
       }
-    }
+    },
+    optionsPath: './vuetify.options.js'
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
