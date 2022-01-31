@@ -17,10 +17,10 @@ const getters = {
 }
 
 const mutations = {
-  setUser (state, user) {
+  SET_USER (state, user) {
     state.user = user
   },
-  setError (state, error) {
+  SET_ERROR (state, error) {
     state.error = error
   }
 }
@@ -48,7 +48,7 @@ const actions = {
     const decoded = JWTDecode(accessTokenCookie)
 
     if (decoded) {
-      commit('setUser', {
+      commit('SET_USER', {
         uid: decoded.user_id,
         email: decoded.email,
         displayName: decoded.displayName
@@ -57,7 +57,7 @@ const actions = {
   },
   async onAuthStateChangedAction (state, { authUser, claims }) {
     if (!authUser) {
-      state.commit('setUser', null)
+      state.commit('SET_USER', null)
       this.$router.push({
         path: '/auth/login'
       })
@@ -65,7 +65,7 @@ const actions = {
       const token = await authUser.getIdToken()
       const { uid, email, displayName } = authUser
       Cookie.set('brello_access_token', token)
-      state.commit('setUser', { uid, email, displayName })
+      state.commit('SET_USER', { uid, email, displayName })
     }
   }
 }

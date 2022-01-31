@@ -282,7 +282,7 @@ export default {
             .doc(this.board.id)
             .update(this.board)
         } catch (error) {
-          this.$store.commit('setError', error)
+          this.$store.commit('SET_ERROR', error)
           // remove locally inserted list
           this.board.lists.pop()
         } finally {
@@ -303,7 +303,7 @@ export default {
           .doc(this.board.id)
           .update(this.board)
       } catch (error) {
-        this.$store.commit('setError', error)
+        this.$store.commit('SET_ERROR', error)
         currentList.title = oldTitle
       }
     },
@@ -341,7 +341,7 @@ export default {
 
           await batch.commit()
         } catch (error) {
-          this.$store.commit('setError', error)
+          this.$store.commit('SET_ERROR', error)
           // re-insert locally deleted list
           this.board.lists.splice(index, 0, deletedList)
         } finally {
@@ -386,7 +386,7 @@ export default {
         })
         await batch.commit()
       } catch (error) {
-        this.$store.commit('setError', error)
+        this.$store.commit('SET_ERROR', error)
         // remove locally inserted card
         currentList.cards.pop()
       }
@@ -427,7 +427,7 @@ export default {
           await batch.commit()
         }
       } catch (error) {
-        this.$store.commit('setError', error)
+        this.$store.commit('SET_ERROR', error)
       }
     },
     promptDeleteCard () {
@@ -474,7 +474,7 @@ export default {
           throw (new Error('Card not found!'))
         }
       } catch (error) {
-        this.$store.commit('setError', error)
+        this.$store.commit('SET_ERROR', error)
         // re-insert locally deleted card
         this.board.lists[listIdx].cards
           .splice(cardIdx, 0, deletedCard)
@@ -531,7 +531,7 @@ export default {
             .doc(this.board.id)
             .update(this.board)
         } catch (error) {
-          this.$store.commit('setError', error)
+          this.$store.commit('SET_ERROR', error)
           // return moved card from target to source list
           this.dropList.list.cards.splice(this.dropList.index, 1)
           this.dragList.list.cards.splice(this.dragList.index, 0, this.dragDropPayload)
