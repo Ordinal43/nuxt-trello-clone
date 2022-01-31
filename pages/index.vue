@@ -84,8 +84,9 @@
                   label="Board title"
                   name="title"
                   type="text"
-                  :rules="[v => !!v || 'Board title is required']"
                   required
+                  validate-on-blur
+                  :rules="[v => !!v || 'Board title is required']"
                 />
               </v-col>
               <v-col
