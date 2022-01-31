@@ -334,9 +334,6 @@ export default {
 
         this.dialog = false
         this.$refs.form.reset()
-        this.snackbarColor = 'green darken-1'
-        this.snackbarText = 'Successfully created your board'
-        this.snackbar = true
       } catch (error) {
         this.snackbarColor = 'red darken-1'
         this.snackbarText = error.message
