@@ -33,10 +33,10 @@
           name="password"
           label="Enter password"
           prepend-icon="mdi-lock"
+          validate-on-blur
           :append-icon="isShowPass ? 'mdi-eye-off' : 'mdi-eye'"
           :type="isShowPass ? 'text' : 'password'"
           :rules="[rules.required]"
-          validate-on-blur
           @click:append="() => (isShowPass = !isShowPass)"
         />
         <v-text-field
@@ -83,7 +83,7 @@
 </template>
 
 <script>
-const REGEX_EMAIL = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+import { required, email } from '@/utils/input_rules.utils'
 
 export default {
   name: 'AuthSignUp',
@@ -96,8 +96,8 @@ export default {
     },
     passwordConfirm: '',
     rules: {
-      required: v => !!v || 'Value cannot be empty!',
-      email: v => !!v.match(REGEX_EMAIL) || 'E-mail not valid!',
+      required,
+      email,
       matchPassword: v => v === vm.auth.password || 'Password does not match!'
     },
     isShowPass: false,
