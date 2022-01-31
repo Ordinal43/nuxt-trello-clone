@@ -3,18 +3,25 @@ import JWTDecode from 'jwt-decode'
 import cookieparser from 'cookieparser'
 
 const state = () => ({
-  user: null
+  user: null,
+  error: null
 })
 
 const getters = {
   getUser (state) {
     return state.user
+  },
+  getError (state) {
+    return state.error
   }
 }
 
 const mutations = {
   setUser (state, user) {
     state.user = user
+  },
+  setError (state, error) {
+    state.error = error
   }
 }
 

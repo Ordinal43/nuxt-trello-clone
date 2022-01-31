@@ -190,23 +190,6 @@
         </v-overlay>
       </v-card>
     </v-dialog>
-    <v-snackbar
-      v-model="snackbar"
-      :timeout="5000"
-      :color="snackbarColor"
-    >
-      {{ snackbarText }}
-      <template #action="{ attrs }">
-        <v-btn
-          color="white"
-          icon
-          v-bind="attrs"
-          @click="snackbar = false"
-        >
-          <v-icon>mdi-close</v-icon>
-        </v-btn>
-      </template>
-    </v-snackbar>
   </v-container>
 </template>
 
@@ -231,10 +214,7 @@ export default {
         }
       },
       boards: [],
-      fileToUpload: {},
-      snackbar: false,
-      snackbarColor: '',
-      snackbarText: ''
+      fileToUpload: {}
     }
   },
   async fetch () {
@@ -298,9 +278,7 @@ export default {
             null,
             // on upload error
             (error) => {
-              this.snackbarColor = 'red darken-1'
-              this.snackbarText = error.message
-              this.snackbar = true
+              this.$store.commit('setError', error)
               return false
             },
             // on upload success
@@ -335,17 +313,12 @@ export default {
         this.dialog = false
         this.$refs.form.reset()
       } catch (error) {
-        this.snackbarColor = 'red darken-1'
-        this.snackbarText = error.message
-        this.snackbar = true
-
+        this.$store.commit('setError', error)
         if (itemRef) {
           try {
-            itemRef.delete()
+            await itemRef.delete()
           } catch (error) {
-            this.snackbarColor = 'red darken-1'
-            this.snackbarText = error.message
-            this.snackbar = true
+            this.$store.commit('setError', error)
           }
         }
       } finally {

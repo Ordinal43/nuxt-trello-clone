@@ -86,12 +86,42 @@
         <Nuxt />
       </div>
     </div>
+    <v-snackbar
+      v-model="snackbar"
+      left
+      :timeout="5000"
+      :color="snackbarColor"
+    >
+      {{ snackbarText }}
+      <template #action="{ attrs }">
+        <v-btn
+          color="white"
+          icon
+          v-bind="attrs"
+          @click="snackbar = false"
+        >
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-app>
 </template>
 
 <script>
 export default {
-  name: 'DefaultLayout'
+  name: 'DefaultLayout',
+  data: () => ({
+    snackbar: false,
+    snackbarColor: '',
+    snackbarText: ''
+  }),
+  watch: {
+    '$store.state.error' (val) {
+      this.snackbarColor = 'red darken-1'
+      this.snackbarText = val.message
+      this.snackbar = true
+    }
+  }
 }
 </script>
 
