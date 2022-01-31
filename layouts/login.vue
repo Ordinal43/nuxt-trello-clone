@@ -9,7 +9,8 @@
       >
         <v-col
           cols="12"
-          sm="6"
+          sm="7"
+          md="6"
           lg="4"
           align="center"
         >
