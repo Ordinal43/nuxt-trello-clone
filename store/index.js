@@ -50,7 +50,8 @@ const actions = {
     if (decoded) {
       commit('setUser', {
         uid: decoded.user_id,
-        email: decoded.email
+        email: decoded.email,
+        displayName: decoded.displayName
       })
     }
   },
@@ -62,10 +63,9 @@ const actions = {
       })
     } else {
       const token = await authUser.getIdToken()
-      const { uid, email } = authUser
-
+      const { uid, email, displayName } = authUser
       Cookie.set('brello_access_token', token)
-      state.commit('setUser', { uid, email })
+      state.commit('setUser', { uid, email, displayName })
     }
   }
 }

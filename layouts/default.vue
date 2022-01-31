@@ -54,7 +54,7 @@
                 </v-list-item-avatar>
 
                 <v-list-item-content>
-                  <v-list-item-title>[Your name here]</v-list-item-title>
+                  <v-list-item-title>{{ $store.getters.getUser.displayName }}</v-list-item-title>
                   <v-list-item-subtitle>{{ $store.getters.getUser.email }}</v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
