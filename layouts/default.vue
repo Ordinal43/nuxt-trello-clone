@@ -44,7 +44,7 @@
           </template>
 
           <v-card>
-            <v-list>
+            <v-list v-if="$store.getters.getUser">
               <v-list-item>
                 <v-list-item-avatar>
                   <img
@@ -54,7 +54,7 @@
                 </v-list-item-avatar>
 
                 <v-list-item-content>
-                  <v-list-item-title>[Your name here]</v-list-item-title>
+                  <v-list-item-title>{{ $store.getters.getUser.displayName }}</v-list-item-title>
                   <v-list-item-subtitle>{{ $store.getters.getUser.email }}</v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
@@ -65,7 +65,7 @@
             <v-list>
               <v-list-item
                 nuxt
-                to="/auth/applogout"
+                to="/auth/logout"
               >
                 <v-list-item-icon>
                   <v-icon>
@@ -116,6 +116,11 @@ export default {
     snackbarText: ''
   }),
   watch: {
+    '$store.state.user' () {
+      this.$router.push({
+        path: '/'
+      })
+    },
     '$store.state.error' (val) {
       this.snackbarColor = 'red darken-1'
       this.snackbarText = val.message
