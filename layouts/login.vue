@@ -6,6 +6,13 @@
 
 <script>
 export default {
-  name: 'LoginLayout'
+  name: 'LoginLayout',
+  watch: {
+    '$store.state.user' () {
+      this.$router.push({
+        path: '/'
+      })
+    }
+  }
 }
 </script>

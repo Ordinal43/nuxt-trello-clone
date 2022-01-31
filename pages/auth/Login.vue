@@ -84,13 +84,6 @@ export default {
       snackbarText: ''
     }
   },
-  watch: {
-    '$store.state.user' () {
-      this.$router.push({
-        path: '/'
-      })
-    }
-  },
   methods: {
     login () {
       this.loading = true
