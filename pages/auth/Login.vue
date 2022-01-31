@@ -72,6 +72,8 @@ export default {
         )
       } catch (error) {
         this.$store.commit('setError', error)
+      } finally {
+        this.loading = false
       }
     }
   }
