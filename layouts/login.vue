@@ -48,11 +48,6 @@ export default {
     snackbarText: ''
   }),
   watch: {
-    '$store.state.user' () {
-      this.$router.push({
-        path: '/'
-      })
-    },
     '$store.state.error' (val) {
       this.snackbarColor = 'red darken-1'
       this.snackbarText = val.message

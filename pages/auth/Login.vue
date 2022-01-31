@@ -55,6 +55,13 @@ export default {
       loading: false
     }
   },
+  watch: {
+    '$store.state.user' () {
+      this.$router.push({
+        path: '/'
+      })
+    }
+  },
   methods: {
     async login () {
       this.loading = true
