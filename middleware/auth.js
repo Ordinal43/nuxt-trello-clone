@@ -1,6 +1,6 @@
 const nonAuthRoutes = [
   '/auth/login',
-  '/auth/sign-up'
+  '/auth/signup'
 ]
 
 export default ({ store, route, redirect }) => {
