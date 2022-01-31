@@ -3,25 +3,34 @@
     class="elevation-5 mx-auto"
   >
     <v-card-text>
-      <h3 class="font-weight-black mb-4">
-        Log in to Brello
-      </h3>
-      <v-text-field
-        v-model="auth.email"
-        name="email"
-        label="Enter e-mail"
-        prepend-icon="mdi-account"
-        type="text"
-      />
-      <v-text-field
-        v-model="auth.password"
-        name="password"
-        label="Enter password"
-        prepend-icon="mdi-lock"
-        :append-icon="isShowPass ? 'mdi-eye-off' : 'mdi-eye'"
-        :type="isShowPass ? 'text' : 'password'"
-        @click:append="() => (isShowPass = !isShowPass)"
-      />
+      <v-form
+        ref="formLogin"
+        @submit.prevent=";"
+      >
+        <h3 class="font-weight-black mb-4">
+          Log in to Brello
+        </h3>
+        <v-text-field
+          v-model="auth.email"
+          name="email"
+          label="Enter e-mail"
+          prepend-icon="mdi-account"
+          type="text"
+          validate-on-blur
+          :rules="[rules.required]"
+        />
+        <v-text-field
+          v-model="auth.password"
+          name="password"
+          label="Enter password"
+          prepend-icon="mdi-lock"
+          validate-on-blur
+          :append-icon="isShowPass ? 'mdi-eye-off' : 'mdi-eye'"
+          :type="isShowPass ? 'text' : 'password'"
+          :rules="[rules.required]"
+          @click:append="() => (isShowPass = !isShowPass)"
+        />
+      </v-form>
     </v-card-text>
     <v-card-text>
       <v-btn
@@ -48,6 +57,8 @@
   </v-card>
 </template>
 <script>
+import { required } from '@/utils/input_rules.utils'
+
 export default {
   name: 'AuthLogin',
   layout: 'login',
@@ -56,6 +67,9 @@ export default {
       auth: {
         email: '',
         password: ''
+      },
+      rules: {
+        required
       },
       isShowPass: false,
       loading: false
@@ -70,16 +84,18 @@ export default {
   },
   methods: {
     async login () {
-      this.loading = true
-      try {
-        await this.$fire.auth.signInWithEmailAndPassword(
-          this.auth.email,
-          this.auth.password
-        )
-      } catch (error) {
-        this.$store.commit('SET_ERROR', error)
-      } finally {
-        this.loading = false
+      if (this.$refs.formLogin.validate()) {
+        this.loading = true
+        try {
+          await this.$fire.auth.signInWithEmailAndPassword(
+            this.auth.email,
+            this.auth.password
+          )
+        } catch (error) {
+          this.$store.commit('SET_ERROR', error)
+        } finally {
+          this.loading = false
+        }
       }
     }
   }
