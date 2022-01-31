@@ -71,7 +71,7 @@ export default {
           this.auth.password
         )
       } catch (error) {
-        this.$store.commit('setError', error)
+        this.$store.commit('SET_ERROR', error)
       } finally {
         this.loading = false
       }

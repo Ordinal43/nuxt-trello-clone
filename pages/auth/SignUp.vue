@@ -116,12 +116,12 @@ export default {
           })
 
           const { uid, email, displayName } = res.user
-          this.$store.commit('setUser', { uid, email, displayName })
+          this.$store.commit('SET_USER', { uid, email, displayName })
           this.$router.push({
             path: '/'
           })
         } catch (error) {
-          this.$store.commit('setError', error)
+          this.$store.commit('SET_ERROR', error)
         } finally {
           this.loading = false
         }

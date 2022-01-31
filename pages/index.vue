@@ -279,7 +279,7 @@ export default {
             null,
             // on upload error
             (error) => {
-              this.$store.commit('setError', error)
+              this.$store.commit('SET_ERROR', error)
               return false
             },
             // on upload success
@@ -314,12 +314,12 @@ export default {
         this.dialog = false
         this.$refs.form.reset()
       } catch (error) {
-        this.$store.commit('setError', error)
+        this.$store.commit('SET_ERROR', error)
         if (itemRef) {
           try {
             await itemRef.delete()
           } catch (error) {
-            this.$store.commit('setError', error)
+            this.$store.commit('SET_ERROR', error)
           }
         }
       } finally {
