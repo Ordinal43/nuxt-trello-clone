@@ -58,7 +58,7 @@ const actions = {
     if (!authUser) {
       state.commit('setUser', null)
       this.$router.push({
-        path: '/auth/applogin'
+        path: '/auth/login'
       })
     } else {
       const token = await authUser.getIdToken()

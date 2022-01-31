@@ -65,7 +65,7 @@
             <v-list>
               <v-list-item
                 nuxt
-                to="/auth/applogout"
+                to="/auth/logout"
               >
                 <v-list-item-icon>
                   <v-icon>

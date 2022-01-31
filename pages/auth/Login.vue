@@ -70,7 +70,7 @@
 </template>
 <script>
 export default {
-  name: 'AppLogin',
+  name: 'AuthLogin',
   layout: 'login',
   data () {
     return {
