@@ -44,7 +44,7 @@
           </template>
 
           <v-card>
-            <v-list>
+            <v-list v-if="$store.getters.getUser">
               <v-list-item>
                 <v-list-item-avatar>
                   <img
