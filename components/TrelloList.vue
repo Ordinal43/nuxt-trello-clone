@@ -152,6 +152,21 @@
           </v-hover>
         </Draggable>
       </Container>
+      <v-card
+        v-show="isInputShown"
+        class="simple-card mt-1 ma-1 pa-2"
+      >
+        <textarea
+          ref="cardcreate"
+          v-model="cardTitle"
+          type="text"
+          placeholder="Enter card title..."
+          class="create-card-textarea text-body-2"
+          @input="mixin_resizeTextarea"
+          @blur="blurAction()"
+          @keydown.enter.prevent="blurAction(true)"
+        />
+      </v-card>
     </div>
     <div class="brello-list-footer mt-1 mx-1">
       <v-hover
@@ -176,21 +191,6 @@
           </v-card>
         </template>
       </v-hover>
-      <v-card
-        v-show="isInputShown"
-        class="pa-2"
-      >
-        <textarea
-          ref="cardcreate"
-          v-model="cardTitle"
-          type="text"
-          placeholder="Enter card title..."
-          class="create-card-textarea text-body-2"
-          @input="mixin_resizeTextarea"
-          @blur="blurAction()"
-          @keydown.enter.prevent="blurAction(true)"
-        />
-      </v-card>
     </div>
   </v-card>
 </template>
