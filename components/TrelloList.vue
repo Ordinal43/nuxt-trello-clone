@@ -63,7 +63,10 @@
         </v-card>
       </v-menu>
     </div>
-    <div class="brello-list-content">
+    <div
+      ref="listScrollable"
+      class="brello-list-content"
+    >
       <Container
         v-show="list.cards.length || (isMouseover && isDragging)"
         :get-child-payload="getChildPayload"
@@ -312,6 +315,7 @@ export default {
       this.isInputShown = true
       this.$nextTick(() => {
         this.$refs.cardcreate.focus()
+        this.$refs.listScrollable.scrollTop = this.$refs.listScrollable.scrollHeight
       })
     },
     blurAction (enterPressed) {
