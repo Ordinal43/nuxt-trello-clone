@@ -266,6 +266,14 @@ export default {
       })
   },
   methods: {
+    updateBoard () {
+      return this.$fire.firestore
+        .collection('users')
+        .doc(this.$store.getters.getUser.uid)
+        .collection('boards')
+        .doc(this.board.id)
+        .update(this.board)
+    },
     /**
      * ============= List methods =============
      */
@@ -286,12 +294,7 @@ export default {
         }
         this.board.lists.push(this.list)
         try {
-          await this.$fire.firestore
-            .collection('users')
-            .doc(this.$store.getters.getUser.uid)
-            .collection('boards')
-            .doc(this.board.id)
-            .update(this.board)
+          await this.updateBoard()
         } catch (error) {
           this.$store.commit('SET_ERROR', error)
           // remove locally inserted list
@@ -307,12 +310,7 @@ export default {
       const oldTitle = currentList.title
       currentList.title = title
       try {
-        await this.$fire.firestore
-          .collection('users')
-          .doc(this.$store.getters.getUser.uid)
-          .collection('boards')
-          .doc(this.board.id)
-          .update(this.board)
+        await this.updateBoard()
       } catch (error) {
         this.$store.commit('SET_ERROR', error)
         currentList.title = oldTitle
@@ -535,12 +533,7 @@ export default {
        */
       if (this.dragList && this.dropList) {
         try {
-          await this.$fire.firestore
-            .collection('users')
-            .doc(this.$store.getters.getUser.uid)
-            .collection('boards')
-            .doc(this.board.id)
-            .update(this.board)
+          await this.updateBoard()
         } catch (error) {
           this.$store.commit('SET_ERROR', error)
           // return moved card from target to source list
