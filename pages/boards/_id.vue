@@ -3,11 +3,25 @@
     class="brello-board-container"
     :style="getBackgroundStyle"
   >
-    <div class="pa-2">
-      <h3>{{ board.title }}</h3>
-      <div class="text-caption">
-        {{ board.dateCreated | formatDate }}
-      </div>
+    <div class="pa-3 d-flex">
+      <span
+        v-show="!isEditBoardTitle"
+        class="brello-header-button text-h6"
+        @click="showInputBoardTitle"
+      >
+        {{ board.title }}
+      </span>
+      <input
+        v-show="isEditBoardTitle"
+        ref="inputEditBoardTitle"
+        :value="board.title"
+        type="text"
+        class="brello-input text-h6"
+        @focus="mixin_resizeInputWidth"
+        @input="mixin_resizeInputWidth"
+        @keydown.enter.prevent="updateBoardTitle"
+        @blur="updateBoardTitle"
+      >
     </div>
     <div class="brello-list-container pl-5 pr-2 pb-3">
       <TrelloList
@@ -182,9 +196,13 @@
 <script>
 import { cloneDeep } from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
+import { mixinInput } from '@/mixins/vue-mixins'
 
 export default {
   name: 'BoardDetails',
+  mixins: [
+    mixinInput
+  ],
   async asyncData ({ app, store, params }) {
     let board = {}
     let currentCard = {}
@@ -220,6 +238,7 @@ export default {
   },
   data () {
     return {
+      isEditBoardTitle: false,
       isCreateList: false,
       list: {
         title: ''
@@ -252,6 +271,7 @@ export default {
     }
   },
   mounted () {
+    this.mixin_resizeInputWidth({ target: this.$refs.inputEditBoardTitle })
     // Add listener to refresh board when data changes
     this.$fire.firestore
       .collection('users')
@@ -273,6 +293,23 @@ export default {
         .collection('boards')
         .doc(this.board.id)
         .update(this.board)
+    },
+    showInputBoardTitle () {
+      this.isEditBoardTitle = true
+      this.$nextTick(() => {
+        this.$refs.inputEditBoardTitle.focus()
+      })
+    },
+    async updateBoardTitle ({ target }) {
+      this.isEditBoardTitle = false
+      if (target.value && (target.value !== this.board.title)) {
+        try {
+          this.board.title = target.value
+          await this.updateBoard()
+        } catch (error) {
+          this.$commit('SET_ERROR', error)
+        }
+      }
     },
     /**
      * ============= List methods =============
@@ -558,6 +595,10 @@ export default {
   flex-direction: column;
 }
 
+.brello-input {
+  width: auto;
+}
+
 .brello-list {
   width: 272px;
   max-width: 272px;
@@ -571,6 +612,15 @@ export default {
 
 ::v-deep .brello-list {
   flex: 1 0 auto;
+}
+
+.brello-header-button {
+  padding: 4px 8px;
+  border-radius: 2px;
+  background: white;
+  &:hover {
+    cursor: pointer;
+  }
 }
 
 input {
