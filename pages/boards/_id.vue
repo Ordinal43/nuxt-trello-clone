@@ -1,5 +1,8 @@
 <template>
-  <div class="brello-board-container">
+  <div
+    class="brello-board-container"
+    :style="getBackgroundStyle"
+  >
     <div class="pa-2">
       <h3>{{ board.title }}</h3>
       <div class="text-caption">
@@ -235,6 +238,15 @@ export default {
     }
   },
   computed: {
+    getBackgroundStyle () {
+      return {
+        'background-image': `url(${this.board.image.downloadURL})`,
+        'background-color': this.board.color,
+        'background-repeat': this.board.image.repeat,
+        'background-attachment': 'fixed',
+        'background-position': 'center'
+      }
+    },
     showCardDetails () {
       return !!this.$route.params.card_id
     }
