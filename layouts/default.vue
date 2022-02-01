@@ -46,11 +46,10 @@
           <v-card>
             <v-list v-if="$store.getters.getUser">
               <v-list-item>
-                <v-list-item-avatar>
-                  <img
-                    src="https://cdn.vuetifyjs.com/images/john.jpg"
-                    alt="John"
-                  >
+                <v-list-item-avatar color="grey lighten-3">
+                  <span class="text-h6 font-weight-bold">
+                    {{ getInitials($store.getters.getUser.displayName) }}
+                  </span>
                 </v-list-item-avatar>
 
                 <v-list-item-content>
@@ -125,6 +124,15 @@ export default {
       this.snackbarColor = 'red darken-1'
       this.snackbarText = val.message
       this.snackbar = true
+    }
+  },
+  methods: {
+    getInitials (name = '') {
+      return name
+        .split(' ')
+        .reduce((acc, val) => {
+          return acc + val[0]
+        }, '')
     }
   }
 }
