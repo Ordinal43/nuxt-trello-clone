@@ -20,7 +20,6 @@
       />
       <v-card
         flat
-        width="272"
         class="brello-list"
         :color="isCreateList ? '#EBECF0' : '#00000014'"
       >
@@ -554,11 +553,15 @@ export default {
   flex-direction: column;
 }
 
-.brello-list-container {
-  flex: 1 1 auto;
-  display: flex;
-  align-items: flex-start;
-  overflow-x: scroll;
+.brello-list {
+  width: 272px;
+  max-width: 272px;
+  &-container {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: flex-start;
+    overflow-x: scroll;
+  }
 }
 
 ::v-deep .brello-list {

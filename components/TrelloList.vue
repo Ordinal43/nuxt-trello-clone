@@ -1,7 +1,6 @@
 <template>
   <v-card
     color="#EBECF0"
-    width="272"
     class="brello-list py-2 px-1 mr-2"
     flat
     @mouseover="isMouseover = true"
@@ -356,6 +355,8 @@ input {
 }
 
 .brello-list{
+  width: 272px;
+  max-width: 272px;
   max-height: 100%;
   display: flex;
   flex-direction: column;
