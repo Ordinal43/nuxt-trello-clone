@@ -28,19 +28,38 @@
         </p>
       </v-col>
       <template v-else>
-        <div v-if="!boards.length">
-          <p class="text-center">
-            No boards yet...
+        <v-col
+          v-if="!boards.length"
+          class="text-center"
+        >
+          <img
+            src="~/assets/no-boards.svg"
+            alt="no-boards.svg"
+            height="160"
+            class="my-5"
+          >
+          <p class="text-h4 mt-3 text-center">
+            Hmmmm...
           </p>
-          <v-btn @click="dialog = true">
-            <v-icon
-              left
+          <div class="text-center">
+            You have no boards at the moment.
+            <v-btn
+              small
+              depressed
+              dark
+              color="#026AA7"
+              class="ml-3"
+              @click="dialog = true"
             >
-              mdi-trello
-            </v-icon>
-            Add a board
-          </v-btn>
-        </div>
+              <v-icon
+                left
+              >
+                mdi-trello
+              </v-icon>
+              Add one!
+            </v-btn>
+          </div>
+        </v-col>
         <template v-else>
           <v-col
             v-for="b in boards"
