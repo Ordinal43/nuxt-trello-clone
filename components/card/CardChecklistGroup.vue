@@ -89,8 +89,8 @@
                 :value="cl.title"
                 class="add-item text-subtitle-1 font-weight-medium"
                 placeholder="Add an item"
-                @focus="mixin_resizeTextarea"
-                @input="mixin_resizeTextarea"
+                @focus="mixin_resizeTextareaHeight"
+                @input="mixin_resizeTextareaHeight"
               />
               <div class="mt-1">
                 <v-btn
@@ -156,8 +156,8 @@
                   :ref="`textarea-edit-item-${item.id}`"
                   :value="item.name"
                   class="add-item text-subtitle-1"
-                  @focus="mixin_resizeTextarea"
-                  @input="mixin_resizeTextarea"
+                  @focus="mixin_resizeTextareaHeight"
+                  @input="mixin_resizeTextareaHeight"
                   @keydown.enter.prevent="updateItem(clIdx, item.id, itemIdx)"
                   @blur="activeInputEditItem = undefined"
                 />
@@ -209,8 +209,8 @@
               v-model="name"
               class="add-item text-subtitle-1"
               placeholder="Add an item"
-              @focus="mixin_resizeTextarea"
-              @input="mixin_resizeTextarea"
+              @focus="mixin_resizeTextareaHeight"
+              @input="mixin_resizeTextareaHeight"
               @keydown.enter.prevent="addChecklistItem(cl.id, clIdx)"
             />
             <div class="mt-1">

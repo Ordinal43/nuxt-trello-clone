@@ -165,7 +165,8 @@
           type="text"
           placeholder="Enter card title..."
           class="create-card-textarea text-body-2"
-          @input="mixin_resizeTextarea"
+          @focus="mixin_resizeTextareaHeight"
+          @input="mixin_resizeTextareaHeight"
           @blur="blurAction()"
           @keydown.enter.prevent="blurAction(true)"
         />

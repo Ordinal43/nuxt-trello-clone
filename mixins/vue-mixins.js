@@ -2,7 +2,7 @@ import dayjs from '@/utils/dayjs.utils'
 
 export const mixinTextArea = {
   methods: {
-    mixin_resizeTextarea ({ target }) {
+    mixin_resizeTextareaHeight ({ target }) {
       /**
        * Dynamically adjust height to textarea content
        */

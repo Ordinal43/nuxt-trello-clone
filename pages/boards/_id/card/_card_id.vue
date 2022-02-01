@@ -15,7 +15,8 @@
               spellcheck="false"
               rows="1"
               class="card-title text-h6"
-              @input="mixin_resizeTextarea"
+              @focus="mixin_resizeTextareaHeight"
+              @input="mixin_resizeTextareaHeight"
             />
           </div>
           <v-icon
@@ -151,7 +152,7 @@ export default {
   },
   updated () {
     // fire textarea resize on updated
-    this.mixin_resizeTextarea({ target: this.$refs['brello-edit-card-title'] })
+    this.mixin_resizeTextareaHeight({ target: this.$refs['brello-edit-card-title'] })
   },
   methods: {
     updateCardDetails () {
