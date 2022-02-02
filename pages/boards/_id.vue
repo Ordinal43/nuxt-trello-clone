@@ -3,87 +3,103 @@
     class="brello-board-container"
     :style="getBackgroundStyle"
   >
-    <div class="pa-3 d-flex">
-      <span
-        v-show="!isEditBoardTitle"
-        class="brello-header-button text-h6"
-        @click="showInputBoardTitle"
-      >
-        {{ board.title }}
-      </span>
-      <input
-        v-show="isEditBoardTitle"
-        ref="inputEditBoardTitle"
-        :value="board.title"
-        type="text"
-        class="brello-input text-h6"
-        @focus="mixin_resizeInputWidth"
-        @input="mixin_resizeInputWidth"
-        @keydown.enter.prevent="updateBoardTitle"
-        @blur="updateBoardTitle"
-      >
-    </div>
-    <div class="brello-list-container pl-5 pr-2 pb-3">
-      <TrelloList
-        v-for="l in board.lists"
-        :key="`list-${l.id}`"
-        :list="l"
-        @update-list-title="updateListTitle(l, ...arguments)"
-        @delete-list="promptDeleteList"
-        @create-card="createCard(l, ...arguments)"
-        @show-details="navigateToCard(l, ...arguments)"
-        @drop-card="dropCard(l, ...arguments)"
-        @update-card="updateCard"
-      />
-      <v-card
-        flat
-        class="brello-list"
-        :color="isCreateList ? '#EBECF0' : '#00000014'"
-      >
-        <div
-          v-show="!isCreateList"
-          class="pa-4"
-          @click="showInputList"
+    <div class="brello-board-main">
+      <div class="pa-3 d-flex">
+        <span
+          v-show="!isEditBoardTitle"
+          class="brello-header-button text-h6"
+          @click="showInputBoardTitle"
         >
-          <div class="text-body-2">
-            <v-icon small>
-              mdi-plus
-            </v-icon>
-            Add {{ (board.lists || []).length? 'another' : 'a' }} list
-          </div>
-        </div>
-        <div
-          v-show="isCreateList"
-          class="pa-2"
+          {{ board.title }}
+        </span>
+        <input
+          v-show="isEditBoardTitle"
+          ref="inputEditBoardTitle"
+          :value="board.title"
+          type="text"
+          class="brello-input text-h6"
+          @focus="mixin_resizeInputWidth"
+          @input="mixin_resizeInputWidth"
+          @keydown.enter.prevent="updateBoardTitle"
+          @blur="updateBoardTitle"
         >
-          <input
-            ref="inputCreateList"
-            v-model="list.title"
-            type="text"
-            placeholder="Enter list title..."
-            class="text-body-2 py-2"
-            @keydown.enter="createList"
+        <v-spacer />
+        <span
+          v-show="!isSidenav"
+          class="brello-header-button"
+          @click="isSidenav = true"
+        >
+          menu
+        </span>
+      </div>
+      <div class="brello-list-container pl-5 pr-2 pb-3">
+        <TrelloList
+          v-for="l in board.lists"
+          :key="`list-${l.id}`"
+          :list="l"
+          @update-list-title="updateListTitle(l, ...arguments)"
+          @delete-list="promptDeleteList"
+          @create-card="createCard(l, ...arguments)"
+          @show-details="navigateToCard(l, ...arguments)"
+          @drop-card="dropCard(l, ...arguments)"
+          @update-card="updateCard"
+        />
+        <v-card
+          flat
+          class="brello-list"
+          :color="isCreateList ? '#EBECF0' : '#00000014'"
+        >
+          <div
+            v-show="!isCreateList"
+            class="pa-4"
+            @click="showInputList"
           >
-          <div class="mt-2">
-            <v-btn
-              small
-              color="primary"
-              @click="createList"
-            >
-              Add list
-            </v-btn>
-            <v-btn
-              text
-              small
-              icon
-              @click="isCreateList = false"
-            >
-              <v-icon>mdi-close</v-icon>
-            </v-btn>
+            <div class="text-body-2">
+              <v-icon small>
+                mdi-plus
+              </v-icon>
+              Add {{ (board.lists || []).length? 'another' : 'a' }} list
+            </div>
           </div>
-        </div>
-      </v-card>
+          <div
+            v-show="isCreateList"
+            class="pa-2"
+          >
+            <input
+              ref="inputCreateList"
+              v-model="list.title"
+              type="text"
+              placeholder="Enter list title..."
+              class="text-body-2 py-2"
+              @keydown.enter="createList"
+            >
+            <div class="mt-2">
+              <v-btn
+                small
+                color="primary"
+                @click="createList"
+              >
+                Add list
+              </v-btn>
+              <v-btn
+                text
+                small
+                icon
+                @click="isCreateList = false"
+              >
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </div>
+          </div>
+        </v-card>
+      </div>
     </div>
+    <v-expand-x-transition>
+      <BoardMenu
+        v-show="isSidenav"
+        @close="isSidenav = false"
+      />
+    </v-expand-x-transition>
 
     <!-- ============= Dialog delete List ============= -->
     <v-dialog
@@ -239,6 +255,7 @@ export default {
   data () {
     return {
       isEditBoardTitle: false,
+      isSidenav: false,
       isCreateList: false,
       list: {
         title: ''
@@ -589,10 +606,24 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.brello-board-container {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
+.brello-board {
+  &-container {
+    height: 100%;
+    width: 100%;
+    display: flex;
+  }
+  &-main {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  &-sidenav {
+    flex: 0 0 auto;
+    width: 339px;
+    box-shadow: 0 12px 24px -6px #091e4240, 0 0 0 1px #091e4214;
+  }
 }
 
 .brello-input {
