@@ -599,19 +599,17 @@ export default {
   width: auto;
 }
 
-.brello-list {
-  width: 272px;
-  max-width: 272px;
-  &-container {
-    flex: 1 1 auto;
-    display: flex;
-    align-items: flex-start;
-    overflow-x: scroll;
-  }
+.brello-list-container {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: flex-start;
+  overflow-x: scroll;
 }
 
 ::v-deep .brello-list {
   flex: 1 0 auto;
+  width: 272px;
+  max-width: 272px;
 }
 
 .brello-header-button {
