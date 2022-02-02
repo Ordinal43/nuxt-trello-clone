@@ -606,6 +606,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.brello-header-button {
+  padding: 4px 8px;
+  border-radius: 2px;
+  background: white;
+  &:hover {
+    cursor: pointer;
+  }
+}
+
 .brello-board {
   &-container {
     height: 100%;
@@ -641,15 +650,6 @@ export default {
   flex: 1 0 auto;
   width: 272px;
   max-width: 272px;
-}
-
-.brello-header-button {
-  padding: 4px 8px;
-  border-radius: 2px;
-  background: white;
-  &:hover {
-    cursor: pointer;
-  }
 }
 
 input {
