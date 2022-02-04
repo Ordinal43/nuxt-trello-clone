@@ -618,6 +618,8 @@ export default {
   padding: 4px 8px;
   border-radius: 2px;
   background: white;
+  display: flex;
+  align-items: center;
   &:hover {
     cursor: pointer;
   }
