@@ -303,7 +303,10 @@ export default {
       })
   },
   methods: {
-    updateBoard () {
+    /**
+     * ============= Board methods =============
+     */
+    updateBoardPromise () {
       return this.$fire.firestore
         .collection('users')
         .doc(this.$store.getters.getUser.uid)
@@ -311,21 +314,24 @@ export default {
         .doc(this.board.id)
         .update(this.board)
     },
+    async updateBoardBasic () {
+      try {
+        await this.updateBoardPromise()
+      } catch (error) {
+        this.$commit('SET_ERROR', error)
+      }
+    },
     showInputBoardTitle () {
       this.isEditBoardTitle = true
       this.$nextTick(() => {
         this.$refs.inputEditBoardTitle.focus()
       })
     },
-    async updateBoardTitle ({ target }) {
+    updateBoardTitle ({ target }) {
       this.isEditBoardTitle = false
       if (target.value && (target.value !== this.board.title)) {
-        try {
-          this.board.title = target.value
-          await this.updateBoard()
-        } catch (error) {
-          this.$commit('SET_ERROR', error)
-        }
+        this.board.title = target.value
+        this.updateBoardBasic()
       }
     },
     /**
@@ -348,7 +354,7 @@ export default {
         }
         this.board.lists.push(this.list)
         try {
-          await this.updateBoard()
+          await this.updateBoardPromise()
         } catch (error) {
           this.$store.commit('SET_ERROR', error)
           // remove locally inserted list
@@ -364,7 +370,7 @@ export default {
       const oldTitle = currentList.title
       currentList.title = title
       try {
-        await this.updateBoard()
+        await this.updateBoardPromise()
       } catch (error) {
         this.$store.commit('SET_ERROR', error)
         currentList.title = oldTitle
@@ -587,7 +593,7 @@ export default {
        */
       if (this.dragList && this.dropList) {
         try {
-          await this.updateBoard()
+          await this.updateBoardPromise()
         } catch (error) {
           this.$store.commit('SET_ERROR', error)
           // return moved card from target to source list
