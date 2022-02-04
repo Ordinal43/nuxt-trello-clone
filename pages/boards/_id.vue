@@ -97,7 +97,9 @@
     <v-expand-x-transition>
       <BoardMenu
         v-show="isSidenav"
+        v-model="board"
         @close="isSidenav = false"
+        @input="updateBoardBasic"
       />
     </v-expand-x-transition>
 
