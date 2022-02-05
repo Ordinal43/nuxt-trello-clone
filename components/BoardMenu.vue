@@ -95,7 +95,8 @@
 </template>
 
 <script>
-import { tap, cloneDeep } from 'lodash'
+import tap from 'lodash/tap'
+import cloneDeep from 'lodash/cloneDeep'
 
 export default {
   props: {

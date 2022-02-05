@@ -212,7 +212,7 @@
 </template>
 
 <script>
-import { cloneDeep } from 'lodash'
+import cloneDeep from 'lodash/cloneDeep'
 import { v4 as uuidv4 } from 'uuid'
 import { mixinInput } from '@/mixins/vue-mixins'
 

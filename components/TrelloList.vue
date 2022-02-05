@@ -201,7 +201,7 @@
 
 <script>
 import { Container, Draggable } from 'vue-dndrop'
-import { cloneDeep } from 'lodash'
+import cloneDeep from 'lodash/cloneDeep'
 import { mixinTextArea, mixinDate } from '@/mixins/vue-mixins'
 import dayjs from '@/utils/dayjs.utils'
 
