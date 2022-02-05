@@ -29,7 +29,7 @@
           class="brello-header-button"
           @click="isSidenav = true"
         >
-          menu
+          <v-icon>mdi-dots-horizontal</v-icon>
         </span>
       </div>
       <div class="brello-list-container pl-5 pr-2 pb-3">
@@ -99,7 +99,7 @@
         v-show="isSidenav"
         v-model="board"
         @close="isSidenav = false"
-        @input="updateBoardBasic"
+        @update="updateBoardBasic"
       />
     </v-expand-x-transition>
 
@@ -278,9 +278,10 @@ export default {
   computed: {
     getBackgroundStyle () {
       return {
-        'background-image': `url(${this.board.image.downloadURL})`,
+        'background-image': this.board.image.downloadURL ? `url(${this.board.image.downloadURL})` : false,
         'background-color': this.board.color,
-        'background-repeat': this.board.image.repeat,
+        'background-repeat': 'repeat',
+        'background-size': this.board.image.repeat ? 'auto' : 'cover',
         'background-attachment': 'fixed',
         'background-position': 'center'
       }

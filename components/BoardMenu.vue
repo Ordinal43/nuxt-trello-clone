@@ -1,10 +1,8 @@
 <template>
-  <div
-    class="brello-board-sidenav white"
-  >
-    <v-list-item>
+  <div class="brello-board-sidenav">
+    <v-list-item class="brello-board-sidenav-header">
       <v-list-item-content>
-        <v-list-item-title class="text-body-2">
+        <v-list-item-title class="font-weight-medium">
           Edit board
         </v-list-item-title>
       </v-list-item-content>
@@ -18,85 +16,203 @@
         </v-btn>
       </v-list-item-action>
     </v-list-item>
-    <v-divider class="mx-3" />
-    <v-list two-line>
-      <v-list-item>
-        <v-list-item-content>
-          <v-list-item-title>Board color</v-list-item-title>
-        </v-list-item-content>
 
-        <v-list-item-action>
-          <v-menu
-            v-model="colorMenu"
-            :close-on-content-click="false"
-            offset-y
-          >
-            <template #activator="{ on }">
-              <v-btn
-                depressed
-                class="px-1"
-                v-on="on"
-              >
-                <v-avatar
-                  :color="value.color || '#00000000'"
-                  size="25"
-                  class="current-color"
-                />
-                <v-icon class="pl-1">
-                  mdi-chevron-down
-                </v-icon>
-              </v-btn>
-            </template>
-            <v-card>
-              <v-card-text class="d-flex align-center">
-                <v-switch
-                  v-model="isUseColor"
-                  inset
-                  hide-details
-                  label="Use color"
-                  class="mt-0"
-                />
-              </v-card-text>
-              <v-color-picker
-                v-model="newColor"
-                :disabled="!isUseColor"
-                dot-size="25"
-                hide-mode-switch
-                mode="hexa"
+    <v-divider class="mx-3" />
+
+    <div class="brello-board-sidenav-content">
+      <v-card-text class="d-flex align-center">
+        <span>
+          Board color
+        </span>
+        <v-spacer />
+        <v-menu
+          v-model="colorMenu"
+          :close-on-content-click="false"
+          offset-y
+        >
+          <template #activator="{ on }">
+            <v-btn
+              depressed
+              class="px-1"
+              v-on="on"
+            >
+              <v-avatar
+                :color="value.color || '#00000000'"
+                size="25"
               />
-              <v-card-actions>
-                <v-btn
-                  color="primary"
-                  @click="updateColor"
+              <v-icon class="pl-1">
+                mdi-chevron-down
+              </v-icon>
+            </v-btn>
+          </template>
+          <v-card>
+            <v-card-text class="d-flex align-center">
+              <v-switch
+                v-model="isUseColor"
+                inset
+                hide-details
+                label="Use color"
+                class="mt-0"
+              />
+            </v-card-text>
+            <v-color-picker
+              v-model="newColor"
+              :disabled="!isUseColor"
+              dot-size="25"
+              hide-mode-switch
+              mode="hexa"
+            />
+            <v-card-actions>
+              <v-btn
+                color="primary"
+                @click="updateColor"
+              >
+                save
+              </v-btn>
+              <v-btn
+                v-show="showResetColor"
+                text
+                @click="newColor = value.color"
+              >
+                reset
+              </v-btn>
+              <v-btn
+                icon
+                small
+                @click="colorMenu = false"
+              >
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-menu>
+      </v-card-text>
+
+      <v-card-text>
+        <p>Image</p>
+        <v-row>
+          <v-col cols="6">
+            <v-hover v-slot="{ hover }">
+              <v-card
+                flat
+                rounded
+                height="100"
+                :color="`grey lighten-${hover? '3' : '5'}`"
+                class="d-flex align-center justify-center"
+                @click="chooseImage"
+              >
+                <v-icon large>
+                  mdi-plus
+                </v-icon>
+              </v-card>
+            </v-hover>
+          </v-col>
+          <v-col
+            v-for="(image, i) in value.images"
+            :key="image.name"
+            cols="6"
+          >
+            <v-menu
+              v-model="imageMenus[i]"
+              :close-on-content-click="false"
+              offset-y
+            >
+              <template #activator="{ on }">
+                <v-hover v-slot="{ hover }">
+                  <v-card
+                    flat
+                    rounded
+                    height="100"
+                    :ripple="false"
+                    @click="setAsBackground(image)"
+                  >
+                    <v-img
+                      :src="image.downloadURL"
+                      :alt="image.originalName"
+                      max-height="100"
+                      class="align-end"
+                    >
+                      <v-sheet
+                        v-show="hover"
+                        class="image-options white--text px-2 py-1"
+                        v-on="on"
+                      >
+                        Options
+                        <v-icon color="white">
+                          mdi-dots-horizontal
+                        </v-icon>
+                      </v-sheet>
+                    </v-img>
+                  </v-card>
+                </v-hover>
+              </template>
+              <v-card>
+                <v-list
+                  dense
+                  subheader
                 >
-                  save
-                </v-btn>
-                <v-btn
-                  v-show="showResetColor"
-                  text
-                  @click="newColor = value.color"
-                >
-                  reset
-                </v-btn>
-                <v-btn
-                  icon
-                  small
-                  @click="colorMenu = false"
-                >
-                  <v-icon>mdi-close</v-icon>
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-menu>
-        </v-list-item-action>
-      </v-list-item>
-    </v-list>
+                  <v-subheader>Display type</v-subheader>
+
+                  <v-list-item @click="setBackgroundRepeat(false)">
+                    <v-list-item-content>
+                      <v-list-item-title>
+                        Cover
+                        <v-icon
+                          v-if="!value.image.repeat"
+                          small
+                          class="ml-2 pb-1"
+                        >
+                          mdi-check
+                        </v-icon>
+                      </v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                  <v-list-item @click="setBackgroundRepeat(true)">
+                    <v-list-item-content>
+                      <v-list-item-title>
+                        Tile
+                        <v-icon
+                          v-if="value.image.repeat"
+                          small
+                          class="ml-2 pb-1"
+                        >
+                          mdi-check
+                        </v-icon>
+                      </v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+
+                  <v-divider class="mb-2" />
+
+                  <v-list-item @click="deleteImage(i, image)">
+                    <v-list-item-content>
+                      <v-list-item-title>
+                        Delete image
+                      </v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                </v-list>
+              </v-card>
+            </v-menu>
+          </v-col>
+        </v-row>
+        <input
+          ref="imageFileInput"
+          type="file"
+          accept="image/jpg, image/jpeg, image/png"
+          style="display: none;"
+          @change="uploadImage"
+        >
+      </v-card-text>
+    </div>
   </div>
 </template>
 
 <script>
 import tap from 'lodash/tap'
 import cloneDeep from 'lodash/cloneDeep'
+import { v4 as uuidv4 } from 'uuid'
+import { MIMETYPE_IMAGES } from '@/utils/input_rules.utils'
 
 export default {
   props: {
@@ -108,7 +224,8 @@ export default {
   data: vm => ({
     colorMenu: false,
     newColor: vm.value.color,
-    isUseColor: !!vm.value.color
+    isUseColor: !!vm.value.color,
+    imageMenus: []
   }),
   computed: {
     showResetColor () {
@@ -117,20 +234,108 @@ export default {
   },
   methods: {
     updateBoard (callback) {
+      // alert parent to update value locally
       this.$emit('input', tap(cloneDeep(this.value), callback))
+      // alert parent to update value on database
+      this.$emit('update')
     },
     updateColor () {
       this.updateBoard((board) => {
         board.color = this.isUseColor ? this.newColor : ''
       })
       this.colorMenu = false
+    },
+    chooseImage () {
+      this.$refs.imageFileInput.click()
+    },
+    async uploadImage ($event) {
+      const file = $event.target.files[0]
+      if (file && MIMETYPE_IMAGES.includes(file.type)) {
+        const uuidImage = uuidv4()
+        const itemFilename = `${uuidImage}-${file.name}`
+        const itemName = `images/${this.$store.getters.getUser.uid}/boards/${this.value.id}/${itemFilename}`
+
+        const itemRef = this.$fire.storage.ref().child(itemName)
+        const itemMeta = {
+          customMetadata: {
+            owner: this.$store.getters.getUser.uid
+          }
+        }
+
+        try {
+          const snapshot = await itemRef.put(file, itemMeta)
+          const url = await snapshot.ref.getDownloadURL()
+          const image = {
+            name: itemFilename,
+            originalName: file.name,
+            downloadURL: url,
+            uuid: uuidImage
+          }
+
+          this.updateBoard((board) => {
+            board.image = image
+            board.images.unshift(image)
+          })
+        } catch (error) {
+          this.$store.commit('SET_ERROR', error)
+          return false
+        }
+      } else {
+        alert('Invalid file!')
+      }
+    },
+    setAsBackground (image) {
+      if (image.name !== this.value.image.name) {
+        this.updateBoard((board) => {
+          board.image = image
+        })
+      }
+    },
+    async deleteImage (index, image) {
+      this.imageMenus[index] = false
+      const itemName = `images/${this.$store.getters.getUser.uid}/boards/${this.value.id}/${image.name}`
+      const itemRef = this.$fire.storage.ref().child(itemName)
+      try {
+        await itemRef.delete(itemRef)
+        this.updateBoard((board) => {
+          if (board.image.name === image.name) {
+            board.image = {}
+          }
+          board.images.splice(index, 1)
+        })
+      } catch (error) {
+        this.$store.commit('SET_ERROR', error)
+      }
+    },
+    setBackgroundRepeat (value) {
+      this.updateBoard((board) => {
+        board.image.repeat = value
+      })
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.current-color {
-  border: 1px solid #091e423d;
+.brello-board-sidenav {
+  background-color: #F4F5F7;
+  display: flex;
+  flex-direction: column;
+  &-header {
+    flex: 0 0 auto;
+  }
+  &-content {
+    min-height: 0;
+    flex: 1 1 auto;
+    overflow-y: auto;
+  }
+}
+
+.image-options {
+  background-color: #0000005c;
+  &:hover {
+    cursor: pointer;
+    background-color: #00000080;
+  }
 }
 </style>
