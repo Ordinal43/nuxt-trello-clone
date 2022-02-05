@@ -2,3 +2,5 @@ const REGEX_EMAIL = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))
 
 export const required = v => !!v || 'Required!'
 export const email = v => !!v.match(REGEX_EMAIL) || 'E-mail invalid!'
+
+export const MIMETYPE_IMAGES = ['image/png', 'image/jpeg', 'image/png']

@@ -174,7 +174,7 @@
                       absolute
                       right
                       class="mr-n2"
-                      @click="resetFileInput()"
+                      @click="resetFileInput"
                     >
                       <v-icon>mdi-delete</v-icon>
                     </v-btn>
@@ -183,7 +183,7 @@
                 <input
                   ref="imageFileInput"
                   type="file"
-                  accept="jpg, jpeg, png"
+                  accept="image/jpg, image/jpeg, image/png"
                   style="display: none;"
                   @change="previewImage($event)"
                 >
@@ -215,6 +215,7 @@
 
 <script>
 import { v4 as uuidv4 } from 'uuid'
+import { MIMETYPE_IMAGES } from '@/utils/input_rules.utils'
 
 export default {
   name: 'IndexPage',
@@ -231,7 +232,8 @@ export default {
           originalName: '',
           downloadURL: '',
           uuid: ''
-        }
+        },
+        images: []
       },
       boards: [],
       fileToUpload: {}
@@ -279,55 +281,61 @@ export default {
     },
     createBoard () {
       if (this.$refs.form.validate()) {
-        const uuid = uuidv4()
+        const uuidBoard = uuidv4()
+        const uuidImage = uuidv4()
         this.uploading = true
         if (this.fileToUpload.file) {
-          const itemFilename = `${uuid}-${this.fileToUpload.file.name}`
-          const itemName = `images/${this.$store.getters.getUser.uid}/boards/${uuid}/${itemFilename}`
+          if (MIMETYPE_IMAGES.includes(this.fileToUpload.file.type)) {
+            const itemFilename = `${uuidImage}-${this.fileToUpload.file.name}`
+            const itemName = `images/${this.$store.getters.getUser.uid}/boards/${uuidBoard}/${itemFilename}`
 
-          const itemRef = this.$fire.storage.ref().child(itemName)
-          const itemMeta = {
-            customMetadata: {
-              owner: this.$store.getters.getUser.uid
-            }
-          }
-
-          const task = itemRef.put(this.fileToUpload.file, itemMeta)
-          return task.on(
-            'state_changed',
-            null,
-            // on upload error
-            (error) => {
-              this.$store.commit('SET_ERROR', error)
-              return false
-            },
-            // on upload success
-            async () => {
-              const url = await task.snapshot.ref.getDownloadURL()
-
-              this.board.image = {
-                name: itemFilename,
-                originalName: this.fileToUpload.file.name,
-                downloadURL: url,
-                uuid
+            const itemRef = this.$fire.storage.ref().child(itemName)
+            const itemMeta = {
+              customMetadata: {
+                owner: this.$store.getters.getUser.uid
               }
-
-              this.uploadBoardData(uuid, itemRef)
             }
-          )
+
+            const task = itemRef.put(this.fileToUpload.file, itemMeta)
+            return task.on(
+              'state_changed',
+              null,
+              // on upload error
+              (error) => {
+                this.$store.commit('SET_ERROR', error)
+                return false
+              },
+              // on upload success
+              async () => {
+                const url = await task.snapshot.ref.getDownloadURL()
+                const image = {
+                  name: itemFilename,
+                  originalName: this.fileToUpload.file.name,
+                  downloadURL: url,
+                  uuid: uuidImage
+                }
+                this.board.image = image
+                this.board.images.push(image)
+
+                this.uploadBoardData(uuidBoard, itemRef)
+              }
+            )
+          } else {
+            alert('Invalid file!')
+          }
         } else {
-          this.uploadBoardData(uuid)
+          this.uploadBoardData(uuidBoard)
         }
       }
     },
-    async uploadBoardData (uuid, itemRef) {
+    async uploadBoardData (uuidBoard, itemRef) {
       this.board.dateCreated = Date.now()
       try {
         await this.$fire.firestore
           .collection('users')
           .doc(this.$store.getters.getUser.uid)
           .collection('boards')
-          .doc(uuid)
+          .doc(uuidBoard)
           .set(this.board)
 
         this.dialog = false
