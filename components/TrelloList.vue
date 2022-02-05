@@ -96,31 +96,32 @@
                 v-if="Object.keys(card).length > 2"
                 class="mt-2"
               >
-                <v-hover v-slot="{ hover: hoverDate }">
-                  <v-btn
-                    v-if="card.date"
-                    x-small
-                    depressed
-                    :color="getDateStatusColor(card.date)"
-                    class="text-none mr-1"
-                    @click.stop="updateStatus(card)"
-                  >
-                    <v-icon
-                      dense
-                      small
-                      left
+                <template v-if="card.date">
+                  <v-hover v-slot="{ hover: hoverDate }">
+                    <v-btn
+                      x-small
+                      depressed
+                      :color="getDateStatusColor(card.date)"
+                      class="text-none mr-1"
+                      @click.stop="updateStatus(card)"
                     >
-                      {{
-                        hoverDate
-                          ? `mdi-checkbox-${card.date.isDone? 'marked' : 'blank'}-outline`
-                          : 'mdi-clock-time-four-outline'
-                      }}
-                    </v-icon>
-                    <span class="text-caption">
-                      {{ getDateDetails(card.date) }}
-                    </span>
-                  </v-btn>
-                </v-hover>
+                      <v-icon
+                        dense
+                        small
+                        left
+                      >
+                        {{
+                          hoverDate
+                            ? `mdi-checkbox-${card.date.isDone? 'marked' : 'blank'}-outline`
+                            : 'mdi-clock-time-four-outline'
+                        }}
+                      </v-icon>
+                      <span class="text-caption">
+                        {{ getDateDetails(card.date) }}
+                      </span>
+                    </v-btn>
+                  </v-hover>
+                </template>
                 <v-icon
                   v-if="card.description"
                   dense
@@ -174,25 +175,24 @@
     <div class="brello-list-footer mt-1 mx-1">
       <v-hover
         v-show="!isInputShown"
+        v-slot="{ hover }"
         class="flex-grow-0 flex-shrink-0"
       >
-        <template #default="{ hover }">
-          <v-card
-            flat
-            class="px-2 py-1"
-            :color="hover? '#00000014' : '#00000000'"
-            @click="showCardForm"
-          >
-            <div>
-              <div class="text-body-2">
-                <v-icon small>
-                  mdi-plus
-                </v-icon>
-                Add card
-              </div>
+        <v-card
+          flat
+          class="px-2 py-1"
+          :color="hover? '#00000014' : '#00000000'"
+          @click="showCardForm"
+        >
+          <div>
+            <div class="text-body-2">
+              <v-icon small>
+                mdi-plus
+              </v-icon>
+              Add card
             </div>
-          </v-card>
-        </template>
+          </div>
+        </v-card>
       </v-hover>
     </div>
   </v-card>
