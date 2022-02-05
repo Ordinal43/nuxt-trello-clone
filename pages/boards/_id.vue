@@ -320,7 +320,7 @@ export default {
       try {
         await this.updateBoardPromise()
       } catch (error) {
-        this.$commit('SET_ERROR', error)
+        this.$store.commit('SET_ERROR', error)
       }
     },
     showInputBoardTitle () {
