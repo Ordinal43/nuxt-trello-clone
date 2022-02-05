@@ -301,7 +301,6 @@ export default {
       .onSnapshot((doc) => {
         if (doc.exists) {
           this.board = doc.data()
-          this.board.id = doc.id
         }
       })
   },
@@ -453,6 +452,7 @@ export default {
 
         batch.update(boardRef, this.board)
         batch.set(newCardRef, {
+          id: uuid,
           title,
           list_id: currentList.id
         })

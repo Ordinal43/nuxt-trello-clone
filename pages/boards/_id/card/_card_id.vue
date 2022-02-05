@@ -133,7 +133,6 @@ export default {
 
     if (doc.exists) {
       this.detailedCard = doc.data()
-      this.detailedCard.id = doc.id
       IS_FROM_FIRESTORE = true
     }
   },

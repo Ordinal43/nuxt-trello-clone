@@ -252,7 +252,6 @@ export default {
     if (querySnapshot.docs.length > 0) {
       for (const doc of querySnapshot.docs) {
         const data = doc.data()
-        data.id = doc.id
         this.boards.push(data)
       }
     }
@@ -268,7 +267,6 @@ export default {
           this.boards = []
           for (const doc of querySnapshot.docs) {
             const data = doc.data()
-            data.id = doc.id
             this.boards.push(data)
           }
         }
@@ -279,7 +277,7 @@ export default {
       this.board.color = ''
       this.enableColor = false
     },
-    createBoard () {
+    async createBoard () {
       if (this.$refs.form.validate()) {
         const uuidBoard = uuidv4()
         const uuidImage = uuidv4()
@@ -296,30 +294,22 @@ export default {
               }
             }
 
-            const task = itemRef.put(this.fileToUpload.file, itemMeta)
-            return task.on(
-              'state_changed',
-              null,
-              // on upload error
-              (error) => {
-                this.$store.commit('SET_ERROR', error)
-                return false
-              },
-              // on upload success
-              async () => {
-                const url = await task.snapshot.ref.getDownloadURL()
-                const image = {
-                  name: itemFilename,
-                  originalName: this.fileToUpload.file.name,
-                  downloadURL: url,
-                  uuid: uuidImage
-                }
-                this.board.image = image
-                this.board.images.push(image)
-
-                this.uploadBoardData(uuidBoard, itemRef)
+            try {
+              const snapshot = await itemRef.put(this.fileToUpload.file, itemMeta)
+              const url = await snapshot.ref.getDownloadURL()
+              const image = {
+                name: itemFilename,
+                originalName: this.fileToUpload.file.name,
+                downloadURL: url,
+                uuid: uuidImage
               }
-            )
+              this.board.image = image
+              this.board.images.push(image)
+
+              this.uploadBoardData(uuidBoard, itemRef)
+            } catch (error) {
+              this.$store.commit('SET_ERROR', error)
+            }
           } else {
             alert('Invalid file!')
           }
@@ -329,6 +319,7 @@ export default {
       }
     },
     async uploadBoardData (uuidBoard, itemRef) {
+      this.board.id = uuidBoard
       this.board.dateCreated = Date.now()
       try {
         await this.$fire.firestore
