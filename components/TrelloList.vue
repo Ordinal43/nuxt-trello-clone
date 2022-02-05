@@ -295,7 +295,7 @@ export default {
       }
       return dateStr
     },
-    getChecklistCombined (checklists) {
+    getChecklistCombined (checklists = []) {
       return checklists.reduce((acc, value) => {
         acc.done = (acc.done || 0) + value.checked.length
         acc.total = (acc.total || 0) + value.items.length
