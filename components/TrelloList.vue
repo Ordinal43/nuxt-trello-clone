@@ -101,7 +101,6 @@
                     v-if="card.date"
                     x-small
                     depressed
-                    :ripple="false"
                     :color="getDateStatusColor(card.date)"
                     class="text-none mr-1"
                     @click.stop="updateStatus(card)"
@@ -370,7 +369,7 @@ input {
   }
   &-content {
     flex: 1 1 auto;
-    overflow-y: scroll;
+    overflow-y: auto;
   }
   &-footer {
     flex: 0 0 auto;
