@@ -1,5 +1,6 @@
 <template>
   <div
+    v-if="board"
     class="brello-board-container"
     :style="getBackgroundStyle"
   >
@@ -100,6 +101,7 @@
         v-model="board"
         @close="isSidenav = false"
         @update="updateBoardBasic"
+        @delete-board="deleteBoard"
       />
     </v-expand-x-transition>
 
@@ -208,6 +210,41 @@
         </v-overlay>
       </v-card>
     </v-dialog>
+
+    <v-overlay
+      :value="isDeletingBoard"
+      color="white"
+    />
+  </div>
+  <div
+    v-else
+    class="text-center mt-5"
+  >
+    <img
+      src="~/assets/not-found.svg"
+      alt="board-not-found.svg"
+      height="160"
+      class="my-5"
+    >
+    <p class="text-subtitle-1 mt-3 text-center">
+      Board not found...
+    </p>
+    <div class="text-center">
+      <v-btn
+        depressed
+        dark
+        nuxt
+        to="/"
+        color="#026AA7"
+      >
+        <v-icon
+          left
+        >
+          mdi-arrow-left
+        </v-icon>
+        Back to home page
+      </v-btn>
+    </div>
   </div>
 </template>
 
@@ -222,8 +259,8 @@ export default {
     mixinInput
   ],
   async asyncData ({ app, store, params }) {
-    let board = {}
-    let currentCard = {}
+    let board = null
+    let currentCard = null
 
     // Get board object
     const boardRef = app.$fire.firestore
@@ -235,7 +272,6 @@ export default {
     const docBoard = await boardRef.get()
     if (docBoard.exists) {
       board = docBoard.data()
-      board.id = docBoard.id
     }
 
     // Get card object if card_id param is present
@@ -258,6 +294,9 @@ export default {
     return {
       isEditBoardTitle: false,
       isSidenav: false,
+
+      isDeletingBoard: false,
+
       isCreateList: false,
       list: {
         title: ''
@@ -291,7 +330,9 @@ export default {
     }
   },
   mounted () {
-    this.mixin_resizeInputWidth({ target: this.$refs.inputEditBoardTitle })
+    if (this.board) {
+      this.mixin_resizeInputWidth({ target: this.$refs.inputEditBoardTitle })
+    }
     // Add listener to refresh board when data changes
     this.$fire.firestore
       .collection('users')
@@ -334,6 +375,38 @@ export default {
       if (target.value && (target.value !== this.board.title)) {
         this.board.title = target.value
         this.updateBoardBasic()
+      }
+    },
+    async deleteBoard () {
+      this.isDeletingBoard = true
+      try {
+        const batch = this.$fire.firestore
+          .batch()
+
+        const boardRef = this.$fire.firestore
+          .collection('users')
+          .doc(this.$store.getters.getUser.uid)
+          .collection('boards')
+          .doc(this.board.id)
+
+        const snapshot = await boardRef
+          .collection('cards')
+          .get()
+
+        snapshot.docs.forEach((doc) => {
+          batch.delete(doc.ref)
+        })
+
+        batch.delete(boardRef)
+
+        await batch.commit()
+
+        this.$store.commit('SET_ALERT', 'Board deleted!')
+        this.$router.push('/')
+      } catch (error) {
+        this.$store.commit('SET_ERROR', error)
+      } finally {
+        this.isDeletingBoard = false
       }
     },
     /**

@@ -205,6 +205,52 @@
         >
       </v-card-text>
     </div>
+    <v-card-text class="brello-board-sidenav-bottom">
+      <v-menu
+        v-model="deleteBoardMenu"
+        :close-on-content-click="false"
+      >
+        <template #activator="{ on }">
+          <v-btn
+            block
+            text
+            color="red darken-1"
+            v-on="on"
+          >
+            <v-icon left>
+              mdi-delete
+            </v-icon>
+            delete board
+          </v-btn>
+        </template>
+        <v-card width="320">
+          <v-container>
+            <v-row>
+              <v-col class="d-flex align-center justify-space-between">
+                <h4>Delete board</h4>
+                <v-icon @click="deleteBoardMenu = false">
+                  mdi-close
+                </v-icon>
+              </v-col>
+              <v-col cols="12">
+                You can't recover its content afterwards. Delete this board?
+              </v-col>
+              <v-col cols="12">
+                <v-btn
+                  depressed
+                  block
+                  dark
+                  color="red darken-1"
+                  @click="deleteBoard"
+                >
+                  delete
+                </v-btn>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card>
+      </v-menu>
+    </v-card-text>
   </div>
 </template>
 
@@ -225,7 +271,8 @@ export default {
     colorMenu: false,
     newColor: vm.value.color,
     isUseColor: !!vm.value.color,
-    imageMenus: []
+    imageMenus: [],
+    deleteBoardMenu: false
   }),
   computed: {
     showResetColor () {
@@ -311,6 +358,10 @@ export default {
       this.updateBoard((board) => {
         board.image.repeat = value
       })
+    },
+    deleteBoard () {
+      this.deleteBoardMenu = false
+      this.$emit('delete-board')
     }
   }
 }
@@ -328,6 +379,9 @@ export default {
     min-height: 0;
     flex: 1 1 auto;
     overflow-y: auto;
+  }
+  &-bottom {
+    flex: 0 0 auto;
   }
 }
 
