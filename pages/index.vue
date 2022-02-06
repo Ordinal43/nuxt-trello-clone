@@ -224,6 +224,7 @@ export default {
       enableColor: false,
       dialog: false,
       uploading: false,
+      boards: [],
       board: {
         title: '',
         color: '',
@@ -235,7 +236,6 @@ export default {
         },
         images: []
       },
-      boards: [],
       fileToUpload: {}
     }
   },
@@ -249,12 +249,7 @@ export default {
     const querySnapshot = await boardsRef
       .get()
 
-    if (querySnapshot.docs.length > 0) {
-      for (const doc of querySnapshot.docs) {
-        const data = doc.data()
-        this.boards.push(data)
-      }
-    }
+    this.boards = querySnapshot.docs.map(doc => doc.data())
   },
   mounted () {
     // Add listener to refresh board when data changes
@@ -263,13 +258,7 @@ export default {
       .doc(this.$store.getters.getUser.uid)
       .collection('boards')
       .onSnapshot((querySnapshot) => {
-        if (querySnapshot.docs.length > 0) {
-          this.boards = []
-          for (const doc of querySnapshot.docs) {
-            const data = doc.data()
-            this.boards.push(data)
-          }
-        }
+        this.boards = querySnapshot.docs.map(doc => doc.data())
       })
   },
   methods: {
