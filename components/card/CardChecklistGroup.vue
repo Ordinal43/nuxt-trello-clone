@@ -130,6 +130,7 @@
           v-for="(item, itemIdx) in cl.items"
           :key="`checklist-item-${item.id}`"
           v-slot="{ hover }"
+          :disabled="activeInputEditItem === item.id"
         >
           <div
             :class="`d-flex ml-sm-8 px-2 py-2 ${hover ? 'grey lighten-3' : ''}`"
