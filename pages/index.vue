@@ -1,54 +1,14 @@
 <template>
-  <v-container class="mt-3">
-    <v-row align="center">
-      <h2>My Boards</h2>
-      <v-btn
-        v-show="boards.length"
-        small
-        class="ml-4"
-        @click="dialog = true"
-      >
-        <v-icon
-          left
-        >
-          mdi-trello
-        </v-icon>
-        create
-      </v-btn>
-    </v-row>
-    <v-row>
-      <v-col v-if="$fetchState.pending">
-        <p class="text-center text-caption">
-          Fetching boards...
-        </p>
-      </v-col>
-      <v-col v-else-if="$fetchState.error">
-        <p class="text-center text-caption">
-          An error occurred :(
-        </p>
-      </v-col>
-      <template v-else>
-        <v-col
-          v-if="!boards.length"
-          class="text-center"
-        >
-          <img
-            src="~/assets/no-boards.svg"
-            alt="no-boards.svg"
-            height="160"
-            class="my-5"
-          >
-          <p class="text-h4 mt-3 text-center">
-            "Looks clean..."
-          </p>
-          <div class="text-center">
-            You have no boards at the moment.
+  <v-container class="fill-height">
+    <v-row class="fill-height">
+      <v-col class="d-flex flex-column">
+        <v-row class="flex-grow-0 flex-shrink-0">
+          <v-col class="d-flex align-center">
+            <h2>My Boards</h2>
             <v-btn
+              v-show="boards.length"
               small
-              depressed
-              dark
-              color="#026AA7"
-              class="ml-3"
+              class="ml-4"
               @click="dialog = true"
             >
               <v-icon
@@ -56,22 +16,59 @@
               >
                 mdi-trello
               </v-icon>
-              Add one!
+              create
             </v-btn>
-          </div>
-        </v-col>
-        <template v-else>
-          <v-col
-            v-for="b in boards"
-            :key="`board-${b.id}`"
-            sm="4"
-            md="3"
-            lg="2"
-          >
-            <LazyTrelloBoard :board="b" />
           </v-col>
-        </template>
-      </template>
+        </v-row>
+        <FetchPending v-if="$fetchState.pending" />
+        <FetchError v-else-if="$fetchState.error" />
+        <v-row v-else class="align-content-start">
+          <v-col
+            v-if="!boards.length"
+            class="text-center"
+          >
+            <img
+              src="~/assets/no-boards.svg"
+              alt="no-boards.svg"
+              height="160"
+              class="my-5"
+            >
+            <p class="text-h4 mt-3 text-center">
+              "Looks clean..."
+            </p>
+            <div class="text-center">
+              You have no boards at the moment.
+              <v-btn
+                small
+                depressed
+                dark
+                color="#026AA7"
+                class="ml-3"
+                @click="dialog = true"
+              >
+                <v-icon
+                  left
+                >
+                  mdi-trello
+                </v-icon>
+                Add one!
+              </v-btn>
+            </div>
+          </v-col>
+          <template v-else>
+            <v-col
+              v-for="b in boards"
+              :key="`board-${b.id}`"
+              cols="12"
+              sm="4"
+              md="3"
+              lg="2"
+            >
+              <LazyTrelloBoard :board="b" />
+            </v-col>
+          </template>
+        </v-row>
+      </v-col>
     </v-row>
     <v-dialog
       :key="dialog"
