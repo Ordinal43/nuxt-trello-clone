@@ -75,6 +75,9 @@ export default {
       loading: false
     }
   },
+  head: () => ({
+    title: 'Sign in'
+  }),
   watch: {
     '$store.getters.getUser' () {
       this.$router.push({

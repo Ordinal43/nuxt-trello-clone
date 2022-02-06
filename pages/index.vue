@@ -248,6 +248,9 @@ export default {
 
     this.boards = querySnapshot.docs.map(doc => doc.data())
   },
+  head: () => ({
+    title: 'Home'
+  }),
   mounted () {
     // Add listener to refresh board when data changes
     this.$fire.firestore

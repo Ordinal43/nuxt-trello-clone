@@ -103,6 +103,9 @@ export default {
     isShowPass: false,
     loading: false
   }),
+  head: () => ({
+    title: 'Sign up'
+  }),
   computed: {
     getMatchPassStatus () {
       return !!this.passwordConfirm && (this.passwordConfirm === this.auth.password)
