@@ -160,7 +160,6 @@
                   @focus="mixin_resizeTextareaHeight"
                   @input="mixin_resizeTextareaHeight"
                   @keydown.enter.prevent="updateItem(clIdx, item.id, itemIdx)"
-                  @blur="activeInputEditItem = undefined"
                 />
                 <div class="mt-1">
                   <v-btn
