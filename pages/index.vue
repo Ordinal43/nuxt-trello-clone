@@ -39,7 +39,7 @@
             class="my-5"
           >
           <p class="text-h4 mt-3 text-center">
-            Hmmmm...
+            "Hmmmm..."
           </p>
           <div class="text-center">
             You have no boards at the moment.
