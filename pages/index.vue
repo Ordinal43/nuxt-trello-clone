@@ -216,26 +216,24 @@ import { MIMETYPE_IMAGES } from '@/utils/input_rules.utils'
 
 export default {
   name: 'IndexPage',
-  data () {
-    return {
-      enableColor: false,
-      dialog: false,
-      uploading: false,
-      boards: [],
-      board: {
-        title: '',
-        color: '',
-        image: {
-          name: '',
-          originalName: '',
-          downloadURL: '',
-          uuid: ''
-        },
-        images: []
+  data: () => ({
+    enableColor: false,
+    dialog: false,
+    uploading: false,
+    boards: [],
+    board: {
+      title: '',
+      color: '',
+      image: {
+        name: '',
+        originalName: '',
+        downloadURL: '',
+        uuid: ''
       },
-      fileToUpload: {}
-    }
-  },
+      images: []
+    },
+    fileToUpload: {}
+  }),
   async fetch () {
     // Get created board list
     const boardsRef = this.$fire.firestore

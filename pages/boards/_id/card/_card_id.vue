@@ -152,11 +152,9 @@ export default {
   mixins: [
     mixinTextArea
   ],
-  data () {
-    return {
-      detailedCard: null
-    }
-  },
+  data: () => ({
+    detailedCard: null
+  }),
   async fetch () {
     const cardRef = this.$fire.firestore
       .collection('users')

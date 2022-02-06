@@ -271,32 +271,30 @@ export default {
   mixins: [
     mixinInput
   ],
-  data () {
-    return {
-      board: null,
-      currentCard: null,
-      isEditBoardTitle: false,
-      isSidenav: false,
+  data: () => ({
+    board: null,
+    currentCard: null,
+    isEditBoardTitle: false,
+    isSidenav: false,
 
-      isDeletingBoard: false,
+    isDeletingBoard: false,
 
-      isCreateList: false,
-      list: {
-        title: ''
-      },
+    isCreateList: false,
+    list: {
+      title: ''
+    },
 
-      deleteListId: null,
-      dialogDeleteList: false,
-      deletingList: false,
+    deleteListId: null,
+    dialogDeleteList: false,
+    deletingList: false,
 
-      dialogDeleteCard: false,
-      deletingCard: false,
+    dialogDeleteCard: false,
+    deletingCard: false,
 
-      dragList: null,
-      dropList: null,
-      dragDropPayload: null
-    }
-  },
+    dragList: null,
+    dropList: null,
+    dragDropPayload: null
+  }),
   async fetch () {
     // Get board object
     const boardRef = this.$fire.firestore

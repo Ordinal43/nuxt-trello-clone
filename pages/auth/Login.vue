@@ -62,19 +62,17 @@ import { required } from '@/utils/input_rules.utils'
 export default {
   name: 'AuthLogin',
   layout: 'login',
-  data () {
-    return {
-      auth: {
-        email: '',
-        password: ''
-      },
-      rules: {
-        required
-      },
-      isShowPass: false,
-      loading: false
-    }
-  },
+  data: () => ({
+    auth: {
+      email: '',
+      password: ''
+    },
+    rules: {
+      required
+    },
+    isShowPass: false,
+    loading: false
+  }),
   head: () => ({
     title: 'Sign in'
   }),

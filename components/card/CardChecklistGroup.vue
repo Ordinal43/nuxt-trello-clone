@@ -258,25 +258,23 @@ export default {
       default: () => []
     }
   },
-  data () {
-    return {
-      containerTagOptions: {
-        value: 'div',
-        props: {
-          class: 'my-5'
-        }
-      },
-      dropPlaceholderOptions: {
-        className: 'drop-preview',
-        showOnTop: false
-      },
-      activeInputEditTitle: undefined,
-      activeInputAddItem: undefined,
-      activeInputEditItem: undefined,
-      menu: {},
-      name: ''
-    }
-  },
+  data: () => ({
+    containerTagOptions: {
+      value: 'div',
+      props: {
+        class: 'my-5'
+      }
+    },
+    dropPlaceholderOptions: {
+      className: 'drop-preview',
+      showOnTop: false
+    },
+    activeInputEditTitle: undefined,
+    activeInputAddItem: undefined,
+    activeInputEditItem: undefined,
+    menu: {},
+    name: ''
+  }),
   methods: {
     getChildPayload (clIdx) {
       return this.value[clIdx]

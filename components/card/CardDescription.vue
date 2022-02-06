@@ -81,11 +81,9 @@ export default {
       default: ''
     }
   },
-  data () {
-    return {
-      descriptionEdit: false
-    }
-  },
+  data: () => ({
+    descriptionEdit: false
+  }),
   methods: {
     openEdit () {
       this.descriptionEdit = true

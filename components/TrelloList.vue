@@ -219,26 +219,24 @@ export default {
   props: {
     list: { type: Object, required: true }
   },
-  data () {
-    return {
-      isEditTitle: false,
-      menu: false,
-      listAction: [
-        { icon: 'mdi-delete', title: 'Delete list', color: 'red', method: this.deleteList }
-      ],
-      dropPlaceholderOptions: {
-        className: 'drop-preview',
-        animationDuration: '150',
-        showOnTop: false
-      },
-      isInputShown: false,
-      cardTitle: '',
+  data: () => ({
+    isEditTitle: false,
+    menu: false,
+    listAction: [
+      { icon: 'mdi-delete', title: 'Delete list', color: 'red', method: this.deleteList }
+    ],
+    dropPlaceholderOptions: {
+      className: 'drop-preview',
+      animationDuration: '150',
+      showOnTop: false
+    },
+    isInputShown: false,
+    cardTitle: '',
 
-      isMouseover: false,
-      // only show container when "isDragging = true"
-      isDragging: false
-    }
-  },
+    isMouseover: false,
+    // only show container when "isDragging = true"
+    isDragging: false
+  }),
   beforeUpdate () {
     /**
      * Since 'mouseover' and 'mouseleave' events will re-render the component,
