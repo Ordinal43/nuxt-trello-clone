@@ -28,19 +28,38 @@
         </p>
       </v-col>
       <template v-else>
-        <div v-if="!boards.length">
-          <p class="text-center">
-            No boards yet...
+        <v-col
+          v-if="!boards.length"
+          class="text-center"
+        >
+          <img
+            src="~/assets/no-boards.svg"
+            alt="no-boards.svg"
+            height="160"
+            class="my-5"
+          >
+          <p class="text-h4 mt-3 text-center">
+            "Looks clean..."
           </p>
-          <v-btn @click="dialog = true">
-            <v-icon
-              left
+          <div class="text-center">
+            You have no boards at the moment.
+            <v-btn
+              small
+              depressed
+              dark
+              color="#026AA7"
+              class="ml-3"
+              @click="dialog = true"
             >
-              mdi-trello
-            </v-icon>
-            Add a board
-          </v-btn>
-        </div>
+              <v-icon
+                left
+              >
+                mdi-trello
+              </v-icon>
+              Add one!
+            </v-btn>
+          </div>
+        </v-col>
         <template v-else>
           <v-col
             v-for="b in boards"
@@ -155,7 +174,7 @@
                       absolute
                       right
                       class="mr-n2"
-                      @click="resetFileInput()"
+                      @click="resetFileInput"
                     >
                       <v-icon>mdi-delete</v-icon>
                     </v-btn>
@@ -164,7 +183,7 @@
                 <input
                   ref="imageFileInput"
                   type="file"
-                  accept="jpg, jpeg, png"
+                  accept="image/jpg, image/jpeg, image/png"
                   style="display: none;"
                   @change="previewImage($event)"
                 >
@@ -196,6 +215,7 @@
 
 <script>
 import { v4 as uuidv4 } from 'uuid'
+import { MIMETYPE_IMAGES } from '@/utils/input_rules.utils'
 
 export default {
   name: 'IndexPage',
@@ -204,6 +224,7 @@ export default {
       enableColor: false,
       dialog: false,
       uploading: false,
+      boards: [],
       board: {
         title: '',
         color: '',
@@ -212,9 +233,9 @@ export default {
           originalName: '',
           downloadURL: '',
           uuid: ''
-        }
+        },
+        images: []
       },
-      boards: [],
       fileToUpload: {}
     }
   },
@@ -228,13 +249,7 @@ export default {
     const querySnapshot = await boardsRef
       .get()
 
-    if (querySnapshot.docs.length > 0) {
-      for (const doc of querySnapshot.docs) {
-        const data = doc.data()
-        data.id = doc.id
-        this.boards.push(data)
-      }
-    }
+    this.boards = querySnapshot.docs.map(doc => doc.data())
   },
   mounted () {
     // Add listener to refresh board when data changes
@@ -243,14 +258,7 @@ export default {
       .doc(this.$store.getters.getUser.uid)
       .collection('boards')
       .onSnapshot((querySnapshot) => {
-        if (querySnapshot.docs.length > 0) {
-          this.boards = []
-          for (const doc of querySnapshot.docs) {
-            const data = doc.data()
-            data.id = doc.id
-            this.boards.push(data)
-          }
-        }
+        this.boards = querySnapshot.docs.map(doc => doc.data())
       })
   },
   methods: {
@@ -258,57 +266,56 @@ export default {
       this.board.color = ''
       this.enableColor = false
     },
-    createBoard () {
+    async createBoard () {
       if (this.$refs.form.validate()) {
-        const uuid = uuidv4()
+        const uuidBoard = uuidv4()
+        const uuidImage = uuidv4()
         this.uploading = true
         if (this.fileToUpload.file) {
-          const itemFilename = `${uuid}-${this.fileToUpload.file.name}`
-          const itemName = `images/${this.$store.getters.getUser.uid}/boards/${uuid}/${itemFilename}`
+          if (MIMETYPE_IMAGES.includes(this.fileToUpload.file.type)) {
+            const itemFilename = `${uuidImage}-${this.fileToUpload.file.name}`
+            const itemName = `images/${this.$store.getters.getUser.uid}/boards/${uuidBoard}/${itemFilename}`
 
-          const itemRef = this.$fire.storage.ref().child(itemName)
-          const itemMeta = {
-            customMetadata: {
-              owner: this.$store.getters.getUser.uid
+            const itemRef = this.$fire.storage.ref().child(itemName)
+            const itemMeta = {
+              customMetadata: {
+                owner: this.$store.getters.getUser.uid
+              }
             }
-          }
 
-          const task = itemRef.put(this.fileToUpload.file, itemMeta)
-          return task.on(
-            'state_changed',
-            null,
-            // on upload error
-            (error) => {
-              this.$store.commit('SET_ERROR', error)
-              return false
-            },
-            // on upload success
-            async () => {
-              const url = await task.snapshot.ref.getDownloadURL()
-
-              this.board.image = {
+            try {
+              const snapshot = await itemRef.put(this.fileToUpload.file, itemMeta)
+              const url = await snapshot.ref.getDownloadURL()
+              const image = {
                 name: itemFilename,
                 originalName: this.fileToUpload.file.name,
                 downloadURL: url,
-                uuid
+                uuid: uuidImage
               }
+              this.board.image = image
+              this.board.images.push(image)
 
-              this.uploadBoardData(uuid, itemRef)
+              this.uploadBoardData(uuidBoard, itemRef)
+            } catch (error) {
+              this.$store.commit('SET_ERROR', error)
             }
-          )
+          } else {
+            alert('Invalid file!')
+          }
         } else {
-          this.uploadBoardData(uuid)
+          this.uploadBoardData(uuidBoard)
         }
       }
     },
-    async uploadBoardData (uuid, itemRef) {
+    async uploadBoardData (uuidBoard, itemRef) {
+      this.board.id = uuidBoard
       this.board.dateCreated = Date.now()
       try {
         await this.$fire.firestore
           .collection('users')
           .doc(this.$store.getters.getUser.uid)
           .collection('boards')
-          .doc(uuid)
+          .doc(uuidBoard)
           .set(this.board)
 
         this.dialog = false

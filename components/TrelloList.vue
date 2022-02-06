@@ -1,7 +1,6 @@
 <template>
   <v-card
     color="#EBECF0"
-    width="272"
     class="brello-list py-2 px-1 mr-2"
     flat
     @mouseover="isMouseover = true"
@@ -64,7 +63,10 @@
         </v-card>
       </v-menu>
     </div>
-    <div class="brello-list-content">
+    <div
+      ref="listScrollable"
+      class="brello-list-content"
+    >
       <Container
         v-show="list.cards.length || (isMouseover && isDragging)"
         :get-child-payload="getChildPayload"
@@ -94,32 +96,32 @@
                 v-if="Object.keys(card).length > 2"
                 class="mt-2"
               >
-                <v-hover v-slot="{ hover: hoverDate }">
-                  <v-btn
-                    v-if="card.date"
-                    x-small
-                    depressed
-                    :ripple="false"
-                    :color="getDateStatusColor(card.date)"
-                    class="text-none mr-1"
-                    @click.stop="updateStatus(card)"
-                  >
-                    <v-icon
-                      dense
-                      small
-                      left
+                <template v-if="card.date">
+                  <v-hover v-slot="{ hover: hoverDate }">
+                    <v-btn
+                      x-small
+                      depressed
+                      :color="getDateStatusColor(card.date)"
+                      class="text-none mr-1"
+                      @click.stop="updateStatus(card)"
                     >
-                      {{
-                        hoverDate
-                          ? `mdi-checkbox-${card.date.isDone? 'marked' : 'blank'}-outline`
-                          : 'mdi-clock-time-four-outline'
-                      }}
-                    </v-icon>
-                    <span class="text-caption">
-                      {{ getDateDetails(card.date) }}
-                    </span>
-                  </v-btn>
-                </v-hover>
+                      <v-icon
+                        dense
+                        small
+                        left
+                      >
+                        {{
+                          hoverDate
+                            ? `mdi-checkbox-${card.date.isDone? 'marked' : 'blank'}-outline`
+                            : 'mdi-clock-time-four-outline'
+                        }}
+                      </v-icon>
+                      <span class="text-caption">
+                        {{ getDateDetails(card.date) }}
+                      </span>
+                    </v-btn>
+                  </v-hover>
+                </template>
                 <v-icon
                   v-if="card.description"
                   dense
@@ -153,33 +155,9 @@
           </v-hover>
         </Draggable>
       </Container>
-    </div>
-    <div class="brello-list-footer mt-1 mx-1">
-      <v-hover
-        v-show="!isInputShown"
-        class="flex-grow-0 flex-shrink-0"
-      >
-        <template #default="{ hover }">
-          <v-card
-            flat
-            class="px-2 py-1"
-            :color="hover? '#00000014' : '#00000000'"
-            @click="showCardForm"
-          >
-            <div>
-              <div class="text-body-2">
-                <v-icon small>
-                  mdi-plus
-                </v-icon>
-                Add card
-              </div>
-            </div>
-          </v-card>
-        </template>
-      </v-hover>
       <v-card
         v-show="isInputShown"
-        class="pa-2"
+        class="simple-card mt-1 ma-1 pa-2"
       >
         <textarea
           ref="cardcreate"
@@ -187,18 +165,42 @@
           type="text"
           placeholder="Enter card title..."
           class="create-card-textarea text-body-2"
-          @input="mixin_resizeTextarea"
+          @focus="mixin_resizeTextareaHeight"
+          @input="mixin_resizeTextareaHeight"
           @blur="blurAction()"
           @keydown.enter.prevent="blurAction(true)"
         />
       </v-card>
+    </div>
+    <div class="brello-list-footer mt-1 mx-1">
+      <v-hover
+        v-show="!isInputShown"
+        v-slot="{ hover }"
+        class="flex-grow-0 flex-shrink-0"
+      >
+        <v-card
+          flat
+          class="px-2 py-1"
+          :color="hover? '#00000014' : '#00000000'"
+          @click="showCardForm"
+        >
+          <div>
+            <div class="text-body-2">
+              <v-icon small>
+                mdi-plus
+              </v-icon>
+              Add card
+            </div>
+          </div>
+        </v-card>
+      </v-hover>
     </div>
   </v-card>
 </template>
 
 <script>
 import { Container, Draggable } from 'vue-dndrop'
-import { cloneDeep } from 'lodash'
+import cloneDeep from 'lodash/cloneDeep'
 import { mixinTextArea, mixinDate } from '@/mixins/vue-mixins'
 import dayjs from '@/utils/dayjs.utils'
 
@@ -293,7 +295,7 @@ export default {
       }
       return dateStr
     },
-    getChecklistCombined (checklists) {
+    getChecklistCombined (checklists = []) {
       return checklists.reduce((acc, value) => {
         acc.done = (acc.done || 0) + value.checked.length
         acc.total = (acc.total || 0) + value.items.length
@@ -313,6 +315,7 @@ export default {
       this.isInputShown = true
       this.$nextTick(() => {
         this.$refs.cardcreate.focus()
+        this.$refs.listScrollable.scrollTop = this.$refs.listScrollable.scrollHeight
       })
     },
     blurAction (enterPressed) {
@@ -356,6 +359,8 @@ input {
 }
 
 .brello-list{
+  width: 272px;
+  max-width: 272px;
   max-height: 100%;
   display: flex;
   flex-direction: column;
@@ -364,7 +369,7 @@ input {
   }
   &-content {
     flex: 1 1 auto;
-    overflow-y: scroll;
+    overflow-y: auto;
   }
   &-footer {
     flex: 0 0 auto;

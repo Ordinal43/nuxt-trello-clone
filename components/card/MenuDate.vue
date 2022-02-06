@@ -110,7 +110,7 @@
 </template>
 
 <script>
-import { cloneDeep } from 'lodash'
+import cloneDeep from 'lodash/cloneDeep'
 import { VALID_DATE_FORMATS, SANITIZE_DATE_STRING, SANITIZE_TIME_STRING } from '@/utils/date.utils'
 import dayjs from '@/utils/dayjs.utils'
 

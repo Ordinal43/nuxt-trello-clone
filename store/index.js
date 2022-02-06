@@ -4,7 +4,8 @@ import cookieparser from 'cookieparser'
 
 const state = () => ({
   user: null,
-  error: null
+  error: null,
+  alert: null
 })
 
 const getters = {
@@ -13,6 +14,9 @@ const getters = {
   },
   getError (state) {
     return state.error
+  },
+  getAlert (state) {
+    return state.alert
   }
 }
 
@@ -22,6 +26,9 @@ const mutations = {
   },
   SET_ERROR (state, error) {
     state.error = error
+  },
+  SET_ALERT (state, alert) {
+    state.alert = alert
   }
 }
 

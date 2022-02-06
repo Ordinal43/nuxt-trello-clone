@@ -6,9 +6,3 @@ Vue.filter('formatFromNow', (value) => {
   if (!dayjsObj.isValid()) { return '' }
   return dayjsObj.fromNow()
 })
-
-Vue.filter('formatDate', (value, format = 'MMM D, YYYY') => {
-  const dayjsObj = dayjs(value)
-  if (!dayjsObj.isValid()) { return '' }
-  return dayjsObj.format(format)
-})
