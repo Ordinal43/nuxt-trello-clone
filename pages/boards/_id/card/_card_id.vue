@@ -1,105 +1,140 @@
 <template>
   <v-card color="#F4F5F7">
     <v-container>
-      <v-row>
-        <v-col class="pl-sm-4 d-flex align-start">
-          <v-icon
-            class="brello-card-icon pr-2 pt-2"
-          >
-            mdi-card-bulleted
-          </v-icon>
-          <div class="brello-card-header">
-            <textarea
-              ref="brello-edit-card-title"
-              v-model="detailedCard.title"
-              spellcheck="false"
-              rows="1"
-              class="card-title text-h6"
-              @focus="mixin_resizeTextareaHeight"
-              @input="mixin_resizeTextareaHeight"
-            />
-          </div>
-          <v-icon
-            class="brello-card-action ml-4"
-            @click="$router.go(-1)"
-          >
-            mdi-close
-          </v-icon>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col>
-          <template v-if="$fetchState.pending" />
-          <template v-else-if="$fetchState.error">
-            <p class="text-center text-caption">
-              An error occurred :(
-            </p>
-          </template>
-          <template v-else>
-            <v-row>
-              <!-- ============= Main ============= -->
-              <v-col
-                cols="12"
-                sm="9"
-                class="pl-sm-4"
-              >
-                <CardDate
-                  v-if="detailedCard.date"
-                  v-model="detailedCard.date"
-                  @open-date-menu="openDateMenu"
-                />
-                <CardDescription
-                  v-model="detailedCard.description"
-                />
-                <CardChecklistGroup
-                  v-model="detailedCard.checklists"
-                />
-              </v-col>
-              <!-- ============= Sidebar ============= -->
-              <v-col
-                cols="12"
-                sm="3"
-              >
-                <MenuChecklist
-                  @add-checklist="addChecklist"
-                />
-                <div class="mb-2">
-                  <v-btn
-                    small
-                    depressed
-                    block
-                    color="#091E420A"
-                    @click="openDateMenu"
-                  >
-                    <v-icon left>
-                      mdi-checkbox-marked-outline
-                    </v-icon>
-                    date
-                  </v-btn>
-                  <MenuDate
-                    ref="menuDate"
+      <FetchPending v-if="$fetchState.pending" />
+      <FetchError v-else-if="$fetchState.error" />
+      <template v-else-if="detailedCard">
+        <v-row>
+          <v-col class="pl-sm-4 d-flex align-start">
+            <v-icon
+              class="brello-card-icon pr-2 pt-2"
+            >
+              mdi-card-bulleted
+            </v-icon>
+            <div class="brello-card-header">
+              <textarea
+                ref="brello-edit-card-title"
+                v-model="detailedCard.title"
+                spellcheck="false"
+                rows="1"
+                class="card-title text-h6"
+                @focus="mixin_resizeTextareaHeight"
+                @input="mixin_resizeTextareaHeight"
+              />
+            </div>
+            <v-icon
+              class="brello-card-action ml-4"
+              @click="$router.go(-1)"
+            >
+              mdi-close
+            </v-icon>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <template v-if="$fetchState.pending" />
+            <template v-else-if="$fetchState.error">
+              <p class="text-center text-caption">
+                An error occurred :(
+              </p>
+            </template>
+            <template v-else>
+              <v-row>
+                <!-- ============= Main ============= -->
+                <v-col
+                  cols="12"
+                  sm="9"
+                  class="pl-sm-4"
+                >
+                  <CardDate
+                    v-if="detailedCard.date"
                     v-model="detailedCard.date"
+                    @open-date-menu="openDateMenu"
                   />
-                </div>
-                <div class="mb-2">
-                  <v-btn
-                    small
-                    depressed
-                    block
-                    color="#091E420A"
-                    @click="$emit('delete-card')"
-                  >
-                    <v-icon left>
-                      mdi-delete
-                    </v-icon>
-                    delete
-                  </v-btn>
-                </div>
-              </v-col>
-            </v-row>
-          </template>
-        </v-col>
-      </v-row>
+                  <CardDescription
+                    v-model="detailedCard.description"
+                  />
+                  <CardChecklistGroup
+                    v-model="detailedCard.checklists"
+                  />
+                </v-col>
+                <!-- ============= Sidebar ============= -->
+                <v-col
+                  cols="12"
+                  sm="3"
+                >
+                  <MenuChecklist
+                    @add-checklist="addChecklist"
+                  />
+                  <div class="mb-2">
+                    <v-btn
+                      small
+                      depressed
+                      block
+                      color="#091E420A"
+                      @click="openDateMenu"
+                    >
+                      <v-icon left>
+                        mdi-checkbox-marked-outline
+                      </v-icon>
+                      date
+                    </v-btn>
+                    <MenuDate
+                      ref="menuDate"
+                      v-model="detailedCard.date"
+                    />
+                  </div>
+                  <div class="mb-2">
+                    <v-btn
+                      small
+                      depressed
+                      block
+                      color="#091E420A"
+                      @click="$emit('delete-card')"
+                    >
+                      <v-icon left>
+                        mdi-delete
+                      </v-icon>
+                      delete
+                    </v-btn>
+                  </div>
+                </v-col>
+              </v-row>
+            </template>
+          </v-col>
+        </v-row>
+      </template>
+      <div
+        v-else
+        class="fill-height d-flex align-center justify-center"
+      >
+        <div class="my-9">
+          <img
+            src="~/assets/not-found.svg"
+            alt="board-not-found.svg"
+            height="160"
+          >
+          <p class="text-subtitle-1 mt-3 text-center">
+            Card not found...
+          </p>
+          <div class="text-center">
+            <v-btn
+              depressed
+              dark
+              nuxt
+              :to="`/boards/${$route.params.id}`"
+              color="#026AA7"
+            >
+              <v-icon
+                left
+              >
+                mdi-arrow-left
+              </v-icon>
+              Back to board
+            </v-btn>
+          </div>
+        </div>
+      </div>
     </v-container>
   </v-card>
 </template>
@@ -116,7 +151,7 @@ export default {
   ],
   data () {
     return {
-      detailedCard: {}
+      detailedCard: null
     }
   },
   async fetch () {
