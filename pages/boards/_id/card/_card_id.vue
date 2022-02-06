@@ -143,6 +143,7 @@
 
 <script>
 import { v4 as uuidv4 } from 'uuid'
+import debounce from 'lodash/debounce'
 import { mixinTextArea } from '@/mixins/vue-mixins'
 
 let IS_FROM_FIRESTORE = false
@@ -194,9 +195,9 @@ export default {
     this.mixin_resizeTextareaHeight({ target: this.$refs['brello-edit-card-title'] })
   },
   methods: {
-    updateCardDetails () {
+    updateCardDetails: debounce(function () {
       this.$emit('update-card', this.detailedCard)
-    },
+    }, 300),
     updateBoardTitle ({ target }) {
       if (target.value) {
         this.detailedCard.title = target.value
