@@ -1,12 +1,7 @@
 <template>
   <v-card
     rounded
-    :style="`
-      background-image: url(${board.image.downloadURL});
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-position: center;
-    `"
+    :style="getBoardStyle"
     :color="board.color"
     :to="`/boards/${board.id}`"
     nuxt
@@ -27,6 +22,16 @@ export default {
   name: 'TrelloBoard',
   props: {
     board: { type: Object, required: true }
+  },
+  computed: {
+    getBoardStyle () {
+      return {
+        'background-image': this.board.image.downloadURL ? `url(${this.board.image.downloadURL})` : false,
+        'background-size': 'cover',
+        'background-repeat': 'no-repeat',
+        'background-position': 'center'
+      }
+    }
   }
 }
 </script>
