@@ -175,7 +175,7 @@ export default {
     }
   },
   head: vm => ({
-    title: vm.detailedCard?.title || 'Card not found!'
+    title: vm.$fetchState.pending ? '...' : (vm.detailedCard?.title || 'Card not found!')
   }),
   watch: {
     detailedCard: {

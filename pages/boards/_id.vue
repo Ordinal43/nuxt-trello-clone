@@ -324,7 +324,7 @@ export default {
     }
   },
   head: vm => ({
-    title: vm.board?.title || 'Board not found!'
+    title: vm.$fetchState.pending ? '...' : (vm.board?.title || 'Board not found!')
   }),
   computed: {
     getBackgroundStyle () {
