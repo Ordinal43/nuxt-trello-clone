@@ -323,6 +323,9 @@ export default {
       }
     }
   },
+  head: vm => ({
+    title: vm.board?.title || 'Board not found!'
+  }),
   computed: {
     getBackgroundStyle () {
       return {

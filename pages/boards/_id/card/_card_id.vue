@@ -136,6 +136,9 @@ export default {
       IS_FROM_FIRESTORE = true
     }
   },
+  head: vm => ({
+    title: vm.detailedCard?.title || 'Card not found!'
+  }),
   watch: {
     detailedCard: {
       handler (val) {
