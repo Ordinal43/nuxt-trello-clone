@@ -124,6 +124,11 @@ export default {
       this.snackbarColor = 'red darken-1'
       this.snackbarText = val.message
       this.snackbar = true
+    },
+    '$store.getters.getAlert' (val) {
+      this.snackbarColor = 'success'
+      this.snackbarText = val
+      this.snackbar = true
     }
   },
   methods: {
