@@ -1,6 +1,18 @@
 <template>
   <div
-    v-if="board"
+    v-if="$fetchState.pending"
+    class="fill-height d-flex align-center justify-center"
+  >
+    Fetching...
+  </div>
+  <div
+    v-else-if="$fetchState.error"
+    class="fill-height d-flex align-center justify-center"
+  >
+    Error!
+  </div>
+  <div
+    v-else-if="board"
     class="brello-board-container"
     :style="getBackgroundStyle"
   >
@@ -218,32 +230,33 @@
   </div>
   <div
     v-else
-    class="text-center mt-5"
+    class="fill-height d-flex align-center justify-center"
   >
-    <img
-      src="~/assets/not-found.svg"
-      alt="board-not-found.svg"
-      height="160"
-      class="my-5"
-    >
-    <p class="text-subtitle-1 mt-3 text-center">
-      Board not found...
-    </p>
-    <div class="text-center">
-      <v-btn
-        depressed
-        dark
-        nuxt
-        to="/"
-        color="#026AA7"
+    <div>
+      <img
+        src="~/assets/not-found.svg"
+        alt="board-not-found.svg"
+        height="160"
       >
-        <v-icon
-          left
+      <p class="text-subtitle-1 mt-3 text-center">
+        Board not found...
+      </p>
+      <div class="text-center">
+        <v-btn
+          depressed
+          dark
+          nuxt
+          to="/"
+          color="#026AA7"
         >
-          mdi-arrow-left
-        </v-icon>
-        Back to home page
-      </v-btn>
+          <v-icon
+            left
+          >
+            mdi-arrow-left
+          </v-icon>
+          Back to home page
+        </v-btn>
+      </div>
     </div>
   </div>
 </template>
@@ -258,40 +271,10 @@ export default {
   mixins: [
     mixinInput
   ],
-  async asyncData ({ app, store, params }) {
-    let board = null
-    let currentCard = null
-
-    // Get board object
-    const boardRef = app.$fire.firestore
-      .collection('users')
-      .doc(store.getters.getUser.uid)
-      .collection('boards')
-      .doc(params.id)
-
-    const docBoard = await boardRef.get()
-    if (docBoard.exists) {
-      board = docBoard.data()
-    }
-
-    // Get card object if card_id param is present
-    const cardId = params.card_id
-    if (cardId) {
-      const cardRef = boardRef
-        .collection('cards')
-        .doc(cardId)
-
-      const docCard = await cardRef.get()
-      if (docCard.exists) {
-        currentCard = docCard.data()
-        currentCard.id = docCard.id
-      }
-    }
-
-    return { board, currentCard }
-  },
   data () {
     return {
+      board: null,
+      currentCard: null,
       isEditBoardTitle: false,
       isSidenav: false,
 
@@ -312,6 +295,32 @@ export default {
       dragList: null,
       dropList: null,
       dragDropPayload: null
+    }
+  },
+  async fetch () {
+    // Get board object
+    const boardRef = this.$fire.firestore
+      .collection('users')
+      .doc(this.$store.getters.getUser.uid)
+      .collection('boards')
+      .doc(this.$route.params.id)
+
+    const docBoard = await boardRef.get()
+    if (docBoard.exists) {
+      this.board = docBoard.data()
+    }
+
+    // Get card object if card_id param is present
+    const cardId = this.$route.params.card_id
+    if (cardId) {
+      const cardRef = boardRef
+        .collection('cards')
+        .doc(cardId)
+
+      const docCard = await cardRef.get()
+      if (docCard.exists) {
+        this.currentCard = docCard.data()
+      }
     }
   },
   computed: {
