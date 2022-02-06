@@ -14,12 +14,14 @@
             <div class="brello-card-header">
               <textarea
                 ref="brello-edit-card-title"
-                v-model="detailedCard.title"
+                :value="detailedCard.title"
                 spellcheck="false"
                 rows="1"
                 class="card-title text-h6"
                 @focus="mixin_resizeTextareaHeight"
                 @input="mixin_resizeTextareaHeight"
+                @blur="updateBoardTitle"
+                @keydown.enter.prevent="$event.target.blur()"
               />
             </div>
             <v-icon
@@ -194,6 +196,13 @@ export default {
   methods: {
     updateCardDetails () {
       this.$emit('update-card', this.detailedCard)
+    },
+    updateBoardTitle ({ target }) {
+      if (target.value) {
+        this.detailedCard.title = target.value
+      } else {
+        target.value = this.detailedCard.title
+      }
     },
     addChecklist (title) {
       if (!this.detailedCard.checklists) {
