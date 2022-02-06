@@ -48,7 +48,7 @@ export default {
     snackbarText: ''
   }),
   watch: {
-    '$store.state.error' (val) {
+    '$store.getters.getError' (val) {
       this.snackbarColor = 'red darken-1'
       this.snackbarText = val.message
       this.snackbar = true

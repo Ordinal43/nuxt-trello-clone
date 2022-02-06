@@ -76,7 +76,7 @@ export default {
     }
   },
   watch: {
-    '$store.state.user' () {
+    '$store.getters.getUser' () {
       this.$router.push({
         path: '/'
       })
