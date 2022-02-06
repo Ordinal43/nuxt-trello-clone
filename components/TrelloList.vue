@@ -277,7 +277,7 @@ export default {
         ? 'success'
         : (this.mixin_getDateDueStatus(
             `${endDate} ${endTime || ''}`
-          ) || {}).color || 'transparent'
+          ))?.color || 'transparent'
     },
     getDateDetails (date) {
       let dateStr, format, sameYear
