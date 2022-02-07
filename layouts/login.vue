@@ -48,6 +48,11 @@ export default {
     snackbarText: ''
   }),
   watch: {
+    '$store.getters.getUser' () {
+      this.$router.push({
+        path: '/'
+      })
+    },
     '$store.getters.getError' (val) {
       this.snackbarColor = 'red darken-1'
       this.snackbarText = val.message
