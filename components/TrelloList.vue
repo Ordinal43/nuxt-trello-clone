@@ -219,11 +219,11 @@ export default {
   props: {
     list: { type: Object, required: true }
   },
-  data: () => ({
+  data: vm => ({
     isEditTitle: false,
     menu: false,
     listAction: [
-      { icon: 'mdi-delete', title: 'Delete list', color: 'red', method: this.deleteList }
+      { icon: 'mdi-delete', title: 'Delete list', color: 'red', method: vm.deleteList }
     ],
     dropPlaceholderOptions: {
       className: 'drop-preview',
