@@ -81,6 +81,7 @@
         <Draggable
           v-for="card in list.cards"
           :key="`card-${card.id}`"
+          :drag-not-allowed="$isMobile()"
         >
           <v-hover v-slot="{ hover }">
             <v-card
