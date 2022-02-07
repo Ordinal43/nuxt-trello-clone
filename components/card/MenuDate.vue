@@ -110,7 +110,7 @@
 </template>
 
 <script>
-import { cloneDeep } from 'lodash'
+import cloneDeep from 'lodash/cloneDeep'
 import { VALID_DATE_FORMATS, SANITIZE_DATE_STRING, SANITIZE_TIME_STRING } from '@/utils/date.utils'
 import dayjs from '@/utils/dayjs.utils'
 
@@ -127,21 +127,19 @@ export default {
       default: () => {}
     }
   },
-  data () {
-    return {
-      menu: false,
-      x: 0,
-      y: 0,
-      dates: [],
-      pickerDate: undefined,
-      startDate: undefined,
-      endDate: undefined,
-      endTime: undefined,
-      hasStartDate: false,
-      hasEndDate: false,
-      isOnEndDate: true
-    }
-  },
+  data: () => ({
+    menu: false,
+    x: 0,
+    y: 0,
+    dates: [],
+    pickerDate: undefined,
+    startDate: undefined,
+    endDate: undefined,
+    endTime: undefined,
+    hasStartDate: false,
+    hasEndDate: false,
+    isOnEndDate: true
+  }),
   computed: {
     // getPickerDate () {
     //   const from = this.hasStartDate ? dayjs(this.startDate).format(FORMAT_DATE_PICKER) : null

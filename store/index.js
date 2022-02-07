@@ -3,18 +3,32 @@ import JWTDecode from 'jwt-decode'
 import cookieparser from 'cookieparser'
 
 const state = () => ({
-  user: null
+  user: null,
+  error: null,
+  alert: null
 })
 
 const getters = {
   getUser (state) {
     return state.user
+  },
+  getError (state) {
+    return state.error
+  },
+  getAlert (state) {
+    return state.alert
   }
 }
 
 const mutations = {
-  setUser (state, user) {
+  SET_USER (state, user) {
     state.user = user
+  },
+  SET_ERROR (state, error) {
+    state.error = error
+  },
+  SET_ALERT (state, alert) {
+    state.alert = alert
   }
 }
 
@@ -41,24 +55,24 @@ const actions = {
     const decoded = JWTDecode(accessTokenCookie)
 
     if (decoded) {
-      commit('setUser', {
+      commit('SET_USER', {
         uid: decoded.user_id,
-        email: decoded.email
+        email: decoded.email,
+        displayName: decoded.displayName
       })
     }
   },
   async onAuthStateChangedAction (state, { authUser, claims }) {
     if (!authUser) {
-      state.commit('setUser', null)
+      state.commit('SET_USER', null)
       this.$router.push({
-        path: '/auth/applogin'
+        path: '/auth/login'
       })
     } else {
       const token = await authUser.getIdToken()
-      const { uid, email } = authUser
-
+      const { uid, email, displayName } = authUser
       Cookie.set('brello_access_token', token)
-      state.commit('setUser', { uid, email })
+      state.commit('SET_USER', { uid, email, displayName })
     }
   }
 }

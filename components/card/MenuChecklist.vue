@@ -55,12 +55,10 @@
 
 <script>
 export default {
-  data () {
-    return {
-      menu: false,
-      title: ''
-    }
-  },
+  data: () => ({
+    menu: false,
+    title: ''
+  }),
   watch: {
     menu (val) {
       if (val) {

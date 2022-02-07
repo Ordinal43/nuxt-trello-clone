@@ -43,8 +43,8 @@
           class="card-description text-body-2"
           placeholder="Add a more detailed description..."
           :value="value"
-          @focus="mixin_resizeTextarea"
-          @input="mixin_resizeTextarea"
+          @focus="mixin_resizeTextareaHeight"
+          @input="mixin_resizeTextareaHeight"
         />
         <div class="mt-1">
           <v-btn
@@ -81,11 +81,9 @@ export default {
       default: ''
     }
   },
-  data () {
-    return {
-      descriptionEdit: false
-    }
-  },
+  data: () => ({
+    descriptionEdit: false
+  }),
   methods: {
     openEdit () {
       this.descriptionEdit = true

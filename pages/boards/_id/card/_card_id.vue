@@ -1,110 +1,149 @@
 <template>
   <v-card color="#F4F5F7">
     <v-container>
-      <v-row>
-        <v-col class="pl-sm-4 d-flex align-start">
-          <v-icon
-            class="brello-card-icon pr-2 pt-2"
-          >
-            mdi-card-bulleted
-          </v-icon>
-          <div class="brello-card-header">
-            <textarea
-              ref="brello-edit-card-title"
-              v-model="detailedCard.title"
-              spellcheck="false"
-              rows="1"
-              class="card-title text-h6"
-              @input="mixin_resizeTextarea"
-            />
-          </div>
-          <v-icon
-            class="brello-card-action ml-4"
-            @click="$router.go(-1)"
-          >
-            mdi-close
-          </v-icon>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col>
-          <template v-if="$fetchState.pending" />
-          <template v-else-if="$fetchState.error">
-            <p class="text-center text-caption">
-              An error occurred :(
-            </p>
-          </template>
-          <template v-else>
-            <v-row>
-              <!-- ============= Main ============= -->
-              <v-col
-                cols="12"
-                sm="9"
-                class="pl-sm-4"
-              >
-                <CardDate
-                  v-if="detailedCard.date"
-                  v-model="detailedCard.date"
-                  @open-date-menu="openDateMenu"
-                />
-                <CardDescription
-                  v-model="detailedCard.description"
-                />
-                <CardChecklistGroup
-                  v-model="detailedCard.checklists"
-                />
-              </v-col>
-              <!-- ============= Sidebar ============= -->
-              <v-col
-                cols="12"
-                sm="3"
-              >
-                <MenuChecklist
-                  @add-checklist="addChecklist"
-                />
-                <div class="mb-2">
-                  <v-btn
-                    small
-                    depressed
-                    block
-                    color="#091E420A"
-                    @click="openDateMenu"
-                  >
-                    <v-icon left>
-                      mdi-checkbox-marked-outline
-                    </v-icon>
-                    date
-                  </v-btn>
-                  <MenuDate
-                    ref="menuDate"
+      <FetchPending v-if="$fetchState.pending" />
+      <FetchError v-else-if="$fetchState.error" />
+      <template v-else-if="detailedCard">
+        <v-row>
+          <v-col class="pl-sm-4 d-flex align-start">
+            <v-icon
+              class="brello-card-icon pr-2 pt-2"
+            >
+              mdi-card-bulleted
+            </v-icon>
+            <div class="brello-card-header">
+              <textarea
+                ref="brello-edit-card-title"
+                :value="detailedCard.title"
+                spellcheck="false"
+                rows="1"
+                class="card-title text-h6"
+                @focus="mixin_resizeTextareaHeight"
+                @input="mixin_resizeTextareaHeight"
+                @blur="updateBoardTitle"
+                @keydown.enter.prevent="$event.target.blur()"
+              />
+            </div>
+            <v-icon
+              class="brello-card-action ml-4"
+              @click="$router.go(-1)"
+            >
+              mdi-close
+            </v-icon>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <template v-if="$fetchState.pending" />
+            <template v-else-if="$fetchState.error">
+              <p class="text-center text-caption">
+                An error occurred :(
+              </p>
+            </template>
+            <template v-else>
+              <v-row>
+                <!-- ============= Main ============= -->
+                <v-col
+                  cols="12"
+                  sm="9"
+                  class="pl-sm-4"
+                >
+                  <CardDate
+                    v-if="detailedCard.date"
                     v-model="detailedCard.date"
+                    @open-date-menu="openDateMenu"
                   />
-                </div>
-                <div class="mb-2">
-                  <v-btn
-                    small
-                    depressed
-                    block
-                    color="#091E420A"
-                    @click="$emit('delete-card')"
-                  >
-                    <v-icon left>
-                      mdi-delete
-                    </v-icon>
-                    delete
-                  </v-btn>
-                </div>
-              </v-col>
-            </v-row>
-          </template>
-        </v-col>
-      </v-row>
+                  <CardDescription
+                    v-model="detailedCard.description"
+                  />
+                  <CardChecklistGroup
+                    v-model="detailedCard.checklists"
+                  />
+                </v-col>
+                <!-- ============= Sidebar ============= -->
+                <v-col
+                  cols="12"
+                  sm="3"
+                >
+                  <MenuChecklist
+                    @add-checklist="addChecklist"
+                  />
+                  <div class="mb-2">
+                    <v-btn
+                      small
+                      depressed
+                      block
+                      color="#091E420A"
+                      @click="openDateMenu"
+                    >
+                      <v-icon left>
+                        mdi-checkbox-marked-outline
+                      </v-icon>
+                      date
+                    </v-btn>
+                    <MenuDate
+                      ref="menuDate"
+                      v-model="detailedCard.date"
+                    />
+                  </div>
+                  <div class="mb-2">
+                    <v-btn
+                      small
+                      depressed
+                      block
+                      color="#091E420A"
+                      @click="$emit('delete-card')"
+                    >
+                      <v-icon left>
+                        mdi-delete
+                      </v-icon>
+                      delete
+                    </v-btn>
+                  </div>
+                </v-col>
+              </v-row>
+            </template>
+          </v-col>
+        </v-row>
+      </template>
+      <div
+        v-else
+        class="fill-height d-flex align-center justify-center"
+      >
+        <div class="my-9">
+          <img
+            src="~/assets/not-found.svg"
+            alt="board-not-found.svg"
+            height="160"
+          >
+          <p class="text-subtitle-1 mt-3 text-center">
+            Card not found...
+          </p>
+          <div class="text-center">
+            <v-btn
+              depressed
+              dark
+              nuxt
+              :to="`/boards/${$route.params.id}`"
+              color="#026AA7"
+            >
+              <v-icon
+                left
+              >
+                mdi-arrow-left
+              </v-icon>
+              Back to board
+            </v-btn>
+          </div>
+        </div>
+      </div>
     </v-container>
   </v-card>
 </template>
 
 <script>
 import { v4 as uuidv4 } from 'uuid'
+import debounce from 'lodash/debounce'
 import { mixinTextArea } from '@/mixins/vue-mixins'
 
 let IS_FROM_FIRESTORE = false
@@ -113,11 +152,9 @@ export default {
   mixins: [
     mixinTextArea
   ],
-  data () {
-    return {
-      detailedCard: {}
-    }
-  },
+  data: () => ({
+    detailedCard: null
+  }),
   async fetch () {
     const cardRef = this.$fire.firestore
       .collection('users')
@@ -132,10 +169,12 @@ export default {
 
     if (doc.exists) {
       this.detailedCard = doc.data()
-      this.detailedCard.id = doc.id
       IS_FROM_FIRESTORE = true
     }
   },
+  head: vm => ({
+    title: vm.$fetchState.pending ? '...' : (vm.detailedCard?.title || 'Card not found!')
+  }),
   watch: {
     detailedCard: {
       handler (val) {
@@ -149,13 +188,20 @@ export default {
       deep: true
     }
   },
-  mounted () {
-    // fire textarea resize on mounted
-    this.mixin_resizeTextarea({ target: this.$refs['brello-edit-card-title'] })
+  updated () {
+    // fire textarea resize on updated
+    this.mixin_resizeTextareaHeight({ target: this.$refs['brello-edit-card-title'] })
   },
   methods: {
-    updateCardDetails () {
+    updateCardDetails: debounce(function () {
       this.$emit('update-card', this.detailedCard)
+    }, 300),
+    updateBoardTitle ({ target }) {
+      if (target.value) {
+        this.detailedCard.title = target.value
+      } else {
+        target.value = this.detailedCard.title
+      }
     },
     addChecklist (title) {
       if (!this.detailedCard.checklists) {

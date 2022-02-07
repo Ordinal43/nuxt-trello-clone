@@ -45,7 +45,8 @@
 </template>
 
 <script>
-import { tap, cloneDeep } from 'lodash'
+import tap from 'lodash/tap'
+import cloneDeep from 'lodash/cloneDeep'
 import dayjs from '@/utils/dayjs.utils'
 import { mixinDate } from '@/mixins/vue-mixins'
 

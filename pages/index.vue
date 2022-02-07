@@ -1,58 +1,74 @@
 <template>
-  <v-container class="mt-3">
-    <v-row align="center">
-      <h2>My Boards</h2>
-      <v-btn
-        v-show="boards.length"
-        small
-        class="ml-4"
-        @click="dialog = true"
-      >
-        <v-icon
-          left
-        >
-          mdi-trello
-        </v-icon>
-        create
-      </v-btn>
-    </v-row>
-    <v-row>
-      <v-col v-if="$fetchState.pending">
-        <p class="text-center text-caption">
-          Fetching boards...
-        </p>
-      </v-col>
-      <v-col v-else-if="$fetchState.error">
-        <p class="text-center text-caption">
-          An error occurred :(
-        </p>
-      </v-col>
-      <template v-else>
-        <div v-if="!boards.length">
-          <p class="text-center">
-            No boards yet...
-          </p>
-          <v-btn @click="dialog = true">
-            <v-icon
-              left
+  <v-container class="fill-height">
+    <v-row class="fill-height">
+      <v-col class="d-flex flex-column">
+        <v-row class="flex-grow-0 flex-shrink-0">
+          <v-col class="d-flex align-center">
+            <h2>My Boards</h2>
+            <v-btn
+              v-show="boards.length"
+              small
+              class="ml-4"
+              @click="dialog = true"
             >
-              mdi-trello
-            </v-icon>
-            Add a board
-          </v-btn>
-        </div>
-        <template v-else>
-          <v-col
-            v-for="b in boards"
-            :key="`board-${b.id}`"
-            sm="4"
-            md="3"
-            lg="2"
-          >
-            <LazyTrelloBoard :board="b" />
+              <v-icon
+                left
+              >
+                mdi-trello
+              </v-icon>
+              create
+            </v-btn>
           </v-col>
-        </template>
-      </template>
+        </v-row>
+        <FetchPending v-if="$fetchState.pending" />
+        <FetchError v-else-if="$fetchState.error" />
+        <v-row v-else class="align-content-start">
+          <v-col
+            v-if="!boards.length"
+            class="text-center"
+          >
+            <img
+              src="~/assets/no-boards.svg"
+              alt="no-boards.svg"
+              height="160"
+              class="my-5"
+            >
+            <p class="text-h4 mt-3 text-center">
+              "Looks clean..."
+            </p>
+            <div class="text-center">
+              You have no boards at the moment.
+              <v-btn
+                small
+                depressed
+                dark
+                color="#026AA7"
+                class="ml-3"
+                @click="dialog = true"
+              >
+                <v-icon
+                  left
+                >
+                  mdi-trello
+                </v-icon>
+                Add one!
+              </v-btn>
+            </div>
+          </v-col>
+          <template v-else>
+            <v-col
+              v-for="b in boards"
+              :key="`board-${b.id}`"
+              cols="12"
+              sm="4"
+              md="3"
+              lg="2"
+            >
+              <LazyTrelloBoard :board="b" />
+            </v-col>
+          </template>
+        </v-row>
+      </v-col>
     </v-row>
     <v-dialog
       :key="dialog"
@@ -84,8 +100,9 @@
                   label="Board title"
                   name="title"
                   type="text"
-                  :rules="[v => !!v || 'Board title is required']"
                   required
+                  validate-on-blur
+                  :rules="[v => !!v || 'Board title is required']"
                 />
               </v-col>
               <v-col
@@ -154,7 +171,7 @@
                       absolute
                       right
                       class="mr-n2"
-                      @click="resetFileInput()"
+                      @click="resetFileInput"
                     >
                       <v-icon>mdi-delete</v-icon>
                     </v-btn>
@@ -163,7 +180,7 @@
                 <input
                   ref="imageFileInput"
                   type="file"
-                  accept="jpg, jpeg, png"
+                  accept="image/jpg, image/jpeg, image/png"
                   style="display: none;"
                   @change="previewImage($event)"
                 >
@@ -190,53 +207,33 @@
         </v-overlay>
       </v-card>
     </v-dialog>
-    <v-snackbar
-      v-model="snackbar"
-      :timeout="5000"
-      :color="snackbarColor"
-    >
-      {{ snackbarText }}
-      <template #action="{ attrs }">
-        <v-btn
-          color="white"
-          icon
-          v-bind="attrs"
-          @click="snackbar = false"
-        >
-          <v-icon>mdi-close</v-icon>
-        </v-btn>
-      </template>
-    </v-snackbar>
   </v-container>
 </template>
 
 <script>
 import { v4 as uuidv4 } from 'uuid'
+import { MIMETYPE_IMAGES } from '@/utils/input_rules.utils'
 
 export default {
   name: 'IndexPage',
-  data () {
-    return {
-      enableColor: false,
-      dialog: false,
-      uploading: false,
-      board: {
-        title: '',
-        color: '',
-        image: {
-          name: '',
-          originalName: '',
-          downloadURL: '',
-          uuid: ''
-        }
+  data: () => ({
+    enableColor: false,
+    dialog: false,
+    uploading: false,
+    boards: [],
+    board: {
+      title: '',
+      color: '',
+      image: {
+        name: '',
+        originalName: '',
+        downloadURL: '',
+        uuid: ''
       },
-      boards: [],
-      fileToUpload: {},
-      snackbar: false,
-      snackbarColor: '',
-      snackbarText: ''
-    }
-  },
+      images: []
+    },
+    fileToUpload: {}
+  }),
   async fetch () {
     // Get created board list
     const boardsRef = this.$fire.firestore
@@ -247,14 +244,11 @@ export default {
     const querySnapshot = await boardsRef
       .get()
 
-    if (querySnapshot.docs.length > 0) {
-      for (const doc of querySnapshot.docs) {
-        const data = doc.data()
-        data.id = doc.id
-        this.boards.push(data)
-      }
-    }
+    this.boards = querySnapshot.docs.map(doc => doc.data())
   },
+  head: () => ({
+    title: 'Home'
+  }),
   mounted () {
     // Add listener to refresh board when data changes
     this.$fire.firestore
@@ -262,14 +256,7 @@ export default {
       .doc(this.$store.getters.getUser.uid)
       .collection('boards')
       .onSnapshot((querySnapshot) => {
-        if (querySnapshot.docs.length > 0) {
-          this.boards = []
-          for (const doc of querySnapshot.docs) {
-            const data = doc.data()
-            data.id = doc.id
-            this.boards.push(data)
-          }
-        }
+        this.boards = querySnapshot.docs.map(doc => doc.data())
       })
   },
   methods: {
@@ -277,78 +264,67 @@ export default {
       this.board.color = ''
       this.enableColor = false
     },
-    createBoard () {
+    async createBoard () {
       if (this.$refs.form.validate()) {
-        const uuid = uuidv4()
+        const uuidBoard = uuidv4()
+        const uuidImage = uuidv4()
         this.uploading = true
         if (this.fileToUpload.file) {
-          const itemFilename = `${uuid}-${this.fileToUpload.file.name}`
-          const itemName = `images/${this.$store.getters.getUser.uid}/boards/${uuid}/${itemFilename}`
+          if (MIMETYPE_IMAGES.includes(this.fileToUpload.file.type)) {
+            const itemFilename = `${uuidImage}-${this.fileToUpload.file.name}`
+            const itemName = `images/${this.$store.getters.getUser.uid}/boards/${uuidBoard}/${itemFilename}`
 
-          const itemRef = this.$fire.storage.ref().child(itemName)
-          const itemMeta = {
-            customMetadata: {
-              owner: this.$store.getters.getUser.uid
+            const itemRef = this.$fire.storage.ref().child(itemName)
+            const itemMeta = {
+              customMetadata: {
+                owner: this.$store.getters.getUser.uid
+              }
             }
-          }
 
-          const task = itemRef.put(this.fileToUpload.file, itemMeta)
-          return task.on(
-            'state_changed',
-            null,
-            // on upload error
-            (error) => {
-              this.snackbarColor = 'red darken-1'
-              this.snackbarText = error.message
-              this.snackbar = true
-              return false
-            },
-            // on upload success
-            async () => {
-              const url = await task.snapshot.ref.getDownloadURL()
-
-              this.board.image = {
+            try {
+              const snapshot = await itemRef.put(this.fileToUpload.file, itemMeta)
+              const url = await snapshot.ref.getDownloadURL()
+              const image = {
                 name: itemFilename,
                 originalName: this.fileToUpload.file.name,
                 downloadURL: url,
-                uuid
+                uuid: uuidImage
               }
+              this.board.image = image
+              this.board.images.push(image)
 
-              this.uploadBoardData(uuid, itemRef)
+              this.uploadBoardData(uuidBoard, itemRef)
+            } catch (error) {
+              this.$store.commit('SET_ERROR', error)
             }
-          )
+          } else {
+            alert('Invalid file!')
+          }
         } else {
-          this.uploadBoardData(uuid)
+          this.uploadBoardData(uuidBoard)
         }
       }
     },
-    async uploadBoardData (uuid, itemRef) {
+    async uploadBoardData (uuidBoard, itemRef) {
+      this.board.id = uuidBoard
       this.board.dateCreated = Date.now()
       try {
         await this.$fire.firestore
           .collection('users')
           .doc(this.$store.getters.getUser.uid)
           .collection('boards')
-          .doc(uuid)
+          .doc(uuidBoard)
           .set(this.board)
 
         this.dialog = false
         this.$refs.form.reset()
-        this.snackbarColor = 'green darken-1'
-        this.snackbarText = 'Successfully created your board'
-        this.snackbar = true
       } catch (error) {
-        this.snackbarColor = 'red darken-1'
-        this.snackbarText = error.message
-        this.snackbar = true
-
+        this.$store.commit('SET_ERROR', error)
         if (itemRef) {
           try {
-            itemRef.delete()
+            await itemRef.delete()
           } catch (error) {
-            this.snackbarColor = 'red darken-1'
-            this.snackbarText = error.message
-            this.snackbar = true
+            this.$store.commit('SET_ERROR', error)
           }
         }
       } finally {
