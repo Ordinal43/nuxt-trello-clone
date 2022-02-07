@@ -738,6 +738,8 @@ export default {
   display: flex;
   align-items: flex-start;
   overflow-x: scroll;
+  // Override 'touch-action: none' from vue-dndrop
+  touch-action: auto !important;
 }
 
 ::v-deep .brello-list {
