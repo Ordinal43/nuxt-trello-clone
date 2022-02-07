@@ -9,7 +9,7 @@
     <Draggable
       v-for="(cl, clIdx) in value"
       :key="`checklist-${cl.id}`"
-      :drag-not-allowed="!!menu[cl.id]"
+      :drag-not-allowed="!!menu[cl.id] || $isMobile()"
     >
       <v-overlay
         absolute
