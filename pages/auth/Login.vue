@@ -76,13 +76,6 @@ export default {
   head: () => ({
     title: 'Sign in'
   }),
-  watch: {
-    '$store.getters.getUser' () {
-      this.$router.push({
-        path: '/'
-      })
-    }
-  },
   methods: {
     async login () {
       if (this.$refs.formLogin.validate()) {
