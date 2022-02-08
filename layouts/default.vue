@@ -144,8 +144,9 @@ export default {
 </script>
 
 <style lang="scss">
-html {
+html, body, #__nuxt, #__layout, #app {
   overflow-y: hidden !important;
+  height: 100%;
 }
 </style>
 
@@ -156,7 +157,7 @@ a {
 }
 
 .brello-flex-container {
-  height: 100vh;
+  height: 100%;
   min-height: 300px;
   display: flex;
   flex-direction: column;
