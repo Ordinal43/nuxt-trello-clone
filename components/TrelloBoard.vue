@@ -1,6 +1,7 @@
 <template>
   <v-card
     rounded
+    height="80"
     :style="getBoardStyle"
     :color="board.color"
     :to="`/boards/${board.id}`"
@@ -11,7 +12,7 @@
         {{ board.title }}
       </h4>
       <p class="text-caption">
-        {{ board.dateCreated | formatFromNow }}
+        {{ board.created_at | formatFromNow }}
       </p>
     </div>
   </v-card>
@@ -38,6 +39,7 @@ export default {
 
 <style scoped>
 .bg-fade {
+  height: 100%;
   background-color: #00000073;
 }
 </style>
