@@ -17,7 +17,7 @@
           prepend-icon="mdi-account"
           type="text"
           validate-on-blur
-          :rules="[rules.required]"
+          :rules="[inputRequired]"
         />
         <v-text-field
           v-model="auth.password"
@@ -27,7 +27,7 @@
           validate-on-blur
           :append-icon="isShowPass ? 'mdi-eye-off' : 'mdi-eye'"
           :type="isShowPass ? 'text' : 'password'"
-          :rules="[rules.required]"
+          :rules="[inputRequired]"
           @click:append="() => (isShowPass = !isShowPass)"
         />
       </v-form>
@@ -57,7 +57,7 @@
   </v-card>
 </template>
 <script>
-import { required } from '@/utils/input_rules.utils'
+import { inputRequired } from '@/utils/input_rules.utils'
 
 export default {
   name: 'AuthLogin',
@@ -67,9 +67,6 @@ export default {
       email: '',
       password: ''
     },
-    rules: {
-      required
-    },
     isShowPass: false,
     loading: false
   }),
@@ -77,6 +74,7 @@ export default {
     title: 'Sign in'
   }),
   methods: {
+    inputRequired,
     async login () {
       if (this.$refs.formLogin.validate()) {
         this.loading = true

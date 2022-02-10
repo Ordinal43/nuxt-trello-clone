@@ -102,7 +102,7 @@
                   type="text"
                   required
                   validate-on-blur
-                  :rules="[v => !!v || 'Board title is required']"
+                  :rules="[inputRequired]"
                 />
               </v-col>
               <v-col
@@ -212,7 +212,7 @@
 
 <script>
 import { v4 as uuidv4 } from 'uuid'
-import { MIMETYPE_IMAGES } from '@/utils/input_rules.utils'
+import { MIMETYPE_IMAGES, inputRequired } from '@/utils/input_rules.utils'
 
 export default {
   name: 'IndexPage',
@@ -260,6 +260,7 @@ export default {
       })
   },
   methods: {
+    inputRequired,
     removeColor () {
       this.board.color = ''
       this.enableColor = false

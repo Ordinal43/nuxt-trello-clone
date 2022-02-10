@@ -17,7 +17,7 @@
           prepend-icon="mdi-account"
           type="text"
           validate-on-blur
-          :rules="[rules.required]"
+          :rules="[inputRequired]"
         />
         <v-text-field
           v-model="auth.email"
@@ -26,7 +26,7 @@
           prepend-icon="mdi-email"
           type="text"
           validate-on-blur
-          :rules="[rules.required, rules.email]"
+          :rules="[inputRequired, inputEmail]"
         />
         <v-text-field
           v-model="auth.password"
@@ -36,7 +36,7 @@
           validate-on-blur
           :append-icon="isShowPass ? 'mdi-eye-off' : 'mdi-eye'"
           :type="isShowPass ? 'text' : 'password'"
-          :rules="[rules.required]"
+          :rules="[inputRequired]"
           @click:append="() => (isShowPass = !isShowPass)"
         />
         <v-text-field
@@ -44,7 +44,7 @@
           name="password confirm"
           label="Confirm password"
           type="password"
-          :rules="[rules.matchPassword]"
+          :rules="[matchPassword]"
           :success="getMatchPassStatus"
           :append-icon="getMatchPassStatus? 'mdi-check' : ''"
         >
@@ -83,7 +83,7 @@
 </template>
 
 <script>
-import { required, email } from '@/utils/input_rules.utils'
+import { inputRequired, inputEmail } from '@/utils/input_rules.utils'
 
 export default {
   name: 'AuthSignUp',
@@ -95,11 +95,6 @@ export default {
       password: ''
     },
     passwordConfirm: '',
-    rules: {
-      required,
-      email,
-      matchPassword: v => v === vm.auth.password || 'Password does not match!'
-    },
     isShowPass: false,
     loading: false
   }),
@@ -112,6 +107,11 @@ export default {
     }
   },
   methods: {
+    inputRequired,
+    inputEmail,
+    matchPassword (v) {
+      return v === this.auth.password || 'Password does not match!'
+    },
     async signUp () {
       if (this.$refs.formSignUp.validate()) {
         this.loading = true
