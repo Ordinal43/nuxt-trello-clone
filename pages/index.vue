@@ -266,6 +266,19 @@ import cloneDeep from 'lodash/cloneDeep'
 import { v4 as uuidv4 } from 'uuid'
 import { MIMETYPE_IMAGES, inputRequired } from '@/utils/input_rules.utils'
 
+const WORKSPACE_COLOR = [
+  ['#cc4223', '#cb7d25'],
+  ['#403294', '#0747a6'],
+  ['#0747a6', '#008da6'],
+  ['#b22865', '#cd5a91'],
+  ['#006644', '#00875a']
+]
+
+const getRandomGradient = () => {
+  const idx = Math.floor(Math.random() * WORKSPACE_COLOR.length)
+  return WORKSPACE_COLOR[idx]
+}
+
 export default {
   name: 'IndexPage',
   data: () => ({
@@ -374,7 +387,8 @@ export default {
         }
         this.user.workspaces.push({
           id: uuidWorkspace,
-          title: this.workspaceTitle
+          title: this.workspaceTitle,
+          color: getRandomGradient()
         })
         try {
           await this.$fire.firestore
