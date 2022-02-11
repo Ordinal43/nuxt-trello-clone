@@ -1,5 +1,5 @@
 <template>
-  <div class="fill-height d-flex align-center justify-center">
+  <div class="fill-height mx-auto d-flex align-center justify-center">
     Fetching Error!
   </div>
 </template>
