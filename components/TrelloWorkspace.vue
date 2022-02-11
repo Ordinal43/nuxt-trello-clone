@@ -1,22 +1,36 @@
 <template>
   <v-row>
-    <v-col cols="12">
+    <v-col cols="12" class="d-flex align-center">
+      <v-avatar
+        size="30"
+        rounded
+        class="mr-3"
+        :style="{
+          background: `linear-gradient(${workspace.color[0]}, ${workspace.color[1]})`
+        }"
+      >
+        <span class="white--text text-uppercase font-weight-black">
+          {{ workspace.title[0] }}
+        </span>
+      </v-avatar>
       <h4>{{ workspace.title }}</h4>
     </v-col>
     <v-col
       v-for="b in workspace.boards"
       :key="`board-${b.id}`"
       cols="12"
-      sm="4"
-      md="3"
+      sm="6"
+      md="4"
+      lg="3"
     >
       <LazyTrelloBoard :board="b" />
     </v-col>
     <v-hover v-slot="{ hover }">
       <v-col
         cols="12"
-        sm="4"
-        md="3"
+        sm="6"
+        md="4"
+        lg="3"
       >
         <v-card
           rounded

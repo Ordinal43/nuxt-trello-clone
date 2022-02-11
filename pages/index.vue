@@ -1,42 +1,48 @@
 <template>
   <v-container class="fill-height">
-    <v-row class="fill-height">
-      <v-col
-        sm="4"
-        md="3"
-        class="d-none d-sm-flex"
+    <FetchPending v-if="$fetchState.pending" />
+    <FetchError v-else-if="$fetchState.error" />
+    <div
+      v-else
+      class="brello-workspace"
+    >
+      <div
+        class="brello-workspace-sidenav d-none d-sm-block"
       >
-        yehe
-      </v-col>
-      <v-col
-        sm="8"
-        md="9"
-        class="d-flex flex-column"
+        <v-list dense>
+          <v-list-item>
+            <v-list-item-content>
+              <v-list-item-title class="text--secondary">
+                Workspaces
+              </v-list-item-title>
+            </v-list-item-content>
+            <v-list-item-action>
+              <v-btn
+                x-small
+                icon
+                text
+                @click="openDialogWorkspace"
+              >
+                <v-icon>mdi-plus</v-icon>
+              </v-btn>
+            </v-list-item-action>
+          </v-list-item>
+          <SidenavWorkspace
+            :workspaces="user.workspaces"
+          />
+        </v-list>
+      </div>
+      <div
+        class="brello-workspace-main"
       >
         <v-row class="flex-grow-0 flex-shrink-0">
           <v-col class="d-flex align-center">
-            <h3
-              class="text-uppercase text--secondary"
-            >
+            <h3 class="text-uppercase text--secondary">
               Your workspaces
             </h3>
-            <v-btn
-              small
-              class="ml-4"
-              @click="openDialogWorkspace"
-            >
-              <v-icon
-                left
-              >
-                mdi-trello
-              </v-icon>
-              create
-            </v-btn>
           </v-col>
         </v-row>
-        <FetchPending v-if="$fetchState.pending" />
-        <FetchError v-else-if="$fetchState.error" />
-        <v-row v-else class="align-content-start">
+        <v-row class="align-content-start">
           <v-col v-if="!getWorkspaces.length">
             <p class="text-subtitle-1 text-uppercase text--secondary font-weight-bold">
               your workspaces
@@ -60,13 +66,14 @@
             />
           </v-col>
         </v-row>
-      </v-col>
-    </v-row>
+      </div>
+    </div>
 
     <!-- ============= Dialog create workspace ============= -->
     <v-dialog
       v-model="dialogWorkspace"
       max-width="355"
+      persistent
     >
       <v-card>
         <v-container>
@@ -77,7 +84,7 @@
             class="mb-2"
           >
             <h3>Add Workspace</h3>
-            <v-icon @click="dialogWorkspace = false; resetWorkspaceForm();">
+            <v-icon @click="dialogWorkspace = false;">
               mdi-close
             </v-icon>
           </v-row>
@@ -125,6 +132,7 @@
     <v-dialog
       v-model="dialogBoard"
       max-width="355"
+      persistent
     >
       <v-card>
         <v-container>
@@ -135,7 +143,7 @@
             class="mb-2"
           >
             <h3>Add Board</h3>
-            <v-icon @click="dialogBoard = false; resetBoardForm();">
+            <v-icon @click="dialogBoard = false">
               mdi-close
             </v-icon>
           </v-row>
@@ -345,6 +353,18 @@ export default {
       return workspacesNew
     }
   },
+  watch: {
+    dialogWorkspace (val) {
+      if (!val) {
+        this.resetWorkspaceForm()
+      }
+    },
+    dialogBoard (val) {
+      if (!val) {
+        this.resetBoardForm()
+      }
+    }
+  },
   mounted () {
     this.$fire.firestore
       .collection('users')
@@ -525,6 +545,20 @@ export default {
 </script>
 
 <style lang="scss">
+.brello-workspace {
+  display: flex;
+  width: 100%;
+  &-sidenav {
+    width: 272px;
+    flex: 0 0 auto;
+  }
+  &-main {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
 input,
 textarea {
   width: 100%;
