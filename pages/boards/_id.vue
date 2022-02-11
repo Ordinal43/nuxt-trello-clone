@@ -108,7 +108,7 @@
       </div>
     </div>
     <v-expand-x-transition>
-      <BoardSidenav
+      <SidenavBoard
         v-show="isSidenav"
         v-model="board"
         @close="isSidenav = false"
