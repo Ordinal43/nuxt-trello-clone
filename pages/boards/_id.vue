@@ -108,7 +108,7 @@
       </div>
     </div>
     <v-expand-x-transition>
-      <BoardMenu
+      <SidenavBoard
         v-show="isSidenav"
         v-model="board"
         @close="isSidenav = false"
@@ -433,7 +433,7 @@ export default {
         this.isCreateList = false
         this.list.id = uuidv4()
         this.list.cards = []
-        this.list.dateCreated = Date.now()
+        this.list.created_at = this.$fireModule.firestore.FieldValue.serverTimestamp()
         if (!this.board.lists) {
           this.board.lists = []
         }
