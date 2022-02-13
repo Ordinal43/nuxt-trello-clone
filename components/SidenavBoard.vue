@@ -129,7 +129,7 @@
                     <v-img
                       :src="image.downloadURL"
                       :alt="image.originalName"
-                      max-height="100"
+                      height="100"
                       class="align-end"
                     >
                       <v-sheet
