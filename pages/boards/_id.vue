@@ -263,6 +263,7 @@
 
 <script>
 import cloneDeep from 'lodash/cloneDeep'
+import debounce from 'lodash/debounce'
 import { v4 as uuidv4 } from 'uuid'
 import { mixinInput } from '@/mixins/vue-mixins'
 
@@ -553,7 +554,7 @@ export default {
       }
       this.$router.push(`/boards/${this.board.id}/card/${card.id}`)
     },
-    async updateCard (detailedCard) {
+    updateCard: debounce(async function (detailedCard) {
       try {
         const idxList = this.board.lists
           .findIndex(({ id }) => id === detailedCard.list_id)
@@ -584,7 +585,7 @@ export default {
       } catch (error) {
         this.$store.commit('SET_ERROR', error)
       }
-    },
+    }, 200),
     promptDeleteCard () {
       this.dialogDeleteCard = true
     },

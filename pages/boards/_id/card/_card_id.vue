@@ -143,7 +143,6 @@
 
 <script>
 import { v4 as uuidv4 } from 'uuid'
-import debounce from 'lodash/debounce'
 import { mixinTextArea } from '@/mixins/vue-mixins'
 
 let IS_FROM_FIRESTORE = false
@@ -158,7 +157,7 @@ export default {
   async fetch () {
     const cardRef = this.$fire.firestore
       .collection('users')
-      .doc(this.$store.getters.getUser.uid)
+      .doc(this.$store.getters.getAccount.uid)
       .collection('boards')
       .doc(this.$route.params.id)
       .collection('cards')
@@ -193,9 +192,9 @@ export default {
     this.mixin_resizeTextareaHeight({ target: this.$refs['brello-edit-card-title'] })
   },
   methods: {
-    updateCardDetails: debounce(function () {
+    updateCardDetails () {
       this.$emit('update-card', this.detailedCard)
-    }, 300),
+    },
     updateBoardTitle ({ target }) {
       if (target.value) {
         this.detailedCard.title = target.value
