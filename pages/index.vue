@@ -6,9 +6,7 @@
       v-else
       class="brello-workspace"
     >
-      <div
-        class="brello-workspace-sidenav d-none d-sm-block"
-      >
+      <div class="brello-workspace-sidenav d-none d-sm-block">
         <v-list dense>
           <v-list-item>
             <v-list-item-content>
@@ -32,9 +30,7 @@
           />
         </v-list>
       </div>
-      <div
-        class="brello-workspace-main"
-      >
+      <div class="brello-workspace-main">
         <v-row class="flex-grow-0 flex-shrink-0">
           <v-col class="d-flex align-center">
             <h3 class="text-uppercase text--secondary">
