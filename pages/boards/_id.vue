@@ -380,11 +380,11 @@ export default {
         this.$refs.inputEditBoardTitle.focus()
       })
     },
-    updateBoardTitle ({ target }) {
+    async updateBoardTitle ({ target }) {
       this.isEditBoardTitle = false
       if (target.value && (target.value !== this.board.title)) {
         this.board.title = target.value
-        this.updateBoardBasic()
+        await this.updateBoardBasic()
       }
     },
     async deleteBoard () {
@@ -639,7 +639,7 @@ export default {
         this.currentCard = {}
       }
     },
-    dropCard (currentList, droppedResult) {
+    async dropCard (currentList, droppedResult) {
       /**
        * This method will ALWAYS BE CALLED TWICE (by the source list and the target list.)
        * We'll handle the data changes for each of them here.
@@ -671,7 +671,7 @@ export default {
         }
       }
       currentList.cards = result
-      this.updateDragDropCards()
+      await this.updateDragDropCards()
     },
     async updateDragDropCards () {
       /**
