@@ -47,7 +47,7 @@
               You aren't a member of any workspaces yet.
               <span
                 class="create-workspace-link"
-                @click="dialogWorkspace = true"
+                @click="openDialogWorkspace"
               >
                 Create a workspace
               </span>
