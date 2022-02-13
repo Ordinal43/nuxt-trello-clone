@@ -452,14 +452,14 @@ export default {
       }
       this.fileToUpload = {}
     },
-    createBoard () {
+    async createBoard () {
       if (this.$refs.formBoard.validate()) {
         const uuidBoard = uuidv4()
         this.uploadingBoard = true
         if (this.fileToUpload.file) {
-          this.uploadBoardImage(uuidBoard)
+          await this.uploadBoardImage(uuidBoard)
         } else {
-          this.uploadBoardData(uuidBoard)
+          await this.uploadBoardData(uuidBoard)
         }
         // Reset board form data
         this.resetBoardForm()
