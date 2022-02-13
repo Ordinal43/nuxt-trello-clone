@@ -48,7 +48,7 @@ export default {
     snackbarText: ''
   }),
   watch: {
-    '$store.getters.getUser' () {
+    '$store.getters.getAccount' () {
       this.$router.push({
         path: '/'
       })

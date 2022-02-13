@@ -44,17 +44,17 @@
           </template>
 
           <v-card>
-            <v-list v-if="$store.getters.getUser">
+            <v-list v-if="$store.getters.getAccount">
               <v-list-item>
                 <v-list-item-avatar color="grey lighten-3">
                   <span class="text-h6 font-weight-bold">
-                    {{ getInitials($store.getters.getUser.displayName) }}
+                    {{ getInitials($store.getters.getAccount.displayName) }}
                   </span>
                 </v-list-item-avatar>
 
                 <v-list-item-content>
-                  <v-list-item-title>{{ $store.getters.getUser.displayName }}</v-list-item-title>
-                  <v-list-item-subtitle>{{ $store.getters.getUser.email }}</v-list-item-subtitle>
+                  <v-list-item-title>{{ $store.getters.getAccount.displayName }}</v-list-item-title>
+                  <v-list-item-subtitle>{{ $store.getters.getAccount.email }}</v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
             </v-list>
@@ -115,7 +115,7 @@ export default {
     snackbarText: ''
   }),
   watch: {
-    '$store.getters.getUser' () {
+    '$store.getters.getAccount' () {
       this.$router.push({
         path: '/'
       })

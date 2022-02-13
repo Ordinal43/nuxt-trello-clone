@@ -300,7 +300,7 @@ export default {
     // Get board object
     const boardRef = this.$fire.firestore
       .collection('users')
-      .doc(this.$store.getters.getUser.uid)
+      .doc(this.$store.getters.getAccount.uid)
       .collection('boards')
       .doc(this.$route.params.id)
 
@@ -347,7 +347,7 @@ export default {
     // Add listener to refresh board when data changes
     this.$fire.firestore
       .collection('users')
-      .doc(this.$store.getters.getUser.uid)
+      .doc(this.$store.getters.getAccount.uid)
       .collection('boards')
       .doc(this.$route.params.id)
       .onSnapshot((doc) => {
@@ -363,7 +363,7 @@ export default {
     updateBoardPromise () {
       return this.$fire.firestore
         .collection('users')
-        .doc(this.$store.getters.getUser.uid)
+        .doc(this.$store.getters.getAccount.uid)
         .collection('boards')
         .doc(this.board.id)
         .update(this.board)
@@ -396,7 +396,7 @@ export default {
 
         const boardRef = this.$fire.firestore
           .collection('users')
-          .doc(this.$store.getters.getUser.uid)
+          .doc(this.$store.getters.getAccount.uid)
           .collection('boards')
           .doc(this.board.id)
 
@@ -481,7 +481,7 @@ export default {
 
           const boardRef = this.$fire.firestore
             .collection('users')
-            .doc(this.$store.getters.getUser.uid)
+            .doc(this.$store.getters.getAccount.uid)
             .collection('boards')
             .doc(this.board.id)
 
@@ -526,7 +526,7 @@ export default {
 
         const boardRef = this.$fire.firestore
           .collection('users')
-          .doc(this.$store.getters.getUser.uid)
+          .doc(this.$store.getters.getAccount.uid)
           .collection('boards')
           .doc(this.board.id)
 
@@ -570,7 +570,7 @@ export default {
 
           const boardRef = this.$fire.firestore
             .collection('users')
-            .doc(this.$store.getters.getUser.uid)
+            .doc(this.$store.getters.getAccount.uid)
             .collection('boards')
             .doc(this.board.id)
 
@@ -616,7 +616,7 @@ export default {
 
           const boardRef = this.$fire.firestore
             .collection('users')
-            .doc(this.$store.getters.getUser.uid)
+            .doc(this.$store.getters.getAccount.uid)
             .collection('boards')
             .doc(this.board.id)
           const cardRef = boardRef

@@ -312,11 +312,11 @@ export default {
     // Get created board list
     const userRef = this.$fire.firestore
       .collection('users')
-      .doc(this.$store.getters.getUser.uid)
+      .doc(this.$store.getters.getAccount.uid)
 
     const boardsRef = this.$fire.firestore
       .collection('users')
-      .doc(this.$store.getters.getUser.uid)
+      .doc(this.$store.getters.getAccount.uid)
       .collection('boards')
       .orderBy('created_at', 'asc')
 
@@ -364,7 +364,7 @@ export default {
   mounted () {
     this.$fire.firestore
       .collection('users')
-      .doc(this.$store.getters.getUser.uid)
+      .doc(this.$store.getters.getAccount.uid)
       .onSnapshot((doc) => {
         if (doc.exists) {
           this.user = doc.data()
@@ -373,7 +373,7 @@ export default {
 
     this.$fire.firestore
       .collection('users')
-      .doc(this.$store.getters.getUser.uid)
+      .doc(this.$store.getters.getAccount.uid)
       .collection('boards')
       .orderBy('created_at', 'asc')
       .onSnapshot((querySnapshot) => {
@@ -409,7 +409,7 @@ export default {
         try {
           await this.$fire.firestore
             .collection('users')
-            .doc(this.$store.getters.getUser.uid)
+            .doc(this.$store.getters.getAccount.uid)
             .set(this.user)
         } catch (error) {
           this.$store.commit('SET_ERROR', error)
@@ -468,12 +468,12 @@ export default {
       const uuidImage = uuidv4()
       if (MIMETYPE_IMAGES.includes(this.fileToUpload.file.type)) {
         const itemFilename = `${uuidImage}-${this.fileToUpload.file.name}`
-        const itemName = `images/${this.$store.getters.getUser.uid}/boards/${uuidBoard}/${itemFilename}`
+        const itemName = `images/${this.$store.getters.getAccount.uid}/boards/${uuidBoard}/${itemFilename}`
 
         const itemRef = this.$fire.storage.ref().child(itemName)
         const itemMeta = {
           customMetadata: {
-            owner: this.$store.getters.getUser.uid
+            owner: this.$store.getters.getAccount.uid
           }
         }
 
@@ -504,7 +504,7 @@ export default {
 
         await this.$fire.firestore
           .collection('users')
-          .doc(this.$store.getters.getUser.uid)
+          .doc(this.$store.getters.getAccount.uid)
           .collection('boards')
           .doc(uuidBoard)
           .set(this.board)
