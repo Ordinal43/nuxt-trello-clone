@@ -1,5 +1,5 @@
 <template>
-  <v-container class="fill-height">
+  <v-container class="fill-height align-start">
     <FetchPending v-if="$fetchState.pending" />
     <FetchError v-else-if="$fetchState.error" />
     <div
@@ -30,19 +30,16 @@
           />
         </v-list>
       </div>
-      <div class="brello-workspace-main">
+      <div class="brello-workspace-main pt-8 pl-sm-4">
         <v-row class="flex-grow-0 flex-shrink-0">
           <v-col class="d-flex align-center">
-            <h3 class="text-uppercase text--secondary">
+            <h4 class="text-uppercase text--secondary">
               Your workspaces
-            </h3>
+            </h4>
           </v-col>
         </v-row>
         <v-row class="align-content-start">
           <v-col v-if="!getWorkspaces.length">
-            <p class="text-subtitle-1 text-uppercase text--secondary font-weight-bold">
-              your workspaces
-            </p>
             <div class="text--secondary">
               You aren't a member of any workspaces yet.
               <span
