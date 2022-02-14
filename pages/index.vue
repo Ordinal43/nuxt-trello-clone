@@ -1,34 +1,53 @@
 <template>
   <v-container class="fill-height align-start">
-    <FetchPending v-if="$fetchState.pending" />
-    <FetchError v-else-if="$fetchState.error" />
     <div
-      v-else
       class="brello-workspace"
     >
       <div class="brello-workspace-sidenav d-none d-sm-block">
-        <v-list dense>
-          <v-list-item>
-            <v-list-item-content>
-              <v-list-item-title class="text--secondary">
-                Workspaces
-              </v-list-item-title>
-            </v-list-item-content>
-            <v-list-item-action>
-              <v-btn
-                x-small
-                icon
-                text
-                @click="openDialogWorkspace"
+        <FetchPending v-if="$fetchState.pending" />
+        <FetchError v-else-if="$fetchState.error" />
+        <div v-else>
+          <v-list nav dense>
+            <v-list-item-group color="primary">
+              <v-list-item
+                to="/"
+                nuxt
               >
-                <v-icon>mdi-plus</v-icon>
-              </v-btn>
-            </v-list-item-action>
-          </v-list-item>
-          <SidenavWorkspace
-            :workspaces="getUser.workspaces"
-          />
-        </v-list>
+                <v-list-item-avatar
+                  size="25"
+                  rounded
+                >
+                  <v-icon>mdi-trello</v-icon>
+                </v-list-item-avatar>
+                <v-list-item-title class="text-body-2">
+                  Boards
+                </v-list-item-title>
+              </v-list-item>
+            </v-list-item-group>
+          </v-list>
+          <v-list nav dense>
+            <v-list-item>
+              <v-list-item-content>
+                <v-list-item-title class="text--secondary">
+                  Workspaces
+                </v-list-item-title>
+              </v-list-item-content>
+              <v-list-item-action>
+                <v-btn
+                  x-small
+                  icon
+                  text
+                  @click="openDialogWorkspace"
+                >
+                  <v-icon>mdi-plus</v-icon>
+                </v-btn>
+              </v-list-item-action>
+            </v-list-item>
+            <SidenavWorkspace
+              :workspaces="getUser.workspaces"
+            />
+          </v-list>
+        </div>
       </div>
       <div class="pt-8 pl-sm-4 brello-workspace-main">
         <NuxtChild
