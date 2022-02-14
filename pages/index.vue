@@ -26,7 +26,7 @@
             </v-list-item-action>
           </v-list-item>
           <SidenavWorkspace
-            :workspaces="user.workspaces"
+            :workspaces="getUser.workspaces"
           />
         </v-list>
       </div>
@@ -267,6 +267,7 @@
 
 <script>
 import cloneDeep from 'lodash/cloneDeep'
+import { mapGetters } from 'vuex'
 import { v4 as uuidv4 } from 'uuid'
 import { MIMETYPE_IMAGES, inputRequired } from '@/utils/input_rules.utils'
 
@@ -292,7 +293,6 @@ export default {
     dialogBoard: false,
     uploadingBoard: false,
     enableColor: false,
-    user: {},
     boards: [],
     board: {
       title: '',
@@ -309,32 +309,30 @@ export default {
     fileToUpload: {}
   }),
   async fetch () {
-    // Get created board list
-    const userRef = this.$fire.firestore
-      .collection('users')
-      .doc(this.$store.getters.getAccount.uid)
+    await this.$store.dispatch('fetchUser')
 
-    const boardsRef = this.$fire.firestore
+    // Get created board list
+    const snapshotBoards = await this.$fire.firestore
       .collection('users')
-      .doc(this.$store.getters.getAccount.uid)
+      .doc(this.getAccount.uid)
       .collection('boards')
       .orderBy('created_at', 'asc')
+      .get()
 
-    const [docUser, snapshotBoards] = await Promise.all([userRef.get(), boardsRef.get()])
-
-    if (docUser.exists) {
-      this.user = docUser.data()
-    }
     this.boards = snapshotBoards.docs.map(doc => doc.data())
   },
   head: () => ({
     title: 'Home'
   }),
   computed: {
+    ...mapGetters([
+      'getAccount',
+      'getUser'
+    ]),
     getWorkspaces () {
       let boardsClone = cloneDeep(this.boards)
 
-      const workspacesNew = (cloneDeep(this.user.workspaces) || [])
+      const workspacesNew = (cloneDeep(this.getUser.workspaces) || [])
         .map((workspace) => {
           const [selected, remaining] = boardsClone.reduce(([pass, fail], current) => {
             return current.workspace_id === workspace.id
@@ -364,16 +362,7 @@ export default {
   mounted () {
     this.$fire.firestore
       .collection('users')
-      .doc(this.$store.getters.getAccount.uid)
-      .onSnapshot((doc) => {
-        if (doc.exists) {
-          this.user = doc.data()
-        }
-      })
-
-    this.$fire.firestore
-      .collection('users')
-      .doc(this.$store.getters.getAccount.uid)
+      .doc(this.getAccount.uid)
       .collection('boards')
       .orderBy('created_at', 'asc')
       .onSnapshot((querySnapshot) => {
@@ -397,23 +386,23 @@ export default {
     async createWorkspace () {
       if (this.$refs.formWorkspace.validate()) {
         const uuidWorkspace = uuidv4()
+        const cloneUser = cloneDeep(this.getUser)
         this.uploadingWorkspace = true
-        if (!this.user.workspaces) {
-          this.user.workspaces = []
+
+        if (!cloneUser.workspaces) {
+          cloneUser.workspaces = []
         }
-        this.user.workspaces.push({
+        cloneUser.workspaces.push({
           id: uuidWorkspace,
           title: this.workspaceTitle,
           color: getRandomGradient()
         })
         try {
-          await this.$fire.firestore
-            .collection('users')
-            .doc(this.$store.getters.getAccount.uid)
-            .set(this.user)
+          await this.$store.dispatch('updateUser', cloneUser)
         } catch (error) {
           this.$store.commit('SET_ERROR', error)
-          this.user.workspaces.pop()
+          cloneUser.workspaces.pop()
+          this.$store.commit('SET_USER', cloneUser)
         }
         this.dialogWorkspace = false
         this.uploadingWorkspace = false
@@ -468,12 +457,12 @@ export default {
       const uuidImage = uuidv4()
       if (MIMETYPE_IMAGES.includes(this.fileToUpload.file.type)) {
         const itemFilename = `${uuidImage}-${this.fileToUpload.file.name}`
-        const itemName = `images/${this.$store.getters.getAccount.uid}/boards/${uuidBoard}/${itemFilename}`
+        const itemName = `images/${this.getAccount.uid}/boards/${uuidBoard}/${itemFilename}`
 
         const itemRef = this.$fire.storage.ref().child(itemName)
         const itemMeta = {
           customMetadata: {
-            owner: this.$store.getters.getAccount.uid
+            owner: this.getAccount.uid
           }
         }
 
@@ -504,7 +493,7 @@ export default {
 
         await this.$fire.firestore
           .collection('users')
-          .doc(this.$store.getters.getAccount.uid)
+          .doc(this.getAccount.uid)
           .collection('boards')
           .doc(uuidBoard)
           .set(this.board)

@@ -131,6 +131,9 @@ export default {
       this.snackbar = true
     }
   },
+  mounted () {
+    this.$store.dispatch('setUserListener')
+  },
   methods: {
     getInitials (name = '') {
       return name

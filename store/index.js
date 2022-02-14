@@ -4,6 +4,7 @@ import cookieparser from 'cookieparser'
 
 const state = () => ({
   account: null,
+  user: {},
   error: null,
   alert: null
 })
@@ -11,6 +12,9 @@ const state = () => ({
 const getters = {
   getAccount (state) {
     return state.account
+  },
+  getUser (state) {
+    return state.user
   },
   getError (state) {
     return state.error
@@ -23,6 +27,9 @@ const getters = {
 const mutations = {
   SET_ACCOUNT (state, account) {
     state.account = account
+  },
+  SET_USER (state, user) {
+    state.user = user
   },
   SET_ERROR (state, error) {
     state.error = error
@@ -73,6 +80,32 @@ const actions = {
       Cookie.set('brello_access_token', token)
       state.commit('SET_ACCOUNT', { uid, email, displayName })
     }
+  },
+  async fetchUser ({ state, commit }) {
+    const docUser = await this.$fire.firestore
+      .collection('users')
+      .doc(state.account.uid)
+      .get()
+
+    if (docUser.exists) {
+      commit('SET_USER', docUser.data())
+    }
+  },
+  setUserListener ({ state, commit }) {
+    this.$fire.firestore
+      .collection('users')
+      .doc(state.account.uid)
+      .onSnapshot((doc) => {
+        if (doc.exists) {
+          commit('SET_USER', doc.data())
+        }
+      })
+  },
+  async updateUser ({ state }, user) {
+    await this.$fire.firestore
+      .collection('users')
+      .doc(state.account.uid)
+      .set(user)
   }
 }
 
