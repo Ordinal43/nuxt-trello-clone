@@ -35,7 +35,7 @@
         <v-card
           rounded
           flat
-          height="80"
+          height="96"
           :color="`grey lighten-${hover? '2' : '4'}`"
           @click="$emit('add-board')"
         >
