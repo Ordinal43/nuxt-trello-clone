@@ -206,7 +206,6 @@ export default {
     fileToUpload: {}
   }),
   async fetch () {
-    // Get created board list
     const snapshotBoards = await this.$fire.firestore
       .collection('users')
       .doc(this.getAccount.uid)
