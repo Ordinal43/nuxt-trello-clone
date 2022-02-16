@@ -1,5 +1,5 @@
 <template>
-  <v-row>
+  <v-row :dense="$vuetify.breakpoint.smAndDown">
     <v-col cols="12" class="d-flex align-center">
       <v-avatar
         size="30"
@@ -18,8 +18,7 @@
     <v-col
       v-for="b in workspace.boards"
       :key="`board-${b.id}`"
-      cols="12"
-      sm="6"
+      cols="6"
       md="4"
       lg="3"
     >
@@ -27,8 +26,7 @@
     </v-col>
     <v-hover v-slot="{ hover }">
       <v-col
-        cols="12"
-        sm="6"
+        cols="6"
         md="4"
         lg="3"
       >
