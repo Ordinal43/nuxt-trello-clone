@@ -48,8 +48,8 @@ export default {
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: {
     dirs: [
-      '~/components',
-      '~/components/card'
+      '@/components',
+      '@/components/card'
     ]
   },
 
@@ -103,7 +103,7 @@ export default {
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
-    customVariables: ['~/assets/variables.scss'],
+    customVariables: ['@/assets/variables.scss'],
     theme: {
       dark: false,
       themes: {

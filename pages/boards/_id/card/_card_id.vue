@@ -115,8 +115,7 @@
       >
         <div class="my-9">
           <img
-            src="~/assets/not-found.svg"
-            alt="board-not-found.svg"
+            src="@/assets/not-found.svg"
             height="160"
           >
           <p class="text-subtitle-1 mt-3 text-center">

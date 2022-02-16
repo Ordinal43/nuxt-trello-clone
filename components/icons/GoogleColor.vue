@@ -1,5 +1,5 @@
 <template>
-  <img src="~/assets/g-logo.svg">
+  <img src="@/assets/g-logo.svg">
 </template>
 
 <script>
