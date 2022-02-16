@@ -6,36 +6,10 @@
   />
   <div v-else>
     <template v-if="boards.length">
-      <v-row :dense="$vuetify.breakpoint.smAndDown">
-        <v-col
-          v-for="b in boards"
-          :key="`board-${b.id}`"
-          cols="6"
-          md="4"
-          lg="3"
-        >
-          <LazyTrelloBoard :board="b" />
-        </v-col>
-        <v-hover v-slot="{ hover }">
-          <v-col
-            cols="6"
-            md="4"
-            lg="3"
-          >
-            <v-card
-              rounded
-              flat
-              height="96"
-              :color="`grey lighten-${hover? '2' : '4'}`"
-              @click=";"
-            >
-              <div class="fill-height d-flex align-center justify-center text-body-2">
-                Create new board
-              </div>
-            </v-card>
-          </v-col>
-        </v-hover>
-      </v-row>
+      <LazyTrelloWorkspace
+        :boards="boards"
+        @add-board=";"
+      />
     </template>
     <template v-else>
       <img
@@ -50,7 +24,7 @@
         <v-btn
           small
           color="primary"
-          @click=";"
+          @click="$emit('add-board')"
         >
           Create your first board
         </v-btn>

@@ -28,12 +28,34 @@
         </div>
       </v-col>
       <v-col v-else>
-        <LazyTrelloWorkspace
-          v-for="w in getWorkspaces"
-          :key="`workspace-${w.id}`"
-          :workspace="w"
-          @add-board="openDialogBoard(w.id)"
-        />
+        <template v-for="w in getWorkspaces">
+          <LazyTrelloWorkspace
+            :key="`workspace-boards-${w.id}`"
+            :boards="w.boards"
+            @add-board="openDialogBoard(w.id)"
+          >
+            <template #header>
+              <v-col
+                cols="12"
+                class="d-flex align-center"
+              >
+                <v-avatar
+                  size="30"
+                  rounded
+                  class="mr-3"
+                  :style="{
+                    background: `linear-gradient(${w.color[0]}, ${w.color[1]})`
+                  }"
+                >
+                  <span class="white--text text-uppercase font-weight-black">
+                    {{ w.title[0] }}
+                  </span>
+                </v-avatar>
+                <h4>{{ w.title }}</h4>
+              </v-col>
+            </template>
+          </LazyTrelloWorkspace>
+        </template>
       </v-col>
     </v-row>
 

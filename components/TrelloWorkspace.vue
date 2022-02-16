@@ -1,22 +1,8 @@
 <template>
   <v-row :dense="$vuetify.breakpoint.smAndDown">
-    <v-col cols="12" class="d-flex align-center">
-      <v-avatar
-        size="30"
-        rounded
-        class="mr-3"
-        :style="{
-          background: `linear-gradient(${workspace.color[0]}, ${workspace.color[1]})`
-        }"
-      >
-        <span class="white--text text-uppercase font-weight-black">
-          {{ workspace.title[0] }}
-        </span>
-      </v-avatar>
-      <h4>{{ workspace.title }}</h4>
-    </v-col>
+    <slot name="header" />
     <v-col
-      v-for="b in workspace.boards"
+      v-for="b in boards"
       :key="`board-${b.id}`"
       cols="6"
       md="4"
@@ -49,8 +35,8 @@
 <script>
 export default {
   props: {
-    workspace: {
-      type: Object,
+    boards: {
+      type: Array,
       required: true
     }
   }
