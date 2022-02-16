@@ -5,7 +5,10 @@
     >
       <div class="brello-workspace-sidenav d-none d-sm-block">
         <FetchPending v-if="$fetchState.pending" />
-        <FetchError v-else-if="$fetchState.error" />
+        <FetchError
+          v-else-if="$fetchState.error"
+          @retry="$fetch"
+        />
         <div v-else>
           <v-list nav dense>
             <v-list-item-group color="primary">

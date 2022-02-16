@@ -1,6 +1,9 @@
 <template>
   <FetchPending v-if="$fetchState.pending" />
-  <FetchError v-else-if="$fetchState.error" />
+  <FetchError
+    v-else-if="$fetchState.error"
+    @retry="$fetch"
+  />
   <div
     v-else
     class="brello-all-workspace"

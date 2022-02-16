@@ -2,7 +2,10 @@
   <v-card color="#F4F5F7">
     <v-container>
       <FetchPending v-if="$fetchState.pending" />
-      <FetchError v-else-if="$fetchState.error" />
+      <FetchError
+        v-else-if="$fetchState.error"
+        @retry="$fetch"
+      />
       <template v-else-if="detailedCard">
         <v-row>
           <v-col class="pl-sm-4 d-flex align-start">
