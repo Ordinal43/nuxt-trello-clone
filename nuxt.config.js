@@ -49,7 +49,8 @@ export default {
   components: {
     dirs: [
       '@/components',
-      '@/components/card'
+      '@/components/card',
+      '@/components/pages'
     ]
   },
 
