@@ -8,7 +8,7 @@
     <template v-if="boards.length">
       <LazyTrelloWorkspace
         :boards="boards"
-        @add-board=";"
+        @add-board="openDialogBoard"
       />
     </template>
     <template v-else>
@@ -24,12 +24,16 @@
         <v-btn
           small
           color="primary"
-          @click="$emit('add-board')"
+          @click="openDialogBoard"
         >
           Create your first board
         </v-btn>
       </div>
     </template>
+
+    <DialogCreateBoard
+      ref="dialogBoard"
+    />
   </div>
 </template>
 
@@ -71,6 +75,11 @@ export default {
       .onSnapshot((querySnapshot) => {
         this.boards = querySnapshot.docs.map(doc => doc.data())
       })
+  },
+  methods: {
+    openDialogBoard () {
+      this.$refs.dialogBoard.openDialogBoard(this.$route.params.ws_id)
+    }
   }
 }
 </script>
