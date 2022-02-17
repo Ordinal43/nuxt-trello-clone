@@ -47,7 +47,7 @@
               </v-list-item-action>
             </v-list-item>
             <SidenavWorkspace
-              :workspaces="getUser.workspaces"
+              :workspaces="getWorkspaceCollection"
             />
           </v-list>
         </div>
@@ -61,7 +61,7 @@
 
     <!-- ============= Dialog create workspace ============= -->
     <v-dialog
-      v-model="dialogWorkspace"
+      v-model="showDialogWorkspace"
       max-width="355"
       persistent
     >
@@ -74,7 +74,7 @@
             class="mb-2"
           >
             <h3>Add Workspace</h3>
-            <v-icon @click="dialogWorkspace = false;">
+            <v-icon @click="showDialogWorkspace = false;">
               mdi-close
             </v-icon>
           </v-row>
@@ -86,13 +86,22 @@
               <v-col cols="12">
                 <v-text-field
                   ref="inputWorkspaceTitle"
-                  v-model="workspaceTitle"
-                  label="Workspace title"
-                  name="Workspace title"
+                  v-model="workspace.title"
+                  label="Workspace name"
+                  name="Workspace name"
                   type="text"
                   required
                   validate-on-blur
                   :rules="[inputRequired]"
+                />
+                <v-textarea
+                  v-model="workspace.description"
+                  label="Workspace description (optional)"
+                  name="Workspace description"
+                  type="text"
+                  rows="2"
+                  no-resize
+                  validate-on-blur
                 />
               </v-col>
               <v-col cols="12">
@@ -121,7 +130,6 @@
 </template>
 
 <script>
-import cloneDeep from 'lodash/cloneDeep'
 import { v4 as uuidv4 } from 'uuid'
 import { mapGetters } from 'vuex'
 import { inputRequired } from '@/utils/input_rules.utils'
@@ -142,27 +150,36 @@ const getRandomGradient = () => {
 export default {
   name: 'IndexPage',
   data: () => ({
-    workspaceTitle: '',
-    dialogWorkspace: false,
+    workspace: {
+      title: '',
+      description: '',
+      color: [],
+      created_at: ''
+    },
+    showDialogWorkspace: false,
     uploadingWorkspace: false
   }),
   async fetch () {
-    await this.$store.dispatch('fetchUser')
+    await this.$store.dispatch('fetchWorkspaceCollection')
   },
   head: () => ({
     title: 'Home'
   }),
   computed: {
     ...mapGetters([
-      'getUser'
+      'getAccount',
+      'getWorkspaceCollection'
     ])
   },
   watch: {
-    dialogWorkspace (val) {
+    showDialogWorkspace (val) {
       if (!val) {
         this.resetWorkspaceForm()
       }
     }
+  },
+  mounted () {
+    this.$store.dispatch('setWorkspaceCollectionListener')
   },
   methods: {
     inputRequired,
@@ -170,37 +187,36 @@ export default {
      * Workspace methods
      */
     openDialogWorkspace () {
-      this.dialogWorkspace = true
+      this.showDialogWorkspace = true
       setTimeout(() => {
         this.$refs.inputWorkspaceTitle.focus()
       }, 100)
     },
     resetWorkspaceForm () {
-      this.workspaceTitle = ''
+      this.workspace.title = ''
     },
     async createWorkspace () {
       if (this.$refs.formWorkspace.validate()) {
-        const uuidWorkspace = uuidv4()
-        const cloneUser = cloneDeep(this.getUser)
-        this.uploadingWorkspace = true
-
-        if (!cloneUser.workspaces) {
-          cloneUser.workspaces = []
-        }
-        cloneUser.workspaces.push({
-          id: uuidWorkspace,
-          title: this.workspaceTitle,
-          color: getRandomGradient()
-        })
         try {
-          await this.$store.dispatch('updateUser', cloneUser)
+          this.uploadingWorkspace = true
+
+          const uuidWorkspace = uuidv4()
+          this.workspace.id = uuidWorkspace
+          this.workspace.color = getRandomGradient()
+          this.workspace.created_at = this.$fireModule.firestore.FieldValue.serverTimestamp()
+
+          await this.$fire.firestore
+            .collection('users')
+            .doc(this.getAccount.uid)
+            .collection('workspaces')
+            .doc(uuidWorkspace)
+            .set(this.workspace)
         } catch (error) {
           this.$store.commit('SET_ERROR', error)
-          cloneUser.workspaces.pop()
-          this.$store.commit('SET_USER', cloneUser)
+        } finally {
+          this.showDialogWorkspace = false
+          this.uploadingWorkspace = false
         }
-        this.dialogWorkspace = false
-        this.uploadingWorkspace = false
       }
     }
   }

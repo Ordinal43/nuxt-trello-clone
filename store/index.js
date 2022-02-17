@@ -5,6 +5,7 @@ import cookieparser from 'cookieparser'
 const state = () => ({
   account: null,
   user: {},
+  workspaces: [],
   error: null,
   alert: null
 })
@@ -15,6 +16,9 @@ const getters = {
   },
   getUser (state) {
     return state.user
+  },
+  getWorkspaceCollection (state) {
+    return state.workspaces
   },
   getError (state) {
     return state.error
@@ -30,6 +34,9 @@ const mutations = {
   },
   SET_USER (state, user) {
     state.user = user
+  },
+  SET_WORKSPACE_COLLECTION (state, workspaces) {
+    state.workspaces = workspaces
   },
   SET_ERROR (state, error) {
     state.error = error
@@ -106,6 +113,30 @@ const actions = {
       .collection('users')
       .doc(state.account.uid)
       .set(user)
+  },
+  async fetchWorkspaceCollection ({ state, commit }) {
+    const snapshotWorkspaces = await this.$fire.firestore
+      .collection('users')
+      .doc(state.account.uid)
+      .collection('workspaces')
+      .orderBy('title', 'asc')
+      .get()
+
+    commit('SET_WORKSPACE_COLLECTION',
+      snapshotWorkspaces.docs.map(doc => doc.data())
+    )
+  },
+  setWorkspaceCollectionListener ({ state, commit }) {
+    this.$fire.firestore
+      .collection('users')
+      .doc(state.account.uid)
+      .collection('workspaces')
+      .orderBy('title', 'asc')
+      .onSnapshot((querySnapshot) => {
+        commit('SET_WORKSPACE_COLLECTION',
+          querySnapshot.docs.map(doc => doc.data())
+        )
+      })
   }
 }
 

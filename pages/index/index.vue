@@ -87,12 +87,12 @@ export default {
   computed: {
     ...mapGetters([
       'getAccount',
-      'getUser'
+      'getWorkspaceCollection'
     ]),
     getWorkspaces () {
       let boardsClone = cloneDeep(this.boards)
 
-      const workspacesNew = (cloneDeep(this.getUser.workspaces) || [])
+      const workspacesNew = cloneDeep(this.getWorkspaceCollection)
         .map((workspace) => {
           const [selected, remaining] = boardsClone.reduce(([pass, fail], current) => {
             return current.workspace_id === workspace.id
