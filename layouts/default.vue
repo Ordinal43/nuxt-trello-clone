@@ -80,9 +80,26 @@
             </v-list>
           </v-card>
         </v-menu>
+
+        <v-overlay
+          :value="overlay"
+          absolute
+          opacity="0"
+        />
       </v-app-bar>
       <div class="brello-content">
         <Nuxt />
+        <v-overlay
+          :value="overlay"
+          absolute
+          color="white"
+          opacity="0.7"
+        >
+          <v-progress-circular
+            indeterminate
+            color="primary"
+          />
+        </v-overlay>
       </div>
     </div>
     <v-snackbar
@@ -112,7 +129,8 @@ export default {
   data: () => ({
     snackbar: false,
     snackbarColor: '',
-    snackbarText: ''
+    snackbarText: '',
+    overlay: true
   }),
   watch: {
     '$store.getters.getAccount' () {
@@ -132,6 +150,7 @@ export default {
     }
   },
   mounted () {
+    this.overlay = false
     this.$store.dispatch('setUserListener')
   },
   methods: {
@@ -175,5 +194,6 @@ a {
   height: 100%;
   flex: 1 auto;
   overflow-y: auto;
+  position: relative;
 }
 </style>
