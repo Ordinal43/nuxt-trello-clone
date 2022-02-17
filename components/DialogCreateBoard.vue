@@ -259,9 +259,6 @@ export default {
           .collection('boards')
           .doc(uuidBoard)
           .set(this.board)
-
-        this.showDialogBoard = false
-        this.$refs.formBoard.reset()
       } catch (error) {
         this.$store.commit('SET_ERROR', error)
         if (itemRef) {
@@ -271,6 +268,8 @@ export default {
             this.$store.commit('SET_ERROR', error)
           }
         }
+      } finally {
+        this.showDialogBoard = false
       }
     },
     chooseImage () {
