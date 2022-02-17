@@ -261,11 +261,6 @@ export default {
     }
   },
   watch: {
-    dialogWorkspace (val) {
-      if (!val) {
-        this.resetWorkspaceForm()
-      }
-    },
     dialogBoard (val) {
       if (!val) {
         this.resetBoardForm()

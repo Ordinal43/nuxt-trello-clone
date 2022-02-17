@@ -157,6 +157,13 @@ export default {
       'getUser'
     ])
   },
+  watch: {
+    dialogWorkspace (val) {
+      if (!val) {
+        this.resetWorkspaceForm()
+      }
+    }
+  },
   methods: {
     inputRequired,
     /**
