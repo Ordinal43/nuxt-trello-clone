@@ -60,6 +60,17 @@ export default {
     '$route.params.ws_id' () {
       this.$fetch()
     }
+  },
+  mounted () {
+    this.$fire.firestore
+      .collection('users')
+      .doc(this.getAccount.uid)
+      .collection('boards')
+      .where('workspace_id', '==', this.$route.params.ws_id)
+      .orderBy('created_at', 'asc')
+      .onSnapshot((querySnapshot) => {
+        this.boards = querySnapshot.docs.map(doc => doc.data())
+      })
   }
 }
 </script>
