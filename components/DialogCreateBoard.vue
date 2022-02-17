@@ -162,7 +162,7 @@ export default {
     fileToUpload: {}
   }),
   watch: {
-    value (val) {
+    showDialogBoard (val) {
       if (!val) {
         this.resetBoardForm()
       }
