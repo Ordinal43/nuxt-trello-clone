@@ -8,6 +8,8 @@
     <template v-if="boards.length">
       <LazyTrelloWorkspace
         :boards="boards"
+        cols="12"
+        sm="4"
         @add-board="openDialogBoard"
       />
     </template>

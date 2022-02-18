@@ -4,17 +4,19 @@
     <v-col
       v-for="b in boards"
       :key="`board-${b.id}`"
-      cols="6"
-      md="4"
-      lg="3"
+      :cols="$attrs.cols || 6"
+      :sm="$attrs.sm || 6"
+      :md="$attrs.md || 4"
+      :lg="$attrs.lg || 3"
     >
       <LazyTrelloBoard :board="b" />
     </v-col>
     <v-hover v-slot="{ hover }">
       <v-col
-        cols="6"
-        md="4"
-        lg="3"
+        :cols="$attrs.cols || 6"
+        :sm="$attrs.sm || 6"
+        :md="$attrs.md || 4"
+        :lg="$attrs.lg || 3"
       >
         <v-card
           rounded
@@ -34,6 +36,7 @@
 
 <script>
 export default {
+  inheritAttrs: false,
   props: {
     boards: {
       type: Array,
