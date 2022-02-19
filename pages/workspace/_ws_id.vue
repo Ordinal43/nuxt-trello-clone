@@ -61,7 +61,9 @@
     </div>
     <v-container fluid>
       <div
-        :class="$vuetify.breakpoint.smAndDown? 'py-4' : 'pa-8'"
+        :class="{
+          'pa-5': $vuetify.breakpoint.mdAndUp
+        }"
       >
         <NuxtChild />
       </div>
