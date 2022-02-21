@@ -22,19 +22,77 @@
             </span>
           </v-avatar>
           <div class="ml-2 workspace-title-main">
-            <p class="workspace-title-main-text">
-              {{ workspace.title }}
-            </p>
-            <v-btn
-              small
-              depressed
-              @click=";"
+            <div v-show="!showEditWorkspace">
+              <p class="workspace-title-main-text">
+                {{ workspace.title }}
+              </p>
+              <v-btn
+                small
+                depressed
+                @click="showEditWorkspace = true"
+              >
+                <v-icon left>
+                  mdi-pencil-outline
+                </v-icon>
+                Edit workspace details
+              </v-btn>
+            </div>
+            <v-form
+              v-show="showEditWorkspace"
+              class="form-edit-workspace"
+              @submit.prevent=";"
             >
-              <v-icon left>
-                mdi-pencil-outline
-              </v-icon>
-              Edit workspace details
-            </v-btn>
+              <v-text-field
+                v-model="workspace.title"
+                label="Name"
+                name="title"
+                type="text"
+                dense
+                outlined
+                validate-on-blur
+                :rules="[inputRequired]"
+              />
+              <v-text-field
+                v-model="workspace.website"
+                label="Website (optional)"
+                name="title"
+                type="text"
+                dense
+                outlined
+              />
+              <v-textarea
+                v-model="workspace.description"
+                label="Description (optional)"
+                name="title"
+                type="text"
+                rows="3"
+                outlined
+              />
+              <v-btn
+                depressed
+                color="primary"
+                small
+                @click="updateWorkspace"
+              >
+                save
+              </v-btn>
+              <v-btn
+                depressed
+                small
+                @click="showEditWorkspace = false"
+              >
+                cancel
+              </v-btn>
+              <v-overlay
+                :value="updatingWorkspace"
+                absolute
+                color="#f4f5f7"
+              >
+                <v-progress-circular
+                  indeterminate
+                />
+              </v-overlay>
+            </v-form>
           </div>
         </div>
         <div>
@@ -73,10 +131,13 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import { inputRequired } from '@/utils/input_rules.utils'
 
 export default {
   data: vm => ({
     workspace: {},
+    showEditWorkspace: false,
+    updatingWorkspace: false,
     tabs: [
       { title: 'Boards', to: { path: `/workspace/${vm.$route.params.ws_id}` } },
       { title: 'Settings', to: { path: `/workspace/${vm.$route.params.ws_id}/settings` } }
@@ -110,6 +171,25 @@ export default {
           this.workspace = doc.data()
         }
       })
+  },
+  methods: {
+    inputRequired,
+    async updateWorkspace () {
+      try {
+        this.updatingWorkspace = true
+        await this.$fire.firestore
+          .collection('users')
+          .doc(this.getAccount.uid)
+          .collection('workspaces')
+          .doc(this.$route.params.ws_id)
+          .update(this.workspace)
+      } catch (error) {
+        this.$store.commit('SET_ERROR', error)
+      } finally {
+        this.showEditWorkspace = false
+        this.updatingWorkspace = false
+      }
+    }
   }
 }
 </script>
@@ -149,6 +229,11 @@ export default {
       border-radius: 3px 3px 0 0;
     }
   }
+}
+
+.form-edit-workspace {
+  width: 250px;
+  position: relative;
 }
 
 .tab-active {
