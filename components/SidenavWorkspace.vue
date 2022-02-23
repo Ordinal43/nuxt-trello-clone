@@ -53,7 +53,7 @@ export default {
   },
   data: () => ({
     menus: [
-      { title: 'Board', icon: 'mdi-trello', uri: '' },
+      { title: 'Board', icon: 'mdi-trello', uri: 'home' },
       { title: 'Settings', icon: 'mdi-cog', uri: 'settings' }
     ]
   })

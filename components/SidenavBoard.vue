@@ -129,7 +129,7 @@
                     <v-img
                       :src="image.downloadURL"
                       :alt="image.originalName"
-                      max-height="100"
+                      height="100"
                       class="align-end"
                     >
                       <v-sheet
@@ -300,12 +300,12 @@ export default {
       if (file && MIMETYPE_IMAGES.includes(file.type)) {
         const uuidImage = uuidv4()
         const itemFilename = `${uuidImage}-${file.name}`
-        const itemName = `images/${this.$store.getters.getUser.uid}/boards/${this.value.id}/${itemFilename}`
+        const itemName = `images/${this.$store.getters.getAccount.uid}/boards/${this.value.id}/${itemFilename}`
 
         const itemRef = this.$fire.storage.ref().child(itemName)
         const itemMeta = {
           customMetadata: {
-            owner: this.$store.getters.getUser.uid
+            owner: this.$store.getters.getAccount.uid
           }
         }
 
@@ -340,7 +340,7 @@ export default {
     },
     async deleteImage (index, image) {
       this.imageMenus[index] = false
-      const itemName = `images/${this.$store.getters.getUser.uid}/boards/${this.value.id}/${image.name}`
+      const itemName = `images/${this.$store.getters.getAccount.uid}/boards/${this.value.id}/${image.name}`
       const itemRef = this.$fire.storage.ref().child(itemName)
       try {
         await itemRef.delete(itemRef)

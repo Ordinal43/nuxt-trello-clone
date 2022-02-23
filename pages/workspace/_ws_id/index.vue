@@ -1,9 +1,9 @@
 <template>
-  <img src="@/assets/g-logo.svg">
+  <WorkspaceBoards />
 </template>
 
 <script>
 export default {
-  name: 'GoogleColorIcon'
+  name: 'WorkspaceBoardsPage'
 }
 </script>

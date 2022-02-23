@@ -125,7 +125,7 @@ export default {
           })
 
           const { uid, email, displayName } = res.user
-          this.$store.commit('SET_USER', { uid, email, displayName })
+          this.$store.commit('SET_ACCOUNT', { uid, email, displayName })
           this.$router.push({
             path: '/'
           })

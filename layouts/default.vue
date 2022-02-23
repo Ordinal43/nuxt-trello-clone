@@ -44,17 +44,17 @@
           </template>
 
           <v-card>
-            <v-list v-if="$store.getters.getUser">
+            <v-list v-if="$store.getters.getAccount">
               <v-list-item>
                 <v-list-item-avatar color="grey lighten-3">
                   <span class="text-h6 font-weight-bold">
-                    {{ getInitials($store.getters.getUser.displayName) }}
+                    {{ getInitials($store.getters.getAccount.displayName) }}
                   </span>
                 </v-list-item-avatar>
 
                 <v-list-item-content>
-                  <v-list-item-title>{{ $store.getters.getUser.displayName }}</v-list-item-title>
-                  <v-list-item-subtitle>{{ $store.getters.getUser.email }}</v-list-item-subtitle>
+                  <v-list-item-title>{{ $store.getters.getAccount.displayName }}</v-list-item-title>
+                  <v-list-item-subtitle>{{ $store.getters.getAccount.email }}</v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
             </v-list>
@@ -80,9 +80,26 @@
             </v-list>
           </v-card>
         </v-menu>
+
+        <v-overlay
+          :value="overlay"
+          absolute
+          opacity="0"
+        />
       </v-app-bar>
       <div class="brello-content">
         <Nuxt />
+        <v-overlay
+          :value="overlay"
+          absolute
+          color="white"
+          opacity="0.7"
+        >
+          <v-progress-circular
+            indeterminate
+            color="primary"
+          />
+        </v-overlay>
       </div>
     </div>
     <v-snackbar
@@ -112,24 +129,38 @@ export default {
   data: () => ({
     snackbar: false,
     snackbarColor: '',
-    snackbarText: ''
+    snackbarText: '',
+    overlay: true
   }),
   watch: {
-    '$store.getters.getUser' () {
+    '$store.getters.getAccount' () {
       this.$router.push({
         path: '/'
       })
     },
     '$store.getters.getError' (val) {
-      this.snackbarColor = 'red darken-1'
-      this.snackbarText = val.message
-      this.snackbar = true
+      if (val) {
+        this.snackbarColor = 'red darken-1'
+        this.snackbarText = val.message
+        this.snackbar = true
+      }
     },
     '$store.getters.getAlert' (val) {
-      this.snackbarColor = 'success'
-      this.snackbarText = val
-      this.snackbar = true
+      if (val) {
+        this.snackbarColor = 'success'
+        this.snackbarText = val
+        this.snackbar = true
+      }
+    },
+    snackbar (val) {
+      if (val) {
+        this.$store.commit('RESET_ALERT_ERROR')
+      }
     }
+  },
+  mounted () {
+    this.overlay = false
+    this.$store.dispatch('setUserListener')
   },
   methods: {
     getInitials (name = '') {
@@ -172,5 +203,6 @@ a {
   height: 100%;
   flex: 1 auto;
   overflow-y: auto;
+  position: relative;
 }
 </style>

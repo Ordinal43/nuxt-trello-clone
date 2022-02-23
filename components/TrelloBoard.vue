@@ -1,7 +1,7 @@
 <template>
   <v-card
     rounded
-    height="80"
+    height="96"
     :style="getBoardStyle"
     :color="board.color"
     :to="`/boards/${board.id}`"

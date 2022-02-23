@@ -4,12 +4,12 @@ const nonAuthRoutes = [
 ]
 
 export default ({ store, route, redirect }) => {
-  const user = store.getters.getUser
+  const account = store.getters.getAccount
   if (nonAuthRoutes.includes(route.path)) {
-    if (user) {
+    if (account) {
       return redirect('/')
     }
-  } else if (!user) {
+  } else if (!account) {
     return redirect('/auth/login')
   }
 }

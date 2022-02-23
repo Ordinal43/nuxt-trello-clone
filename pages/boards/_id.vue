@@ -234,8 +234,7 @@
   >
     <div>
       <img
-        src="~/assets/not-found.svg"
-        alt="board-not-found.svg"
+        src="@/assets/not-found.svg"
         height="160"
       >
       <p class="text-subtitle-1 mt-3 text-center">
@@ -263,6 +262,7 @@
 
 <script>
 import cloneDeep from 'lodash/cloneDeep'
+import debounce from 'lodash/debounce'
 import { v4 as uuidv4 } from 'uuid'
 import { mixinInput } from '@/mixins/vue-mixins'
 
@@ -299,7 +299,7 @@ export default {
     // Get board object
     const boardRef = this.$fire.firestore
       .collection('users')
-      .doc(this.$store.getters.getUser.uid)
+      .doc(this.$store.getters.getAccount.uid)
       .collection('boards')
       .doc(this.$route.params.id)
 
@@ -346,7 +346,7 @@ export default {
     // Add listener to refresh board when data changes
     this.$fire.firestore
       .collection('users')
-      .doc(this.$store.getters.getUser.uid)
+      .doc(this.$store.getters.getAccount.uid)
       .collection('boards')
       .doc(this.$route.params.id)
       .onSnapshot((doc) => {
@@ -362,7 +362,7 @@ export default {
     updateBoardPromise () {
       return this.$fire.firestore
         .collection('users')
-        .doc(this.$store.getters.getUser.uid)
+        .doc(this.$store.getters.getAccount.uid)
         .collection('boards')
         .doc(this.board.id)
         .update(this.board)
@@ -380,11 +380,11 @@ export default {
         this.$refs.inputEditBoardTitle.focus()
       })
     },
-    updateBoardTitle ({ target }) {
+    async updateBoardTitle ({ target }) {
       this.isEditBoardTitle = false
       if (target.value && (target.value !== this.board.title)) {
         this.board.title = target.value
-        this.updateBoardBasic()
+        await this.updateBoardBasic()
       }
     },
     async deleteBoard () {
@@ -395,7 +395,7 @@ export default {
 
         const boardRef = this.$fire.firestore
           .collection('users')
-          .doc(this.$store.getters.getUser.uid)
+          .doc(this.$store.getters.getAccount.uid)
           .collection('boards')
           .doc(this.board.id)
 
@@ -433,7 +433,7 @@ export default {
         this.isCreateList = false
         this.list.id = uuidv4()
         this.list.cards = []
-        this.list.created_at = this.$fireModule.firestore.FieldValue.serverTimestamp()
+        this.list.created_at = Date.now()
         if (!this.board.lists) {
           this.board.lists = []
         }
@@ -480,7 +480,7 @@ export default {
 
           const boardRef = this.$fire.firestore
             .collection('users')
-            .doc(this.$store.getters.getUser.uid)
+            .doc(this.$store.getters.getAccount.uid)
             .collection('boards')
             .doc(this.board.id)
 
@@ -525,7 +525,7 @@ export default {
 
         const boardRef = this.$fire.firestore
           .collection('users')
-          .doc(this.$store.getters.getUser.uid)
+          .doc(this.$store.getters.getAccount.uid)
           .collection('boards')
           .doc(this.board.id)
 
@@ -553,7 +553,7 @@ export default {
       }
       this.$router.push(`/boards/${this.board.id}/card/${card.id}`)
     },
-    async updateCard (detailedCard) {
+    updateCard: debounce(async function (detailedCard) {
       try {
         const idxList = this.board.lists
           .findIndex(({ id }) => id === detailedCard.list_id)
@@ -569,7 +569,7 @@ export default {
 
           const boardRef = this.$fire.firestore
             .collection('users')
-            .doc(this.$store.getters.getUser.uid)
+            .doc(this.$store.getters.getAccount.uid)
             .collection('boards')
             .doc(this.board.id)
 
@@ -584,7 +584,7 @@ export default {
       } catch (error) {
         this.$store.commit('SET_ERROR', error)
       }
-    },
+    }, 200),
     promptDeleteCard () {
       this.dialogDeleteCard = true
     },
@@ -615,7 +615,7 @@ export default {
 
           const boardRef = this.$fire.firestore
             .collection('users')
-            .doc(this.$store.getters.getUser.uid)
+            .doc(this.$store.getters.getAccount.uid)
             .collection('boards')
             .doc(this.board.id)
           const cardRef = boardRef
@@ -639,7 +639,7 @@ export default {
         this.currentCard = {}
       }
     },
-    dropCard (currentList, droppedResult) {
+    async dropCard (currentList, droppedResult) {
       /**
        * This method will ALWAYS BE CALLED TWICE (by the source list and the target list.)
        * We'll handle the data changes for each of them here.
@@ -671,7 +671,7 @@ export default {
         }
       }
       currentList.cards = result
-      this.updateDragDropCards()
+      await this.updateDragDropCards()
     },
     async updateDragDropCards () {
       /**
