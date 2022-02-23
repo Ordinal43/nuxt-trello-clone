@@ -37,7 +37,7 @@
             <template #header>
               <v-col
                 cols="12"
-                class="d-flex align-center"
+                class="d-flex flex-wrap align-center mt-3 mt-md-0"
               >
                 <v-avatar
                   size="30"
@@ -52,6 +52,35 @@
                   </span>
                 </v-avatar>
                 <h4>{{ w.title }}</h4>
+
+                <v-spacer />
+
+                <div>
+                  <v-btn
+                    small
+                    depressed
+                    class="my-1"
+                    :to="`/workspace/${w.id}`"
+                    nuxt
+                  >
+                    <v-icon left>
+                      mdi-trello
+                    </v-icon>
+                    Boards
+                  </v-btn>
+                  <v-btn
+                    small
+                    depressed
+                    class="my-1"
+                    :to="`/workspace/${w.id}/settings`"
+                    nuxt
+                  >
+                    <v-icon left>
+                      mdi-cog
+                    </v-icon>
+                    Settings
+                  </v-btn>
+                </div>
               </v-col>
             </template>
           </LazyTrelloWorkspace>
