@@ -123,7 +123,9 @@
           'pa-5': $vuetify.breakpoint.mdAndUp
         }"
       >
-        <NuxtChild />
+        <NuxtChild
+          :workspace="workspace"
+        />
       </div>
     </v-container>
   </div>
