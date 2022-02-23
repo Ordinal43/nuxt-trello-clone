@@ -139,14 +139,23 @@ export default {
       })
     },
     '$store.getters.getError' (val) {
-      this.snackbarColor = 'red darken-1'
-      this.snackbarText = val.message
-      this.snackbar = true
+      if (val) {
+        this.snackbarColor = 'red darken-1'
+        this.snackbarText = val.message
+        this.snackbar = true
+      }
     },
     '$store.getters.getAlert' (val) {
-      this.snackbarColor = 'success'
-      this.snackbarText = val
-      this.snackbar = true
+      if (val) {
+        this.snackbarColor = 'success'
+        this.snackbarText = val
+        this.snackbar = true
+      }
+    },
+    snackbar (val) {
+      if (val) {
+        this.$store.commit('RESET_ALERT_ERROR')
+      }
     }
   },
   mounted () {

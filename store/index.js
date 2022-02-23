@@ -43,6 +43,10 @@ const mutations = {
   },
   SET_ALERT (state, alert) {
     state.alert = alert
+  },
+  RESET_ALERT_ERROR (state) {
+    state.alert = null
+    state.error = null
   }
 }
 
