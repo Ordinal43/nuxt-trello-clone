@@ -43,7 +43,7 @@
             </v-btn>
           </template>
 
-          <v-card>
+          <v-card width="300">
             <v-list v-if="$store.getters.getAccount">
               <v-list-item>
                 <v-list-item-avatar color="grey lighten-3">
