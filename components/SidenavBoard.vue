@@ -195,6 +195,32 @@
               </v-card>
             </v-menu>
           </v-col>
+          <v-col
+            v-show="isUploading"
+          >
+            <v-card
+              flat
+              rounded
+              height="100"
+              :ripple="false"
+            >
+              <v-img
+                :src="tempUrl"
+                alt="temporary image"
+                height="100"
+                class="align-end"
+              >
+                <v-sheet
+                  class="image-options white--text px-2 py-1"
+                >
+                  Uploading
+                  <v-icon color="white">
+                    mdi-dots-horizontal
+                  </v-icon>
+                </v-sheet>
+              </v-img>
+            </v-card>
+          </v-col>
         </v-row>
         <input
           ref="imageFileInput"
@@ -272,7 +298,9 @@ export default {
     newColor: vm.value.color,
     isUseColor: !!vm.value.color,
     imageMenus: [],
-    deleteBoardMenu: false
+    deleteBoardMenu: false,
+    isUploading: false,
+    tempUrl: null
   }),
   computed: {
     showResetColor () {
@@ -297,6 +325,9 @@ export default {
     },
     async uploadImage ($event) {
       const file = $event.target.files[0]
+
+      this.isUploading = true
+      this.tempUrl = URL.createObjectURL(file)
       if (file && MIMETYPE_IMAGES.includes(file.type)) {
         const uuidImage = uuidv4()
         const itemFilename = `${uuidImage}-${file.name}`
@@ -326,6 +357,9 @@ export default {
         } catch (error) {
           this.$store.commit('SET_ERROR', error)
           return false
+        } finally {
+          this.isUploading = false
+          this.tempUrl = null
         }
       } else {
         alert('Invalid file!')
@@ -342,16 +376,27 @@ export default {
       this.imageMenus[index] = false
       const itemName = `images/${this.$store.getters.getAccount.uid}/boards/${this.value.id}/${image.name}`
       const itemRef = this.$fire.storage.ref().child(itemName)
+
+      let deletedImage
+      let isCurrentBackground = false
       try {
-        await itemRef.delete(itemRef)
         this.updateBoard((board) => {
           if (board.image.name === image.name) {
+            isCurrentBackground = true
             board.image = {}
           }
-          board.images.splice(index, 1)
+          deletedImage = board.images.splice(index, 1)[0]
         })
+        await itemRef.delete(itemRef)
+        this.$store.commit('SET_ALERT', 'Background deleted!')
       } catch (error) {
         this.$store.commit('SET_ERROR', error)
+        this.updateBoard((board) => {
+          if (isCurrentBackground) {
+            board.image = image
+          }
+          board.images.splice(index, 0, deletedImage)
+        })
       }
     },
     setBackgroundRepeat (value) {
