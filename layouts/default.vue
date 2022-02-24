@@ -124,13 +124,16 @@
 </template>
 
 <script>
+import debounce from 'lodash/debounce'
+
 export default {
   name: 'DefaultLayout',
   data: () => ({
     snackbar: false,
     snackbarColor: '',
     snackbarText: '',
-    overlay: true
+    overlay: true,
+    windowHeight: process.server ? 100 : window.innerHeight
   }),
   watch: {
     '$store.getters.getAccount' () {
@@ -161,8 +164,22 @@ export default {
   mounted () {
     this.overlay = false
     this.$store.dispatch('setUserListener')
+    this.$nextTick(() => {
+      this.setCustomVh()
+      window.addEventListener('resize', this.onResize)
+    })
+  },
+  beforeDestroy () {
+    window.removeEventListener('resize', this.onResize)
   },
   methods: {
+    setCustomVh: debounce(function () {
+      const vh = window.innerHeight * 0.01
+      document.documentElement.style.setProperty('--vh', `${vh}px`)
+    }, 250),
+    onResize () {
+      this.setCustomVh()
+    },
     getInitials (name = '') {
       return name
         .split(' ')
@@ -175,9 +192,8 @@ export default {
 </script>
 
 <style lang="scss">
-html, body, #__nuxt, #__layout, #app {
+:root {
   overflow-y: hidden !important;
-  height: 100%;
 }
 </style>
 
@@ -188,7 +204,8 @@ a {
 }
 
 .brello-flex-container {
-  height: 100%;
+  height: 100vh; /* Use vh as a fallback for browsers that do not support Custom Properties */
+  height: calc(var(--vh, 1vh) * 100);
   min-height: 300px;
   display: flex;
   flex-direction: column;
