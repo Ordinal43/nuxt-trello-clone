@@ -17,7 +17,7 @@
           </span>
         </v-list-item-avatar>
         <v-list-item-content>
-          <v-list-item-title class="text-body-2 py-1">
+          <v-list-item-title class="text-body-2 py-1 font-weight-black">
             {{ w.title }}
           </v-list-item-title>
         </v-list-item-content>
