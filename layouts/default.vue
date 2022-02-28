@@ -21,6 +21,9 @@
             </span>
           </NuxtLink>
         </v-toolbar-title>
+
+        <AppBarMenu />
+
         <v-spacer />
 
         <v-menu
