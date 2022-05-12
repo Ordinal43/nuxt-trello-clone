@@ -1,12 +1,7 @@
 # nuxt-trello-clone (WIP)
 
 ## About this project
-A  Trello clone made with Nuxt and Vuetify based on [this project](https://gitlab.com/codebasetutorials/trello-clone-yello/) with several additions including:
-- Persistent auth using cookies,
-- Improved drag and drop interface,
-- Improved card and list creation interface (similar to Trello's),
-- Added more card properties (description, checklists (with drag and drop), and dates), 
-- and more to come...
+A work-in-progress Trello clone made with Nuxt and Vuetify. Check it out [here!](https://nuxt-trello-clone.herokuapp.com/)
 
 ## Build Setup
 
