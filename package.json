@@ -21,7 +21,7 @@
     "@nuxtjs/axios": "^5.13.6",
     "@nuxtjs/firebase": "^8.2.2",
     "cookieparser": "^0.1.0",
-    "core-js": "^3.21.0",
+    "core-js": "^3.22.6",
     "dayjs": "^1.10.7",
     "firebase": "^9.6.6",
     "js-cookie": "^3.0.1",
