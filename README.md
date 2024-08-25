@@ -1,7 +1,7 @@
 # nuxt-trello-clone (WIP)
 
 ## About this project
-A work-in-progress Trello clone made with Nuxt and Vuetify. Check it out [here!](https://nuxt-trello-clone.herokuapp.com/)
+A work-in-progress Trello clone made with Nuxt and Vuetify.
 
 ## Build Setup
 
