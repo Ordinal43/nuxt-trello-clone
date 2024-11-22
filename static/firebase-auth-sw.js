@@ -1,10 +1,10 @@
 const ignorePaths = ["\u002F__webpack_hmr","\u002F_loading","\u002F_nuxt\u002F"]
 
 importScripts(
-  'https://www.gstatic.com/firebasejs/9.6.6/firebase-app-compat.js'
+  'https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js'
 )
 importScripts(
-  'https://www.gstatic.com/firebasejs/9.6.6/firebase-auth-compat.js'
+  'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js'
 )
 firebase.initializeApp({"apiKey":"AIzaSyBwzWn0nceyHyqCGLmDi6zEp0exKD_iQ_k","authDomain":"vue-trello-clone-aaccd.firebaseapp.com","projectId":"vue-trello-clone-aaccd","storageBucket":"vue-trello-clone-aaccd.appspot.com","messagingSenderId":"832402878231","appId":"1:832402878231:web:698c5edaf2b9a5f7f99152"})
 

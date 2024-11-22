@@ -77,7 +77,6 @@ export default {
           storageBucket: 'vue-trello-clone-aaccd.appspot.com',
           messagingSenderId: '832402878231',
           appId: '1:832402878231:web:698c5edaf2b9a5f7f99152'
-
         },
         services: {
           auth: {
